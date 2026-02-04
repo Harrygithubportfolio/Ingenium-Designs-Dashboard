@@ -59,8 +59,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           />
 
           {/* Page Content - fills remaining height */}
-          <main className="flex-1 overflow-hidden">
-            <div className="h-full p-4 md:p-6">
+          <main className="flex-1 min-h-0 overflow-hidden p-3 md:p-4">
+            <div className="h-full overflow-hidden">
               {children}
             </div>
           </main>
