@@ -49,7 +49,7 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-4 overflow-hidden">
+      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 grid-rows-[1fr_auto] gap-4 overflow-hidden">
         {/* Weather Preview */}
         <WeatherPreview />
 
@@ -57,7 +57,7 @@ export default function Home() {
         <GoalsPreview />
 
         {/* Bottom Row - Static Cards */}
-        <div className="lg:col-span-2 grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="lg:col-span-2 grid grid-cols-2 lg:grid-cols-4 gap-3 flex-shrink-0">
           <NavCard
             title="Focus Mode"
             description="3 tasks pending"
@@ -123,8 +123,8 @@ function WeatherPreview() {
     : true;
 
   return (
-    <Link href="/weather" className="group block">
-      <div className="h-full bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] p-4 flex flex-col transition-all hover:border-[#3b82f6]/40 hover:shadow-lg hover:shadow-[#3b82f6]/5 relative overflow-hidden">
+    <Link href="/weather" className="group block h-full">
+      <div className="h-full bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] p-4 md:p-5 lg:p-6 flex flex-col transition-all hover:border-[#3b82f6]/40 hover:shadow-lg hover:shadow-[#3b82f6]/5 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -151,34 +151,34 @@ function WeatherPreview() {
             <div className="w-6 h-6 border-2 border-[#3b82f6]/30 border-t-[#3b82f6] rounded-full animate-spin" />
           </div>
         ) : weather ? (
-          <div className="flex-1 flex flex-col">
-            {/* Current Weather */}
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-2 bg-[#22222c]/60 rounded-xl">
-                <WeatherIcon type={mapWeatherToIcon(weather.current.weather[0].id, isDay)} size="lg" />
+          <div className="flex-1 flex flex-col min-h-0">
+            {/* Current Weather - Grows to fill space */}
+            <div className="flex-1 flex items-center justify-center gap-6 min-h-0">
+              <div className="p-3 md:p-4 bg-[#22222c]/60 rounded-2xl">
+                <WeatherIcon type={mapWeatherToIcon(weather.current.weather[0].id, isDay)} size="xl" />
               </div>
-              <div>
+              <div className="flex flex-col justify-center">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-white">{Math.round(weather.current.temp)}</span>
-                  <span className="text-lg text-gray-500">°C</span>
+                  <span className="text-5xl md:text-6xl lg:text-7xl font-bold text-white">{Math.round(weather.current.temp)}</span>
+                  <span className="text-xl md:text-2xl text-gray-500">°C</span>
                 </div>
-                <p className="text-sm text-[#3b82f6] font-medium">{capitalizeDescription(weather.current.weather[0].description)}</p>
-                <p className="text-xs text-gray-500">{weather.current.location}</p>
+                <p className="text-base md:text-lg text-[#3b82f6] font-medium mt-1">{capitalizeDescription(weather.current.weather[0].description)}</p>
+                <p className="text-sm text-gray-500">{weather.current.location}</p>
               </div>
             </div>
 
-            {/* Hourly Preview */}
-            <div className="flex-1 min-h-0">
-              <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-2">Next Hours</p>
-              <div className="grid grid-cols-5 gap-2">
+            {/* Hourly Preview - Fills remaining space */}
+            <div className="flex-shrink-0 mt-auto pt-4">
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Next Hours</p>
+              <div className="grid grid-cols-5 gap-2 md:gap-3">
                 {weather.hourly.slice(1, 6).map((hour) => {
                   const hourIsDay = isDaytime(hour.dt, weather.current.sunrise, weather.current.sunset);
                   const iconType = mapWeatherToIcon(hour.weather[0].id, hourIsDay);
                   return (
-                    <div key={hour.dt} className="flex flex-col items-center py-1.5 px-1 bg-[#14141a] rounded-lg">
-                      <span className="text-[10px] text-gray-500 mb-1">{formatHour(hour.dt, weather.timezone)}</span>
-                      <WeatherIcon type={iconType} size="sm" />
-                      <span className="text-xs font-semibold text-white mt-1">{Math.round(hour.temp)}°</span>
+                    <div key={hour.dt} className="flex flex-col items-center py-2 md:py-3 px-1 md:px-2 bg-[#14141a] rounded-xl">
+                      <span className="text-xs text-gray-500 mb-1.5">{formatHour(hour.dt, weather.timezone)}</span>
+                      <WeatherIcon type={iconType} size="md" />
+                      <span className="text-sm md:text-base font-semibold text-white mt-1.5">{Math.round(hour.temp)}°</span>
                     </div>
                   );
                 })}
@@ -229,8 +229,8 @@ function GoalsPreview() {
     : 0;
 
   return (
-    <Link href="/goals" className="group block">
-      <div className="h-full bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] p-4 flex flex-col transition-all hover:border-[#3b82f6]/40 hover:shadow-lg hover:shadow-[#3b82f6]/5 relative overflow-hidden">
+    <Link href="/goals" className="group block h-full">
+      <div className="h-full bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] p-4 md:p-5 lg:p-6 flex flex-col transition-all hover:border-[#3b82f6]/40 hover:shadow-lg hover:shadow-[#3b82f6]/5 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-green-500/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -257,27 +257,27 @@ function GoalsPreview() {
             <div className="w-6 h-6 border-2 border-[#3b82f6]/30 border-t-[#3b82f6] rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="flex-1 flex flex-col">
-            {/* Stats Row */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex-1 bg-[#14141a] rounded-xl p-3">
-                <p className="text-[10px] text-gray-500 uppercase mb-0.5">Total</p>
-                <p className="text-2xl font-bold text-white">{totalGoals}</p>
+          <div className="flex-1 flex flex-col min-h-0">
+            {/* Stats Row - Expands to fill space */}
+            <div className="flex-1 flex items-stretch gap-3 md:gap-4 mb-4 min-h-0">
+              <div className="flex-1 bg-[#14141a] rounded-xl p-3 md:p-4 flex flex-col justify-center">
+                <p className="text-xs text-gray-500 uppercase mb-1">Total</p>
+                <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">{totalGoals}</p>
               </div>
-              <div className="flex-1 bg-[#14141a] rounded-xl p-3">
-                <p className="text-[10px] text-gray-500 uppercase mb-0.5">Active</p>
-                <p className="text-2xl font-bold text-yellow-400">{inProgressGoals}</p>
+              <div className="flex-1 bg-[#14141a] rounded-xl p-3 md:p-4 flex flex-col justify-center">
+                <p className="text-xs text-gray-500 uppercase mb-1">Active</p>
+                <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-yellow-400">{inProgressGoals}</p>
               </div>
-              <div className="flex-1 bg-[#14141a] rounded-xl p-3">
-                <p className="text-[10px] text-gray-500 uppercase mb-0.5">Progress</p>
-                <p className="text-2xl font-bold text-[#3b82f6]">{avgProgress}%</p>
+              <div className="flex-1 bg-[#14141a] rounded-xl p-3 md:p-4 flex flex-col justify-center">
+                <p className="text-xs text-gray-500 uppercase mb-1">Progress</p>
+                <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#3b82f6]">{avgProgress}%</p>
               </div>
             </div>
 
             {/* Goals List */}
-            <div className="flex-1 min-h-0 space-y-2 overflow-hidden">
+            <div className="flex-shrink-0 space-y-2 md:space-y-3">
               {goals.length === 0 ? (
-                <div className="flex items-center justify-center h-full">
+                <div className="flex items-center justify-center py-4">
                   <p className="text-sm text-gray-500">No goals yet</p>
                 </div>
               ) : (
@@ -288,22 +288,22 @@ function GoalsPreview() {
                   const progress = total === 0 ? goal.progress ?? 0 : Math.round((completed / total) * 100);
 
                   return (
-                    <div key={goal.id} className="flex items-center gap-3 p-2 bg-[#14141a] rounded-lg">
-                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                    <div key={goal.id} className="flex items-center gap-3 p-3 md:p-4 bg-[#14141a] rounded-xl">
+                      <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
                         goal.status === 'Completed' ? 'bg-green-500' :
                         goal.status === 'In Progress' ? 'bg-yellow-500' : 'bg-gray-500'
                       }`} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-white truncate">{goal.title}</p>
+                        <p className="text-sm md:text-base font-medium text-white truncate">{goal.title}</p>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <div className="w-16 h-1 bg-[#22222c] rounded-full overflow-hidden">
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <div className="w-20 md:w-24 h-1.5 bg-[#22222c] rounded-full overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-full"
                             style={{ width: `${progress}%` }}
                           />
                         </div>
-                        <span className="text-[10px] text-gray-400 w-7 text-right">{progress}%</span>
+                        <span className="text-xs md:text-sm text-gray-400 w-10 text-right">{progress}%</span>
                       </div>
                     </div>
                   );
@@ -321,8 +321,8 @@ function GoalsPreview() {
 // WEATHER ICON COMPONENT (Simplified)
 // ============================================
 
-function WeatherIcon({ type, size = 'md' }: { type: WeatherIconType; size?: 'sm' | 'md' | 'lg' }) {
-  const sizeMap = { sm: 'w-5 h-5', md: 'w-8 h-8', lg: 'w-12 h-12' };
+function WeatherIcon({ type, size = 'md' }: { type: WeatherIconType; size?: 'sm' | 'md' | 'lg' | 'xl' }) {
+  const sizeMap = { sm: 'w-6 h-6', md: 'w-10 h-10', lg: 'w-16 h-16', xl: 'w-20 h-20' };
   const iconSize = sizeMap[size];
 
   const icons: Partial<Record<WeatherIconType, React.ReactNode>> = {
