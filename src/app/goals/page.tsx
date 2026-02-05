@@ -1,91 +1,160 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
-import GoalDetails from "./components/GoalDetails";
-import AddGoalModal from "./components/AddGoalModal";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { Goal } from "./utils/goalTypes";
+import { DailyGoal } from "./utils/goalTypes";
+import QuickAddGoalModal from "./components/QuickAddGoalModal";
+import EveningReviewModal from "./components/EveningReviewModal";
+import DailyGoalCard from "./components/DailyGoalCard";
+import GoalHistory from "./components/GoalHistory";
 
 export default function GoalsPage() {
-  const [goals, setGoals] = useState<Goal[]>([]);
-  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
+  const [goals, setGoals] = useState<DailyGoal[]>([]);
+  const [activeTab, setActiveTab] = useState<"today" | "tomorrow" | "review" | "history">(
+    "today"
+  );
   const [showAddModal, setShowAddModal] = useState(false);
-  const detailsRef = useRef<HTMLDivElement>(null);
-  const goalsGridRef = useRef<HTMLDivElement>(null);
+  const [reviewingGoal, setReviewingGoal] = useState<DailyGoal | null>(null);
 
-  const selectedGoal = goals.find((g) => g.id === selectedGoalId) ?? null;
+  // Get today's and tomorrow's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0];
+  const tomorrowDate = new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  const tomorrow = tomorrowDate.toISOString().split("T")[0];
 
-  // Calculate stats
-  const totalGoals = goals.length;
-  const completedGoals = goals.filter((g) => g.status === "Completed").length;
-  const inProgressGoals = goals.filter((g) => g.status === "In Progress").length;
-  const avgProgress = goals.length > 0
-    ? Math.round(goals.reduce((sum, g) => sum + (g.progress || 0), 0) / goals.length)
-    : 0;
-
-  // Handle click outside to deselect goal
-  const handleClickOutside = useCallback((event: MouseEvent) => {
-    const target = event.target as Node;
-    const isOutsideDetails = detailsRef.current && !detailsRef.current.contains(target);
-    const isOutsideGoals = goalsGridRef.current && !goalsGridRef.current.contains(target);
-
-    if (isOutsideDetails && isOutsideGoals) {
-      const isModal = (target as Element).closest?.('[data-modal]');
-      const isButton = (target as Element).closest?.('button');
-      if (!isModal && !isButton) {
-        setSelectedGoalId(null);
+  // Load goals from localStorage (in a real app, use Supabase)
+  useEffect(() => {
+    const savedGoals = localStorage.getItem("daily_goals");
+    if (savedGoals) {
+      try {
+        setGoals(JSON.parse(savedGoals));
+      } catch (e) {
+        console.error("Failed to load goals", e);
       }
     }
   }, []);
 
+  // Save goals to localStorage whenever they change
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [handleClickOutside]);
+    localStorage.setItem("daily_goals", JSON.stringify(goals));
+  }, [goals]);
 
-  // Load goals from Supabase
-  useEffect(() => {
-    const load = async () => {
-      const { data } = await supabase
-        .from("goals")
-        .select("*, milestones(*)")
-        .order("created_at", { ascending: true });
-      if (data) setGoals(data);
-    };
+  // Get today's and tomorrow's goals
+  const todayGoals = goals.filter((g) => g.date === today);
+  const tomorrowGoals = goals.filter((g) => g.date === tomorrow);
 
-    load();
+  // Get goals that need review (completed but not reviewed)
+  const goalsForReview = todayGoals.filter(
+    (g) => g.completed && !g.review
+  );
 
-    const channel = supabase
-      .channel("realtime-goals")
-      .on("postgres_changes", { event: "*", schema: "public", table: "goals" }, () => load())
-      .on("postgres_changes", { event: "*", schema: "public", table: "milestones" }, () => load())
-      .subscribe();
+  // Handle completion toggle
+  const handleToggleComplete = (goalId: string) => {
+    setGoals(
+      goals.map((g) =>
+        g.id === goalId
+          ? { ...g, completed: !g.completed, completedAt: !g.completed ? new Date().toISOString() : undefined }
+          : g
+      )
+    );
+  };
 
-    return () => { supabase.removeChannel(channel); };
-  }, []);
+  // Handle review submission
+  const handleCompleteReview = (
+    goalId: string,
+    rating: number,
+    notes: string,
+    carryOver: boolean
+  ) => {
+    setGoals(
+      goals.map((g) => {
+        if (g.id === goalId) {
+          return {
+            ...g,
+            review: {
+              rating,
+              notes,
+              reviewedAt: new Date().toISOString(),
+              carryOver,
+            },
+          };
+        }
+        return g;
+      })
+    );
+
+    // If carrying over, create goal for tomorrow
+    if (carryOver) {
+      const goal = goals.find((g) => g.id === goalId);
+      if (goal) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split("T")[0];
+
+        const newGoal: DailyGoal = {
+          id: `goal_${Date.now()}`,
+          title: goal.title,
+          description: goal.description,
+          category: goal.category,
+          date: tomorrowStr,
+          completed: false,
+          carriedOverFrom: goal.id,
+          priority: goal.priority,
+        };
+
+        setGoals([...goals, newGoal]);
+      }
+    }
+
+    setReviewingGoal(null);
+  };
+
+  // Calculate stats
+  const completedToday = todayGoals.filter((g) => g.completed).length;
+  const reviewedToday = todayGoals.filter((g) => g.review).length;
+  const avgRating = todayGoals
+    .filter((g) => g.review)
+    .reduce((sum, g) => sum + (g.review?.rating || 0), 0) / (reviewedToday || 1);
+
+  const getTimeOfDay = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "morning";
+    if (hour < 17) return "afternoon";
+    return "evening";
+  };
+
+  const timeOfDay = getTimeOfDay();
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
-      {/* Compact Header */}
-      <div className="flex-shrink-0 flex items-center justify-between gap-4 mb-3">
+    <div className="h-full flex flex-col overflow-hidden bg-[#0a0a0f]">
+      {/* Header */}
+      <div className="flex-shrink-0 flex items-center justify-between gap-4 mb-4 px-1">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center flex-shrink-0">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            <svg
+              className="w-5 h-5 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+              />
             </svg>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">Goals</h1>
-            <p className="text-gray-500 text-xs">Track your long-term progress</p>
+            <h1 className="text-xl font-bold text-white">Daily Goals</h1>
+            <p className="text-gray-500 text-xs">
+              {timeOfDay === "morning"
+                ? "Set your goals for today"
+                : timeOfDay === "afternoon"
+                  ? "Keep making progress!"
+                  : "Time to review your day"}
+            </p>
           </div>
-        </div>
-
-        {/* Inline Stats */}
-        <div className="hidden md:flex items-center gap-2">
-          <MiniStat label="Total" value={totalGoals} />
-          <MiniStat label="Active" value={inProgressGoals} color="text-yellow-400" />
-          <MiniStat label="Done" value={completedGoals} color="text-green-400" />
-          <MiniStat label="Progress" value={`${avgProgress}%`} color="text-[#3b82f6]" />
         </div>
 
         <button
@@ -93,157 +162,248 @@ export default function GoalsPage() {
           onClick={() => setShowAddModal(true)}
           className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#3b82f6] hover:bg-[#2563eb] text-white text-sm font-medium transition-all flex-shrink-0"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
           </svg>
-          <span className="hidden sm:inline">New Goal</span>
+          <span className="hidden sm:inline">Add Goal</span>
         </button>
       </div>
 
-      {/* Mobile Stats Row */}
-      <div className="flex-shrink-0 md:hidden flex items-center gap-2 mb-3">
-        <MiniStat label="Total" value={totalGoals} />
-        <MiniStat label="Active" value={inProgressGoals} color="text-yellow-400" />
-        <MiniStat label="Done" value={completedGoals} color="text-green-400" />
-        <MiniStat label="Progress" value={`${avgProgress}%`} color="text-[#3b82f6]" />
+      {/* Tabs */}
+      <div className="flex-shrink-0 flex gap-2 mb-4 px-1 border-b border-[#2a2a33]">
+        {(
+          [
+            { id: "today", label: "Today", count: todayGoals.length },
+            { id: "tomorrow", label: "Tomorrow", count: tomorrowGoals.length },
+            { id: "review", label: "Review", count: goalsForReview.length },
+            { id: "history", label: "History", count: 0 },
+          ] as const
+        ).map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-2 text-sm font-medium transition relative ${
+              activeTab === tab.id
+                ? "text-white"
+                : "text-gray-400 hover:text-gray-300"
+            }`}
+          >
+            {tab.label}
+            {tab.count > 0 && (
+              <span className="ml-2 inline-block w-5 h-5 rounded-full bg-[#3b82f6] text-white text-xs flex items-center justify-center">
+                {tab.count}
+              </span>
+            )}
+            {activeTab === tab.id && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3b82f6]" />
+            )}
+          </button>
+        ))}
       </div>
 
-      {/* Main Content - Takes remaining space */}
-      <div className="flex-1 min-h-0 flex gap-3 overflow-hidden">
-        {/* Goals Grid - Expands/contracts based on selection */}
-        <div
-          ref={goalsGridRef}
-          className={`bg-[#1a1a22] rounded-xl border border-[#2a2a33] p-3 flex flex-col overflow-hidden transition-all duration-300 ease-out ${
-            selectedGoal ? 'flex-1 lg:flex-[2]' : 'flex-1'
-          }`}
-        >
-          <div className="flex items-center justify-between mb-2 flex-shrink-0">
-            <h2 className="text-sm font-semibold text-gray-300">Your Goals</h2>
-            <span className="text-xs text-gray-500">{goals.length} goals</span>
-          </div>
-
-          {goals.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-[#22222c] flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
-                  </svg>
-                </div>
-                <p className="text-gray-400 text-sm">No goals yet</p>
-                <p className="text-gray-500 text-xs">Click &quot;New Goal&quot; to get started</p>
+      {/* Content */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-1">
+        {activeTab === "today" && (
+          <div className="max-w-4xl">
+            {/* Stats Bar */}
+            {todayGoals.length > 0 && (
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <StatCard
+                  label="Total Goals"
+                  value={todayGoals.length}
+                  color="blue"
+                />
+                <StatCard
+                  label="Completed"
+                  value={completedToday}
+                  color="green"
+                />
+                <StatCard
+                  label="Reviewed"
+                  value={reviewedToday}
+                  color="purple"
+                />
               </div>
-            </div>
-          ) : (
-            <div className="flex-1 min-h-0 overflow-y-auto">
-              <div className={`grid gap-2 auto-rows-min transition-all duration-300 ${
-                selectedGoal
-                  ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
-                  : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
-              }`}>
-                {goals.map((goal) => (
-                  <CompactGoalCard
+            )}
+
+            {/* Goals List */}
+            {todayGoals.length === 0 ? (
+              <EmptyState
+                icon="📝"
+                title={
+                  timeOfDay === "morning"
+                    ? "No goals set for today yet"
+                    : "No goals tracked today"
+                }
+                description="Click 'Add Goal' to set your goals for today and track your progress!"
+              />
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {todayGoals.map((goal) => (
+                  <DailyGoalCard
                     key={goal.id}
                     goal={goal}
-                    selected={goal.id === selectedGoalId}
-                    onClick={() => setSelectedGoalId(goal.id)}
+                    onToggleComplete={handleToggleComplete}
+                    onReview={setReviewingGoal}
+                    isReviewTime={false}
                   />
                 ))}
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Details Panel - Slides in from right */}
-        <div
-          ref={detailsRef}
-          className={`overflow-hidden transition-all duration-300 ease-out ${
-            selectedGoal
-              ? 'w-80 lg:w-96 opacity-100'
-              : 'w-0 opacity-0'
-          }`}
-        >
-          <div className="w-80 lg:w-96 h-full">
-            <GoalDetails
-              goal={selectedGoal}
-              goals={goals}
-              setGoals={setGoals}
-              isVisible={!!selectedGoal}
-              onClose={() => setSelectedGoalId(null)}
-            />
+            )}
           </div>
-        </div>
+        )}
+
+        {activeTab === "tomorrow" && (
+          <div className="max-w-4xl">
+            {/* Stats Bar */}
+            {tomorrowGoals.length > 0 && (
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <StatCard
+                  label="Goals Planned"
+                  value={tomorrowGoals.length}
+                  color="blue"
+                />
+                <StatCard
+                  label="High Priority"
+                  value={tomorrowGoals.filter((g) => g.priority === "High").length}
+                  color="purple"
+                />
+              </div>
+            )}
+
+            {/* Goals List */}
+            {tomorrowGoals.length === 0 ? (
+              <EmptyState
+                icon="🌅"
+                title="No goals set for tomorrow yet"
+                description="Plan ahead! Click 'Add Goal' to set your goals for tomorrow."
+              />
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {tomorrowGoals.map((goal) => (
+                  <DailyGoalCard
+                    key={goal.id}
+                    goal={goal}
+                    onToggleComplete={handleToggleComplete}
+                    onReview={setReviewingGoal}
+                    isReviewTime={false}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "review" && (
+          <div className="max-w-4xl">
+            {goalsForReview.length === 0 ? (
+              <EmptyState
+                icon="✅"
+                title="All caught up!"
+                description={
+                  todayGoals.length === 0
+                    ? "No goals to review. Set some goals first!"
+                    : "Mark goals as complete to review them"
+                }
+              />
+            ) : (
+              <div>
+                <p className="text-sm text-gray-400 mb-4">
+                  Review your completed goals and rate your progress
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {goalsForReview.map((goal) => (
+                    <DailyGoalCard
+                      key={goal.id}
+                      goal={goal}
+                      onToggleComplete={handleToggleComplete}
+                      onReview={setReviewingGoal}
+                      isReviewTime={true}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "history" && (
+          <div className="max-w-4xl">
+            <GoalHistory goals={goals} onReview={setReviewingGoal} />
+          </div>
+        )}
       </div>
 
-      {/* Add Goal Modal */}
+      {/* Modals */}
       {showAddModal && (
-        <div data-modal>
-          <AddGoalModal
-            close={() => setShowAddModal(false)}
-            setGoals={setGoals}
-            goals={goals}
-          />
-        </div>
+        <QuickAddGoalModal
+          close={() => setShowAddModal(false)}
+          date={activeTab === "tomorrow" ? tomorrow : today}
+          goals={goals}
+          setGoals={setGoals}
+        />
+      )}
+
+      {reviewingGoal && (
+        <EveningReviewModal
+          goal={reviewingGoal}
+          onClose={() => setReviewingGoal(null)}
+          onComplete={handleCompleteReview}
+        />
       )}
     </div>
   );
 }
 
-// Mini Stat Component
-function MiniStat({ label, value, color = "text-white" }: { label: string; value: string | number; color?: string }) {
-  return (
-    <div className="flex items-center gap-1.5 px-2 py-1 bg-[#1a1a22] rounded-lg border border-[#2a2a33]">
-      <span className="text-[10px] text-gray-500 uppercase">{label}</span>
-      <span className={`text-sm font-bold ${color}`}>{value}</span>
-    </div>
-  );
-}
-
-// Compact Goal Card Component
-function CompactGoalCard({ goal, selected, onClick }: { goal: Goal; selected: boolean; onClick: () => void }) {
-  const milestones = goal.milestones ?? [];
-  const completed = milestones.filter((m) => m.completed).length;
-  const total = milestones.length;
-  const progress = total === 0 ? goal.progress ?? 0 : Math.round((completed / total) * 100);
-
-  const statusColors: Record<string, string> = {
-    "In Progress": "bg-yellow-500",
-    "Completed": "bg-green-500",
-    "Not Started": "bg-gray-500",
+// Stat Card Component
+function StatCard({
+  label,
+  value,
+  color = "blue",
+}: {
+  label: string;
+  value: number;
+  color?: "blue" | "green" | "purple";
+}) {
+  const bgColors = {
+    blue: "bg-blue-500/20 text-blue-300",
+    green: "bg-green-500/20 text-green-300",
+    purple: "bg-purple-500/20 text-purple-300",
   };
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`w-full text-left p-3 rounded-lg border transition-all ${
-        selected
-          ? "border-[#3b82f6] bg-[#3b82f6]/10"
-          : "border-[#2a2a33] bg-[#14141a] hover:bg-[#1e1e26] hover:border-[#3a3a44]"
-      }`}
-    >
-      <div className="flex items-start justify-between gap-2 mb-1.5">
-        <h3 className="text-sm font-medium text-white truncate flex-1">{goal.title}</h3>
-        <span className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${statusColors[goal.status] || "bg-gray-500"}`} />
-      </div>
+    <div className={`p-3 rounded-lg border border-[#2a2a33] ${bgColors[color]}`}>
+      <p className="text-xs text-gray-400 mb-1">{label}</p>
+      <p className="text-2xl font-bold">{value}</p>
+    </div>
+  );
+}
 
-      {goal.description && (
-        <p className="text-xs text-gray-500 line-clamp-1 mb-2">{goal.description}</p>
-      )}
-
-      <div className="flex items-center gap-2">
-        <div className="flex-1 h-1 bg-[#22222c] rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-full transition-all"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-        <span className="text-[10px] text-gray-400 flex-shrink-0">{progress}%</span>
-      </div>
-
-      {total > 0 && (
-        <p className="text-[10px] text-gray-500 mt-1">{completed}/{total} milestones</p>
-      )}
-    </button>
+// Empty State Component
+function EmptyState({
+  icon,
+  title,
+  description,
+}: {
+  icon: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      <div className="text-5xl mb-4">{icon}</div>
+      <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
+      <p className="text-gray-400 text-sm max-w-xs">{description}</p>
+    </div>
   );
 }
