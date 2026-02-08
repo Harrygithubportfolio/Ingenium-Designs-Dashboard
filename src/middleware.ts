@@ -21,7 +21,7 @@ export function middleware(req: NextRequest) {
 
   // Otherwise → redirect to Cognito login
   const loginUrl = `${COGNITO_DOMAIN}/login?client_id=${CLIENT_ID}&response_type=code&scope=openid+email+profile&redirect_uri=${encodeURIComponent(
-    REDIRECT_URI + "/parse-auth"
+    REDIRECT_URI
   )}`;
 
   return NextResponse.redirect(loginUrl);
