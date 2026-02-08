@@ -1,5 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import Providers from '@/components/Providers';
 import DashboardLayout from '@/components/DashboardLayout';
 
 export const metadata: Metadata = {
@@ -14,7 +15,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body className="antialiased">
-        <DashboardLayout>{children}</DashboardLayout>
+        <Providers>
+          <DashboardLayout>{children}</DashboardLayout>
+        </Providers>
       </body>
     </html>
   );
