@@ -9,17 +9,14 @@ export function middleware(req: NextRequest) {
   const idToken = req.cookies.get("ingenium-id-token")?.value;
   const accessToken = req.cookies.get("ingenium-access-token")?.value;
 
-  // Allow the callback route
   if (req.nextUrl.pathname === "/parse-auth") {
     return NextResponse.next();
   }
 
-  // If authenticated → continue
   if (idToken && accessToken) {
     return NextResponse.next();
   }
 
-  // Otherwise → redirect to Cognito login
   const loginUrl = `${COGNITO_DOMAIN}/login?client_id=${CLIENT_ID}&response_type=code&scope=openid+email+profile&redirect_uri=${encodeURIComponent(
     REDIRECT_URI
   )}`;
