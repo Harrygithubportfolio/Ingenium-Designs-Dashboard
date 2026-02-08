@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const COGNITO_DOMAIN = "https://eu-west-2s533x2p21.auth.eu-west-2.amazoncognito.com";
-const CLIENT_ID = "7r3sa4mqqamdrd8idrrtu89g95";
-const REDIRECT_URI = "https://dashboard.ingeniumdesigns.co.uk";
+const COGNITO_DOMAIN = "https://eu-west-2f6mdhutkp.auth.eu-west-2.amazoncognito.com";
+const CLIENT_ID = "26st86eirq4i8986hmheb4m1ll";
+const REDIRECT_URI = "https://dashboard.ingeniumdesigns.co.uk/parse-auth";
 
 export function middleware(req: NextRequest) {
   const idToken = req.cookies.get("ingenium-id-token")?.value;

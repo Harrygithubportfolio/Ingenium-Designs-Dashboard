@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   }
 
   const tokenResponse = await fetch(
-    "https://eu-west-2s533x2p21.auth.eu-west-2.amazoncognito.com/oauth2/token",
+    "https://eu-west-2f6mdhutkp.auth.eu-west-2.amazoncognito.com/oauth2/token",
     {
       method: "POST",
       headers: {
@@ -17,7 +17,7 @@ export async function GET(req: Request) {
       },
       body: new URLSearchParams({
         grant_type: "authorization_code",
-        client_id: "7r3sa4mqqamdrd8idrrtu89g95",
+        client_id: "26st86eirq4i8986hmheb4m1ll",
         code,
         redirect_uri: "https://dashboard.ingeniumdesigns.co.uk/parse-auth",
       }),
