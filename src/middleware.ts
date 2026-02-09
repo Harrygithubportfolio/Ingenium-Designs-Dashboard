@@ -17,9 +17,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const loginUrl = `${COGNITO_DOMAIN}/login?client_id=${CLIENT_ID}&response_type=code&scope=openid+email+profile&redirect_uri=${encodeURIComponent(
-    REDIRECT_URI
-  )}`;
+  const loginUrl = `${COGNITO_DOMAIN}/login?client_id=${CLIENT_ID}&response_type=code&scope=openid+email+profile&redirect_uri=${REDIRECT_URI}`;
 
   return NextResponse.redirect(loginUrl);
 }
