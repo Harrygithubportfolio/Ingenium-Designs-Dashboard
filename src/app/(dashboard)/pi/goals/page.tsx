@@ -7,7 +7,11 @@ import AddGoalModal from "./components/AddGoalModal";
 import EditGoalModal from "./components/EditGoalModal";
 
 export default function PiGoalsPage() {
-  const { goals, loading, fetchGoals, subscribeToRealtime } = useGoals();
+  const goals = useGoals((s) => s.goals);
+  const loading = useGoals((s) => s.loading);
+  const fetchGoals = useGoals((s) => s.fetchGoals);
+  const subscribeToRealtime = useGoals((s) => s.subscribeToRealtime);
+
   const [showAdd, setShowAdd] = useState(false);
   const [editing, setEditing] = useState<Goal | null>(null);
 
@@ -15,7 +19,8 @@ export default function PiGoalsPage() {
     fetchGoals();
     const unsub = subscribeToRealtime();
     return unsub;
-  }, [fetchGoals, subscribeToRealtime]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Show max 6 goals in a 2×3 grid (fits 1280×720)
   const visibleGoals = goals.slice(0, 6);

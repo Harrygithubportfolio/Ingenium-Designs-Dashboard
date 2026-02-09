@@ -33,7 +33,11 @@ export const useGoals = create<GoalsState>((set, get) => ({
       .from("goals")
       .select("*")
       .order("created_at", { ascending: true });
-    if (!error && data) set({ goals: data });
+    if (error) {
+      console.error("fetchGoals error:", error);
+    } else if (data) {
+      set({ goals: data });
+    }
     set({ loading: false });
   },
 
@@ -53,17 +57,33 @@ export const useGoals = create<GoalsState>((set, get) => ({
   },
 
   addGoal: async (title, description = "") => {
-    await supabase.from("goals").insert({ title, description });
+    const { error } = await supabase.from("goals").insert({ title, description });
+    if (error) {
+      console.error("addGoal error:", error);
+      return;
+    }
+    // Re-fetch immediately so the UI updates even if realtime is slow
+    await get().fetchGoals();
   },
 
   updateGoal: async (id, updates) => {
-    await supabase
+    const { error } = await supabase
       .from("goals")
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq("id", id);
+    if (error) {
+      console.error("updateGoal error:", error);
+      return;
+    }
+    await get().fetchGoals();
   },
 
   deleteGoal: async (id) => {
-    await supabase.from("goals").delete().eq("id", id);
+    const { error } = await supabase.from("goals").delete().eq("id", id);
+    if (error) {
+      console.error("deleteGoal error:", error);
+      return;
+    }
+    await get().fetchGoals();
   },
 }));
