@@ -1,5 +1,7 @@
 'use client';
 
+import SignOutButton from '@/components/SignOutButton';
+
 // Firebolt Logo SVG (same as in Sidebar)
 function FireboltLogo({ className = '' }: { className?: string }) {
   return (
@@ -112,13 +114,15 @@ export default function Topbar({ isPrimary, isCollapsed, onToggle, onToggleColla
           <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#3b82f6] ring-2 ring-[#0f0f14]" />
         </button>
 
+        {/* Sign Out */}
+        <SignOutButton />
+
         {/* Profile */}
-        <button
-          type="button"
-          className="ml-1 w-8 h-8 rounded-full bg-gradient-to-br from-[#3b82f6] to-purple-600 flex items-center justify-center text-sm font-semibold text-white ring-2 ring-[#2a2a33] hover:ring-[#3b82f6]/50 transition-all"
+        <div
+          className="ml-1 w-8 h-8 rounded-full bg-gradient-to-br from-[#3b82f6] to-purple-600 flex items-center justify-center text-sm font-semibold text-white ring-2 ring-[#2a2a33]"
         >
           H
-        </button>
+        </div>
       </div>
     </header>
   );
