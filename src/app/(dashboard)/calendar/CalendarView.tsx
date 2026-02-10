@@ -114,58 +114,59 @@ export default function CalendarView() {
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-[#151411] flex flex-col">
+    <div className="h-full flex flex-col gap-4 overflow-hidden">
       {/* HEADER */}
-      <header className="px-6 pt-5 pb-3 border-b border-[#2a2924] bg-[#1b1a17]">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-[#b0a89a]">
-              Paper Planner · Life OS
-            </p>
-            <h1 className="mt-1 text-2xl md:text-3xl font-semibold tracking-tight text-[#f5f1e8]">
-              Calendar
-            </h1>
-            <p className="mt-1 text-xs text-[#c4bba9]">
-              A warm, journal‑style view of your time.
-            </p>
+      <header className="flex-shrink-0 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center flex-shrink-0">
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
           </div>
+          <div>
+            <h1 className="text-lg font-semibold text-white">Calendar</h1>
+            <p className="text-gray-500 text-[11px]">Your events at a glance</p>
+          </div>
+        </div>
 
-          <div className="flex items-center gap-3">
-            <div className="inline-flex rounded-full bg-[#25231f] p-1 border border-[#343129]">
-              <button
-                onClick={() => setTab('planner')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
-                  tab === 'planner'
-                    ? 'bg-[#f0e3c2] text-[#2a261f]'
-                    : 'text-[#c4bba9]'
-                }`}
-              >
-                Planner
-              </button>
-              <button
-                onClick={() => setTab('month')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
-                  tab === 'month'
-                    ? 'bg-[#f0e3c2] text-[#2a261f]'
-                    : 'text-[#c4bba9]'
-                }`}
-              >
-                Month
-              </button>
-            </div>
-
+        <div className="flex items-center gap-2">
+          <div className="inline-flex rounded-lg bg-[#1a1a22] p-1 border border-[#2a2a33]">
             <button
-              onClick={() => setAdding(true)}
-              className="px-4 py-2 text-xs md:text-sm font-medium rounded-full bg-[#e0b15a] text-[#2a261f] hover:bg-[#f0c56f] transition-colors shadow-[0_8px_20px_rgba(0,0,0,0.4)]"
+              type="button"
+              onClick={() => setTab('planner')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                tab === 'planner'
+                  ? 'bg-[#3b82f6] text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
             >
-              + New Entry
+              Planner
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab('month')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                tab === 'month'
+                  ? 'bg-[#3b82f6] text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Month
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setAdding(true)}
+            className="px-4 py-2 text-xs font-medium rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white hover:from-[#2563eb] hover:to-[#7c3aed] transition-all shadow-lg shadow-[#3b82f6]/20"
+          >
+            + New
+          </button>
         </div>
       </header>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 px-6 pb-4 pt-3 flex flex-col text-[#f5f1e8]">
+      <main className="flex-1 min-h-0 flex flex-col">
         {tab === 'planner' && (
           <PlannerView
             today={today}
