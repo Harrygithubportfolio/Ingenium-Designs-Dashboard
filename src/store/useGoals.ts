@@ -7,7 +7,7 @@ export interface Goal {
   id: string;
   user_id: string | null;
   title: string;
-  description: string;
+  description: string | null;
   status: GoalStatus;
   created_at: string;
   updated_at: string;

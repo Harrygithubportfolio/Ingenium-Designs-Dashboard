@@ -299,8 +299,8 @@ function GoalsPreview() {
                       <div className="flex items-center gap-3 flex-shrink-0">
                         <div className="w-20 md:w-24 h-1.5 bg-[#22222c] rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-full"
-                            style={{ width: `${progress}%` }}
+                            className="h-full bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-full transition-all duration-300"
+                            style={{ ['--progress-width' as string]: `${progress}%`, width: 'var(--progress-width)' } as React.CSSProperties}
                           />
                         </div>
                         <span className="text-xs md:text-sm text-gray-400 w-10 text-right">{progress}%</span>
