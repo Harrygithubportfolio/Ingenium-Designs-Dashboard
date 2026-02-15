@@ -208,3 +208,31 @@ export async function createAiTextIntake(input: AiTextIntakeInput) {
 
   return event as IntakeEvent;
 }
+
+// --- Backfill AI Estimates ---
+
+export async function backfillAiEstimates(
+  updates: {
+    item_id: string;
+    estimated_calories: number;
+    estimated_protein_g: number;
+    estimated_carbs_g: number;
+    estimated_fat_g: number;
+    confidence_score: number;
+  }[]
+) {
+  for (const u of updates) {
+    const { error } = await supabase
+      .from('intake_items')
+      .update({
+        estimated_calories: u.estimated_calories,
+        estimated_protein_g: u.estimated_protein_g,
+        estimated_carbs_g: u.estimated_carbs_g,
+        estimated_fat_g: u.estimated_fat_g,
+        confidence_score: u.confidence_score,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', u.item_id);
+    if (error) throw new Error(error.message);
+  }
+}

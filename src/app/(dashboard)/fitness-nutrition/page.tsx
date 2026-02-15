@@ -8,6 +8,8 @@ import TrainingIntentBadge from '@/components/fitness/TrainingIntentBadge';
 import WorkoutStatusBadge from '@/components/fitness/WorkoutStatusBadge';
 import CalorieRing from '@/components/nutrition/CalorieRing';
 import IntakeEventCard from '@/components/nutrition/IntakeEventCard';
+import MealDetailModal from '@/components/nutrition/MealDetailModal';
+import DailySummaryCard from '@/components/nutrition/DailySummaryCard';
 import type { ScheduledWorkout } from '@/lib/fitness/types';
 import type { IntakeEvent } from '@/lib/nutrition/types';
 
@@ -149,6 +151,7 @@ export default function FitnessNutritionPage() {
           remaining={remaining}
           calPct={calPct}
           events={events}
+          onRefresh={fetchDay}
         />
       )}
     </div>
@@ -302,6 +305,7 @@ function NutritionTab({
   remaining,
   calPct,
   events,
+  onRefresh,
 }: {
   loading: boolean;
   consumed: MacroTotals;
@@ -309,8 +313,10 @@ function NutritionTab({
   remaining: MacroTotals;
   calPct: number;
   events: IntakeEvent[];
+  onRefresh: () => void;
 }) {
   const [showRemaining, setShowRemaining] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<IntakeEvent | null>(null);
 
   return (
     <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-4 overflow-hidden">
@@ -372,7 +378,7 @@ function NutritionTab({
         )}
       </div>
 
-      {/* Right: Today's Meals */}
+      {/* Right: Today's Meals + AI Summary */}
       <div className="bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] p-5 flex flex-col overflow-hidden">
         <h2 className="text-sm font-semibold text-white mb-3 flex-shrink-0">
           Today&apos;s Meals ({events.length})
@@ -393,16 +399,42 @@ function NutritionTab({
             </Link>
           </div>
         ) : (
-          <div className="flex-1 min-h-0 space-y-2 overflow-hidden">
-            {events.slice(0, 6).map((event) => (
-              <IntakeEventCard key={event.id} event={event} />
-            ))}
-            {events.length > 6 && (
-              <p className="text-xs text-gray-500 text-center">+{events.length - 6} more meals</p>
-            )}
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="space-y-2">
+              {events.slice(0, 6).map((event) => (
+                <IntakeEventCard
+                  key={event.id}
+                  event={event}
+                  onEdit={setSelectedEvent}
+                />
+              ))}
+              {events.length > 6 && (
+                <p className="text-xs text-gray-500 text-center">+{events.length - 6} more meals</p>
+              )}
+            </div>
+
+            {/* AI Summary */}
+            <DailySummaryCard
+              events={events}
+              consumed={consumed}
+              targets={targets}
+            />
           </div>
         )}
       </div>
+
+      {/* Meal Detail Modal */}
+      {selectedEvent && (
+        <MealDetailModal
+          event={selectedEvent}
+          open={!!selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onRefresh={() => {
+            onRefresh();
+            setSelectedEvent(null);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -9,6 +9,7 @@ export function buildEstimationPrompt(description: string): {
 4. Assign a confidence score (0.0-1.0) based on how certain you are
 
 Rules:
+- Always write in British English (e.g., "recognised" not "recognized", "fibre" not "fiber", "flavour" not "flavor").
 - Always return valid JSON matching the schema below. No markdown, no explanation, just the JSON object.
 - Split composite foods into components (e.g., "chicken rice bowl" -> chicken breast, white rice, any mentioned toppings)
 - Use typical serving sizes when not specified
