@@ -6,7 +6,7 @@ import { useGymSession } from '@/store/useGymSession';
 import { useFitnessSchedule } from '@/store/useFitnessSchedule';
 import { useTimer, formatTime } from '@/hooks/useTimer';
 import { createReflection, updateReflection } from '@/lib/fitness/mutations';
-import type { SessionRating, LogSetInput, ExecutionExercise } from '@/lib/fitness/types';
+import type { SessionRating, LogSetInput, ExecutionExercise, GymSession } from '@/lib/fitness/types';
 
 type GymView = 'loading' | 'start' | 'exercise' | 'paused' | 'summary' | 'reflection';
 
@@ -15,15 +15,26 @@ export default function GymModePage() {
   const store = useGymSession();
   const { todayWorkout, fetchToday } = useFitnessSchedule();
   const [view, setView] = useState<GymView>('loading');
+  const [completedSession, setCompletedSession] = useState<GymSession | null>(null);
+  const [completedElapsed, setCompletedElapsed] = useState(0);
   useTimer();
+
+  // Helper: transition to summary with a snapshot of the session
+  const goToSummary = (session: GymSession | null) => {
+    if (!session) return;
+    setCompletedSession(session);
+    setCompletedElapsed(store.elapsedSeconds);
+    setView('summary');
+  };
 
   // Determine view based on store status
   useEffect(() => {
     store.checkForActiveSession().then(() => {
       if (store.status === 'active') setView('exercise');
       else if (store.status === 'paused') setView('paused');
-      else if (store.status === 'completed') setView('summary');
-      else {
+      else if (store.status === 'completed' && store.session) {
+        goToSummary(store.session);
+      } else {
         fetchToday();
         setView('start');
       }
@@ -34,7 +45,9 @@ export default function GymModePage() {
   useEffect(() => {
     if (store.status === 'active' && view === 'paused') setView('exercise');
     if (store.status === 'paused' && view === 'exercise') setView('paused');
-    if (store.status === 'completed' && view !== 'reflection') setView('summary');
+    if (store.status === 'completed' && view !== 'reflection' && view !== 'summary') {
+      goToSummary(store.session);
+    }
   }, [store.status]);
 
   if (view === 'loading' || store.loading) {
@@ -56,16 +69,19 @@ export default function GymModePage() {
     return <PauseOverlay
       elapsed={store.elapsedSeconds}
       onResume={async () => { await store.resume(); setView('exercise'); }}
-      onEnd={async () => { const s = await store.complete(); if (s) setView('summary'); }}
+      onEnd={async () => {
+        const s = await store.complete();
+        goToSummary(s ?? store.session);
+      }}
     />;
   }
 
-  if (view === 'summary') {
-    return <SessionSummary session={store.session!} elapsed={store.elapsedSeconds} onReflect={() => setView('reflection')} />;
+  if (view === 'summary' && completedSession) {
+    return <SessionSummary session={completedSession} elapsed={completedElapsed} onReflect={() => setView('reflection')} />;
   }
 
-  if (view === 'reflection') {
-    return <ReflectionScreen sessionId={store.session!.id} onDone={() => { store.reset(); router.push('/fitness'); }} />;
+  if (view === 'reflection' && completedSession) {
+    return <ReflectionScreen sessionId={completedSession.id} onDone={() => { store.reset(); router.push('/fitness'); }} />;
   }
 
   // Check if any sets have been logged across all exercises
@@ -109,7 +125,7 @@ export default function GymModePage() {
       onPrev={() => store.prevExercise()}
       onSkip={async () => { await store.skipExercise(); }}
       onPause={async () => { await store.pause(); setView('paused'); }}
-      onFinish={async () => { const s = await store.complete(); if (s) setView('summary'); }}
+      onFinish={async () => { const s = await store.complete(); goToSummary(s ?? store.session); }}
       onAddExercise={async (name) => { await store.addExercise(name); }}
       onAbandon={async () => { await store.abandon(); store.reset(); router.push('/fitness'); }}
       onChangeMode={handleChangeMode}
