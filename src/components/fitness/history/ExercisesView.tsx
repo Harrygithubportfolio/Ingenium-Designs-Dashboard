@@ -84,21 +84,21 @@ export default function ExercisesView() {
 
       {loading && (
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-[#3b82f6]/30 border-t-[#3b82f6] rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       )}
 
       {!loading && !selected && (
         <div className="flex-1 flex flex-col items-center justify-center gap-2">
-          <p className="text-gray-500 text-sm">Search for an exercise above</p>
-          <p className="text-gray-600 text-xs">See your weight progression and past performances</p>
+          <p className="text-dim text-sm">Search for an exercise above</p>
+          <p className="text-dim text-xs">See your weight progression and past performances</p>
         </div>
       )}
 
       {!loading && selected && entries.length === 0 && (
         <div className="flex-1 flex flex-col items-center justify-center gap-2">
-          <p className="text-gray-500 text-sm">No history for &quot;{selected}&quot;</p>
-          <p className="text-gray-600 text-xs">Complete a session with this exercise to see data here</p>
+          <p className="text-dim text-sm">No history for &quot;{selected}&quot;</p>
+          <p className="text-dim text-xs">Complete a session with this exercise to see data here</p>
         </div>
       )}
 
@@ -106,33 +106,33 @@ export default function ExercisesView() {
         <div className="flex-1 overflow-y-auto space-y-4 pr-1">
           {/* Progress chart */}
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Weight Progression</p>
+            <p className="text-xs text-dim uppercase tracking-wider mb-2">Weight Progression</p>
             <ProgressChart data={chartData} />
           </div>
 
           {/* Stats summary */}
           <div className="grid grid-cols-3 gap-2">
-            <div className="p-2 bg-[#14141a] rounded-lg border border-[#2a2a33] text-center">
-              <p className="text-lg font-bold text-white">
+            <div className="p-2 bg-inner rounded-lg border border-edge text-center">
+              <p className="text-lg font-bold text-heading">
                 {chartData.length > 0 ? Math.max(...chartData.map((d) => d.maxWeight)) : 0}kg
               </p>
-              <p className="text-[10px] text-gray-500 uppercase">Best Weight</p>
+              <p className="text-[10px] text-dim uppercase">Best Weight</p>
             </div>
-            <div className="p-2 bg-[#14141a] rounded-lg border border-[#2a2a33] text-center">
-              <p className="text-lg font-bold text-white">{entries.length}</p>
-              <p className="text-[10px] text-gray-500 uppercase">Sessions</p>
+            <div className="p-2 bg-inner rounded-lg border border-edge text-center">
+              <p className="text-lg font-bold text-heading">{entries.length}</p>
+              <p className="text-[10px] text-dim uppercase">Sessions</p>
             </div>
-            <div className="p-2 bg-[#14141a] rounded-lg border border-[#2a2a33] text-center">
-              <p className="text-lg font-bold text-white">
+            <div className="p-2 bg-inner rounded-lg border border-edge text-center">
+              <p className="text-lg font-bold text-heading">
                 {entries.reduce((sum, e) => sum + e.sets.length, 0)}
               </p>
-              <p className="text-[10px] text-gray-500 uppercase">Total Sets</p>
+              <p className="text-[10px] text-dim uppercase">Total Sets</p>
             </div>
           </div>
 
           {/* Past performances */}
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Past Performances</p>
+            <p className="text-xs text-dim uppercase tracking-wider mb-2">Past Performances</p>
             <div className="space-y-2">
               {entries.map((entry) => {
                 const date = new Date(entry.session.started_at).toLocaleDateString('en-GB', {
@@ -144,9 +144,9 @@ export default function ExercisesView() {
                 return (
                   <div
                     key={entry.gym_session_id}
-                    className="p-3 bg-[#1a1a22] border border-[#2a2a33] rounded-xl"
+                    className="p-3 bg-card border border-edge rounded-xl"
                   >
-                    <p className="text-xs text-gray-500 mb-2">{date}</p>
+                    <p className="text-xs text-dim mb-2">{date}</p>
                     <div className="space-y-1">
                       {entry.sets
                         .sort((a, b) => a.set_number - b.set_number)
@@ -155,8 +155,8 @@ export default function ExercisesView() {
                             key={`${entry.gym_session_id}-${i}`}
                             className="flex items-center justify-between text-xs"
                           >
-                            <span className="text-gray-500">Set {s.set_number}</span>
-                            <span className="text-white font-medium">
+                            <span className="text-dim">Set {s.set_number}</span>
+                            <span className="text-heading font-medium">
                               {s.actual_weight_kg}kg x {s.actual_reps}
                             </span>
                           </div>

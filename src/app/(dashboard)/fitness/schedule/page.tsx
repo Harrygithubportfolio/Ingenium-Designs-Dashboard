@@ -101,24 +101,24 @@ export default function SchedulePage() {
       <header className="flex-shrink-0 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/fitness-nutrition" className="text-gray-500 hover:text-white transition-colors">
+            <Link href="/fitness-nutrition" className="text-dim hover:text-heading transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
-            <h1 className="text-lg font-semibold text-white">Schedule</h1>
+            <h1 className="text-lg font-semibold text-heading">Schedule</h1>
           </div>
           <button
             type="button"
             onClick={() => setShowScheduleModal(true)}
-            className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-lg hover:opacity-90 transition-opacity"
+            className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-accent to-accent-secondary rounded-lg hover:opacity-90 transition-opacity"
           >
             + Schedule
           </button>
         </div>
 
         {/* View toggle */}
-        <div className="flex items-center bg-[#14141a] rounded-lg border border-[#2a2a33] p-0.5 w-fit">
+        <div className="flex items-center bg-inner rounded-lg border border-edge p-0.5 w-fit">
           {(['week', 'agenda', 'month'] as const).map((view) => (
             <button
               key={view}
@@ -126,8 +126,8 @@ export default function SchedulePage() {
               onClick={() => setActiveView(view)}
               className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all capitalize ${
                 activeView === view
-                  ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
-                  : 'text-gray-400 hover:text-white border border-transparent'
+                  ? 'bg-accent/20 text-accent border border-accent/40'
+                  : 'text-sub hover:text-heading border border-transparent'
               }`}
             >
               {view}
@@ -139,7 +139,7 @@ export default function SchedulePage() {
       {/* Content */}
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-[#3b82f6]/30 border-t-[#3b82f6] rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       ) : activeView === 'week' ? (
         <WeekView
@@ -241,10 +241,10 @@ function ScheduleModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-md bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-6">
+      <div className="w-full max-w-md bg-card rounded-2xl border border-edge p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-white">Schedule Workout</h2>
-          <button type="button" onClick={onClose} aria-label="Close modal" className="text-gray-500 hover:text-white transition-colors">
+          <h2 className="text-lg font-semibold text-heading">Schedule Workout</h2>
+          <button type="button" onClick={onClose} aria-label="Close modal" className="text-dim hover:text-heading transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -253,12 +253,12 @@ function ScheduleModal({
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Template</label>
+            <label className="block text-xs text-sub mb-1">Template</label>
             <select
               value={selectedTemplate}
               onChange={(e) => setSelectedTemplate(e.target.value)}
               aria-label="Select workout template"
-              className="w-full px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white focus:outline-none focus:border-[#3b82f6]"
+              className="w-full px-3 py-2 bg-inner border border-edge rounded-lg text-sm text-heading focus:outline-none focus:border-accent"
             >
               <option value="">Select a template...</option>
               {templates.map((t) => (
@@ -270,13 +270,13 @@ function ScheduleModal({
           </div>
 
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Date</label>
+            <label className="block text-xs text-sub mb-1">Date</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               aria-label="Select workout date"
-              className="w-full px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white focus:outline-none focus:border-[#3b82f6]"
+              className="w-full px-3 py-2 bg-inner border border-edge rounded-lg text-sm text-heading focus:outline-none focus:border-accent"
             />
           </div>
         </div>
@@ -285,7 +285,7 @@ function ScheduleModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 text-sm font-medium text-gray-400 bg-[#14141a] rounded-lg hover:text-white transition-colors"
+            className="flex-1 py-2.5 text-sm font-medium text-sub bg-inner rounded-lg hover:text-heading transition-colors"
           >
             Cancel
           </button>
@@ -293,7 +293,7 @@ function ScheduleModal({
             type="button"
             onClick={handleSubmit}
             disabled={saving || !selectedTemplate}
-            className="flex-1 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="flex-1 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-accent to-accent-secondary rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {saving ? 'Scheduling...' : 'Schedule'}
           </button>

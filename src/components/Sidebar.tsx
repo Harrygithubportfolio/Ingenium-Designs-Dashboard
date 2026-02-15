@@ -30,8 +30,8 @@ function FireboltLogo({ className = '' }: { className?: string }) {
       />
       <defs>
         <linearGradient id="firebolt-gradient" x1="4" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#3b82f6" />
-          <stop offset="1" stopColor="#8b5cf6" />
+          <stop style={{ stopColor: 'var(--accent)' }} />
+          <stop offset="1" style={{ stopColor: 'var(--accent-secondary)' }} />
         </linearGradient>
       </defs>
     </svg>
@@ -164,26 +164,26 @@ export default function Sidebar({ isPrimary, isCollapsed, onToggleCollapse }: Si
 
   return (
     <aside
-      className={`${styles.sidebar} fixed left-0 top-0 h-screen bg-[#1a1a22] border-r border-[#2a2a33] flex flex-col z-50 transition-transform duration-300 ease-in-out ${
+      className={`${styles.sidebar} fixed left-0 top-0 h-screen bg-card border-r border-edge flex flex-col z-50 transition-transform duration-300 ease-in-out ${
         isCollapsed ? '-translate-x-full' : 'translate-x-0'
       }`}
     >
       {/* Logo / Brand - Toggle Button */}
-      <div className="p-4 border-b border-[#2a2a33]">
+      <div className="p-4 border-b border-edge">
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-[#22222c] transition-colors group"
+          className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-elevated transition-colors group"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#3b82f6]/20 to-[#8b5cf6]/20 flex items-center justify-center border border-[#3b82f6]/30 group-hover:border-[#3b82f6]/50 transition-colors">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent/20 to-accent-secondary/20 flex items-center justify-center border border-accent/30 group-hover:border-accent/50 transition-colors">
             <FireboltLogo className="w-6 h-6" />
           </div>
           <div className="text-left">
-            <h1 className="text-lg font-bold text-white">Life OS</h1>
-            <p className="text-xs text-gray-500">Personal Dashboard</p>
+            <h1 className="text-lg font-bold text-heading">Life OS</h1>
+            <p className="text-xs text-dim">Personal Dashboard</p>
           </div>
           <svg
-            className="w-4 h-4 text-gray-500 ml-auto group-hover:text-gray-300 transition-colors"
+            className="w-4 h-4 text-dim ml-auto group-hover:text-sub transition-colors"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -196,7 +196,7 @@ export default function Sidebar({ isPrimary, isCollapsed, onToggleCollapse }: Si
       {/* Navigation */}
       <nav className="flex-1 p-3 overflow-y-auto">
         <div className="sidebar-section" key={isPrimary ? 'primary' : 'secondary'}>
-          <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+          <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-dim">
             {sectionTitle}
           </p>
           <ul className="space-y-1">
@@ -213,18 +213,18 @@ export default function Sidebar({ isPrimary, isCollapsed, onToggleCollapse }: Si
                     href={item.href}
                     className={`nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                       isActive
-                        ? 'active text-[#3b82f6] bg-[#3b82f6]/10'
-                        : 'text-gray-400 hover:text-white hover:bg-[#22222c]'
+                        ? 'active text-accent bg-accent/10'
+                        : 'text-sub hover:text-heading hover:bg-elevated'
                     }`}
                   >
                     <span className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
-                      isActive ? 'bg-[#3b82f6] text-white' : 'bg-[#22222c] group-hover:bg-[#3b82f6]/20'
+                      isActive ? 'bg-accent text-white' : 'bg-elevated group-hover:bg-accent/20'
                     }`}>
                       {item.icon}
                     </span>
                     <span className="truncate">{item.name}</span>
                     {isActive && (
-                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#3b82f6]" />
+                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent" />
                     )}
                   </Link>
                 </li>
@@ -235,14 +235,14 @@ export default function Sidebar({ isPrimary, isCollapsed, onToggleCollapse }: Si
       </nav>
 
       {/* Footer */}
-      <div className="p-3 border-t border-[#2a2a33]">
-        <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#22222c] transition-colors cursor-pointer">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#3b82f6] to-purple-600 flex items-center justify-center text-sm font-semibold text-white">
+      <div className="p-3 border-t border-edge">
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-elevated transition-colors cursor-pointer">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-purple-600 flex items-center justify-center text-sm font-semibold text-white">
             H
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">Harry</p>
-            <p className="text-xs text-gray-500 truncate">Premium</p>
+            <p className="text-sm font-medium text-heading truncate">Harry</p>
+            <p className="text-xs text-dim truncate">Premium</p>
           </div>
         </div>
       </div>

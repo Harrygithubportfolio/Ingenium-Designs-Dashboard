@@ -16,8 +16,8 @@ function FireboltLogo({ className = '' }: { className?: string }) {
       />
       <defs>
         <linearGradient id="firebolt-gradient-topbar" x1="4" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#3b82f6" />
-          <stop offset="1" stopColor="#8b5cf6" />
+          <stop style={{ stopColor: 'var(--accent)' }} />
+          <stop offset="1" style={{ stopColor: 'var(--accent-secondary)' }} />
         </linearGradient>
       </defs>
     </svg>
@@ -33,7 +33,7 @@ interface TopbarProps {
 
 export default function Topbar({ isPrimary, isCollapsed, onToggle, onToggleCollapse }: TopbarProps) {
   return (
-    <header className="h-14 min-h-[56px] border-b border-[#2a2a33] flex items-center px-4 bg-[#0f0f14]/80 backdrop-blur-xl">
+    <header className="h-14 min-h-[56px] border-b border-edge flex items-center px-4 bg-surface/80 backdrop-blur-xl">
       {/* Left Section */}
       <div className="flex items-center gap-3">
         {/* Show Firebolt logo button when sidebar is collapsed */}
@@ -41,7 +41,7 @@ export default function Topbar({ isPrimary, isCollapsed, onToggle, onToggleColla
           <button
             type="button"
             onClick={onToggleCollapse}
-            className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#3b82f6]/20 to-[#8b5cf6]/20 border border-[#3b82f6]/30 hover:border-[#3b82f6]/50 transition-all hover:scale-105"
+            className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-accent/20 to-accent-secondary/20 border border-accent/30 hover:border-accent/50 transition-all hover:scale-105"
             title="Show Sidebar"
           >
             <FireboltLogo className="w-5 h-5" />
@@ -52,32 +52,32 @@ export default function Topbar({ isPrimary, isCollapsed, onToggle, onToggleColla
         <button
           type="button"
           onClick={onToggle}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#1a1a22] border border-[#2a2a33] hover:border-[#3b82f6]/50 transition-all duration-300 group"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card border border-edge hover:border-accent/50 transition-all duration-300 group"
         >
           <div className="flex items-center gap-1.5">
             <span
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                isPrimary ? 'bg-[#3b82f6] shadow-lg shadow-blue-500/50' : 'bg-gray-600'
+                isPrimary ? 'bg-accent shadow-lg shadow-blue-500/50' : 'bg-gray-600'
               }`}
             />
             <span
               className={`text-xs font-medium transition-colors duration-300 ${
-                isPrimary ? 'text-[#3b82f6]' : 'text-gray-500'
+                isPrimary ? 'text-accent' : 'text-dim'
               }`}
             >
               Primary
             </span>
           </div>
-          <span className="text-gray-600">/</span>
+          <span className="text-dim">/</span>
           <div className="flex items-center gap-1.5">
             <span
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                !isPrimary ? 'bg-[#3b82f6] shadow-lg shadow-blue-500/50' : 'bg-gray-600'
+                !isPrimary ? 'bg-accent shadow-lg shadow-blue-500/50' : 'bg-gray-600'
               }`}
             />
             <span
               className={`text-xs font-medium transition-colors duration-300 ${
-                !isPrimary ? 'text-[#3b82f6]' : 'text-gray-500'
+                !isPrimary ? 'text-accent' : 'text-dim'
               }`}
             >
               Secondary
@@ -95,7 +95,7 @@ export default function Topbar({ isPrimary, isCollapsed, onToggle, onToggleColla
         <button
           type="button"
           title="Search"
-          className="p-2 rounded-lg hover:bg-[#1a1a22] text-gray-400 hover:text-white transition-colors"
+          className="p-2 rounded-lg hover:bg-card text-sub hover:text-heading transition-colors"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -106,12 +106,12 @@ export default function Topbar({ isPrimary, isCollapsed, onToggle, onToggleColla
         <button
           type="button"
           title="Notifications"
-          className="p-2 rounded-lg hover:bg-[#1a1a22] text-gray-400 hover:text-white transition-colors relative"
+          className="p-2 rounded-lg hover:bg-card text-sub hover:text-heading transition-colors relative"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#3b82f6] ring-2 ring-[#0f0f14]" />
+          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-accent ring-2 ring-surface" />
         </button>
 
         {/* Sign Out */}
@@ -119,7 +119,7 @@ export default function Topbar({ isPrimary, isCollapsed, onToggle, onToggleColla
 
         {/* Profile */}
         <div
-          className="ml-1 w-8 h-8 rounded-full bg-gradient-to-br from-[#3b82f6] to-purple-600 flex items-center justify-center text-sm font-semibold text-white ring-2 ring-[#2a2a33]"
+          className="ml-1 w-8 h-8 rounded-full bg-gradient-to-br from-accent to-purple-600 flex items-center justify-center text-sm font-semibold text-white ring-2 ring-edge"
         >
           H
         </div>

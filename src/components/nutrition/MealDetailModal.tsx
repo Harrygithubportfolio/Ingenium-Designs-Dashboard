@@ -141,18 +141,18 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md mx-4 bg-[#1a1a22] border border-[#2a2a33] rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
+      <div className="relative w-full max-w-md mx-4 bg-card border border-edge rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#2a2a33] flex-shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-edge flex-shrink-0">
           <div className="flex items-center gap-3">
             <span className="text-xl">{MEAL_TYPE_ICONS[event.meal_type]}</span>
             <div>
-              <h2 className="text-sm font-semibold text-white">
+              <h2 className="text-sm font-semibold text-heading">
                 {MEAL_TYPE_LABELS[event.meal_type]}
               </h2>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-xs text-gray-500">{time}</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#14141a] text-gray-400 border border-[#2a2a33]">
+                <span className="text-xs text-dim">{time}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-inner text-sub border border-edge">
                   {METHOD_LABELS[event.intake_method] ?? event.intake_method}
                 </span>
               </div>
@@ -162,7 +162,7 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#14141a] transition-colors text-gray-400 hover:text-white"
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-inner transition-colors text-sub hover:text-heading"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -172,15 +172,15 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
 
         {/* Notes */}
         {event.notes && (
-          <div className="px-4 py-2 border-b border-[#2a2a33] flex-shrink-0">
-            <p className="text-xs text-gray-400 italic line-clamp-2">{event.notes}</p>
+          <div className="px-4 py-2 border-b border-edge flex-shrink-0">
+            <p className="text-xs text-sub italic line-clamp-2">{event.notes}</p>
           </div>
         )}
 
         {/* Items */}
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {items.length === 0 ? (
-            <p className="text-sm text-gray-500 text-center py-4">No items in this meal</p>
+            <p className="text-sm text-dim text-center py-4">No items in this meal</p>
           ) : (
             items.map((item) => {
               const cal = getEffectiveValue(item.estimated_calories, item.edited_calories);
@@ -190,16 +190,16 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
               return (
                 <div
                   key={item.id}
-                  className="p-3 bg-[#14141a] rounded-xl border border-[#2a2a33]/50"
+                  className="p-3 bg-inner rounded-xl border border-edge/50"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
+                      <p className="text-sm font-medium text-heading truncate">
                         {item.food_name}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
                         {item.portion_description && (
-                          <span className="text-[10px] text-gray-500">
+                          <span className="text-[10px] text-dim">
                             {item.portion_description}
                           </span>
                         )}
@@ -213,7 +213,7 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
                         )}
                       </div>
                     </div>
-                    <p className="text-sm font-semibold text-white flex-shrink-0">
+                    <p className="text-sm font-semibold text-heading flex-shrink-0">
                       {Math.round(cal)} cal
                     </p>
                   </div>
@@ -223,7 +223,7 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
                     <span className="text-amber-400">C: {Math.round(c * 10) / 10}g</span>
                     <span className="text-red-400">F: {Math.round(f * 10) / 10}g</span>
                     {cal === 0 && p === 0 && c === 0 && f === 0 && (
-                      <span className="text-gray-600 italic">no macro data</span>
+                      <span className="text-dim italic">no macro data</span>
                     )}
                   </div>
                 </div>
@@ -234,10 +234,10 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
 
         {/* Totals */}
         {items.length > 0 && (
-          <div className="px-4 py-3 border-t border-[#2a2a33] flex-shrink-0">
+          <div className="px-4 py-3 border-t border-edge flex-shrink-0">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500 uppercase">Meal Totals</span>
-              <span className="text-sm font-bold text-white">{Math.round(totalCal)} cal</span>
+              <span className="text-xs text-dim uppercase">Meal Totals</span>
+              <span className="text-sm font-bold text-heading">{Math.round(totalCal)} cal</span>
             </div>
             <div className="flex items-center gap-4 mt-1 text-[11px]">
               <span className="text-blue-400">P: {Math.round(totalP)}g</span>
@@ -248,7 +248,7 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
         )}
 
         {/* Actions */}
-        <div className="px-4 py-3 border-t border-[#2a2a33] flex items-center gap-2 flex-shrink-0">
+        <div className="px-4 py-3 border-t border-edge flex items-center gap-2 flex-shrink-0">
           {needsNutrition && (
             <button
               type="button"
@@ -275,7 +275,7 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
               className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium rounded-lg transition-colors disabled:opacity-50 ${
                 confirmRedo
                   ? 'text-amber-300 bg-amber-500/15 border border-amber-500/40'
-                  : 'text-gray-400 hover:text-emerald-300 bg-[#14141a] border border-[#2a2a33] hover:border-emerald-500/30'
+                  : 'text-sub hover:text-emerald-300 bg-inner border border-edge hover:border-emerald-500/30'
               }`}
             >
               {estimating ? (
@@ -298,7 +298,7 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
             className={`flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors disabled:opacity-50 ${
               confirmDelete
                 ? 'text-red-300 bg-red-500/20 border border-red-500/40'
-                : 'text-gray-400 hover:text-red-400 bg-[#14141a] border border-[#2a2a33] hover:border-red-500/30'
+                : 'text-sub hover:text-red-400 bg-inner border border-edge hover:border-red-500/30'
             }`}
           >
             {deleting ? (

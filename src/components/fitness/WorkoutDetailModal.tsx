@@ -39,22 +39,22 @@ export default function WorkoutDetailModal({ workout, onClose, onReschedule }: P
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
         transition={{ duration: 0.25, ease: 'easeOut' }}
-        className="w-full max-w-lg max-h-[85vh] bg-[#1a1a22] border border-[#2a2a33] rounded-2xl flex flex-col overflow-hidden"
+        className="w-full max-w-lg max-h-[85vh] bg-card border border-edge rounded-2xl flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 border-b border-[#2a2a33] flex-shrink-0">
+        <div className="p-5 border-b border-edge flex-shrink-0">
           <div className="flex items-start justify-between mb-3">
             <div className="flex-1 min-w-0">
-              <h2 className="text-xl font-bold text-white truncate">
+              <h2 className="text-xl font-bold text-heading truncate">
                 {template?.name ?? 'Workout'}
               </h2>
-              <p className="text-xs text-gray-500 mt-1">{dateLabel}</p>
+              <p className="text-xs text-dim mt-1">{dateLabel}</p>
             </div>
             <button
               onClick={onClose}
               aria-label="Close modal"
-              className="ml-3 p-1.5 text-gray-500 hover:text-white hover:bg-[#22222c] rounded-lg transition-colors flex-shrink-0"
+              className="ml-3 p-1.5 text-dim hover:text-heading hover:bg-elevated rounded-lg transition-colors flex-shrink-0"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -65,7 +65,7 @@ export default function WorkoutDetailModal({ workout, onClose, onReschedule }: P
             {template && <TrainingIntentBadge intent={template.training_intent} />}
             <WorkoutStatusBadge status={workout.status} />
             {template?.description && (
-              <span className="text-xs text-gray-500 truncate ml-1">{template.description}</span>
+              <span className="text-xs text-dim truncate ml-1">{template.description}</span>
             )}
           </div>
         </div>
@@ -74,23 +74,23 @@ export default function WorkoutDetailModal({ workout, onClose, onReschedule }: P
         <div className="flex-1 min-h-0 overflow-y-auto p-5">
           {exercises.length === 0 ? (
             <div className="flex items-center justify-center h-full">
-              <p className="text-sm text-gray-500">No exercises in this template</p>
+              <p className="text-sm text-dim">No exercises in this template</p>
             </div>
           ) : (
             <div className="space-y-2.5">
               {exercises.map((ex, i) => (
                 <div
                   key={ex.id}
-                  className="bg-[#14141a] rounded-xl p-4 border border-[#2a2a33]/50"
+                  className="bg-inner rounded-xl p-4 border border-edge/50"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3 min-w-0">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-lg bg-[#22222c] flex items-center justify-center text-[10px] font-bold text-gray-400">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-lg bg-elevated flex items-center justify-center text-[10px] font-bold text-sub">
                         {i + 1}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-white">{ex.exercise_name}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">
+                        <p className="text-sm font-semibold text-heading">{ex.exercise_name}</p>
+                        <p className="text-xs text-sub mt-0.5">
                           {ex.target_sets} sets &times; {ex.target_reps} reps
                           {ex.target_load_kg != null && (
                             <span className="text-blue-400 font-medium"> @ {ex.target_load_kg}kg</span>
@@ -105,7 +105,7 @@ export default function WorkoutDetailModal({ workout, onClose, onReschedule }: P
                     )}
                   </div>
                   {ex.notes && (
-                    <p className="text-xs text-gray-500 italic mt-2 ml-9">{ex.notes}</p>
+                    <p className="text-xs text-dim italic mt-2 ml-9">{ex.notes}</p>
                   )}
                 </div>
               ))}
@@ -115,12 +115,12 @@ export default function WorkoutDetailModal({ workout, onClose, onReschedule }: P
 
         {/* Footer */}
         {(canStart || onReschedule) && (
-          <div className="p-5 border-t border-[#2a2a33] flex-shrink-0 flex items-center gap-3">
+          <div className="p-5 border-t border-edge flex-shrink-0 flex items-center gap-3">
             {onReschedule && workout.status === 'scheduled' && (
               <button
                 type="button"
                 onClick={onReschedule}
-                className="px-4 py-3 text-sm font-medium text-gray-400 bg-[#14141a] border border-[#2a2a33] rounded-xl hover:text-white hover:border-[#3b82f6]/30 transition-all"
+                className="px-4 py-3 text-sm font-medium text-sub bg-inner border border-edge rounded-xl hover:text-heading hover:border-accent/30 transition-all"
               >
                 Reschedule
               </button>
@@ -128,7 +128,7 @@ export default function WorkoutDetailModal({ workout, onClose, onReschedule }: P
             {canStart && (
               <Link
                 href="/gym-mode"
-                className="flex-1 block py-3 bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white font-semibold rounded-xl text-center hover:opacity-90 transition-opacity"
+                className="flex-1 block py-3 bg-gradient-to-r from-accent to-accent-secondary text-white font-semibold rounded-xl text-center hover:opacity-90 transition-opacity"
               >
                 Start Gym Mode
               </Link>

@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useCallback, createContext, useContext } from 'react';
+import { useState, useCallback, useEffect, createContext, useContext } from 'react';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import { useSettings } from '@/store/useSettings';
+import { applyAccentColour, applyTheme } from '@/lib/settings/types';
 
 // Context for sidebar state
 interface SidebarContextType {
@@ -26,6 +28,25 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+// Syncs theme + accent colour from settings to CSS variables on load
+function ThemeSync() {
+  const { settings, fetchSettings } = useSettings();
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  useEffect(() => {
+    applyTheme(settings.appearance.theme);
+  }, [settings.appearance.theme]);
+
+  useEffect(() => {
+    applyAccentColour(settings.appearance.accent_colour);
+  }, [settings.appearance.accent_colour]);
+
+  return null;
+}
+
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isPrimary, setIsPrimary] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -40,7 +61,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <SidebarContext.Provider value={{ isCollapsed, isPrimary, toggleCollapse, toggleMenu }}>
-      <div className="h-screen w-screen overflow-hidden bg-[#0f0f14] text-white flex">
+      <ThemeSync />
+      <div className="h-screen w-screen overflow-hidden bg-surface text-heading flex">
         {/* Sidebar */}
         <Sidebar isPrimary={isPrimary} isCollapsed={isCollapsed} onToggleCollapse={toggleCollapse} />
 

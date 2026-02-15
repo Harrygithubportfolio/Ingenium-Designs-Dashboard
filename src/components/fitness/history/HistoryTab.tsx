@@ -12,14 +12,14 @@ export default function HistoryTab() {
   return (
     <div className="flex-1 flex flex-col gap-3 overflow-hidden">
       {/* Sub-tab toggle */}
-      <div className="flex items-center bg-[#14141a] rounded-lg border border-[#2a2a33] p-0.5 w-fit flex-shrink-0">
+      <div className="flex items-center bg-inner rounded-lg border border-edge p-0.5 w-fit flex-shrink-0">
         <button
           type="button"
           onClick={() => setSubTab('sessions')}
           className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
             subTab === 'sessions'
-              ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
-              : 'text-gray-400 hover:text-white border border-transparent'
+              ? 'bg-accent/20 text-accent border border-accent/40'
+              : 'text-sub hover:text-heading border border-transparent'
           }`}
         >
           Sessions
@@ -29,8 +29,8 @@ export default function HistoryTab() {
           onClick={() => setSubTab('exercises')}
           className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
             subTab === 'exercises'
-              ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
-              : 'text-gray-400 hover:text-white border border-transparent'
+              ? 'bg-accent/20 text-accent border border-accent/40'
+              : 'text-sub hover:text-heading border border-transparent'
           }`}
         >
           Exercises

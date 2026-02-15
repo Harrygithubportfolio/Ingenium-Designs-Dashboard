@@ -28,16 +28,16 @@ export default function TemplatesPage() {
     <div className="h-full flex flex-col gap-4 overflow-hidden">
       <header className="flex-shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/fitness-nutrition" className="text-gray-500 hover:text-white transition-colors">
+          <Link href="/fitness-nutrition" className="text-dim hover:text-heading transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
-          <h1 className="text-lg font-semibold text-white">Workout Templates</h1>
+          <h1 className="text-lg font-semibold text-heading">Workout Templates</h1>
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-lg hover:opacity-90 transition-opacity"
+          className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-accent to-accent-secondary rounded-lg hover:opacity-90 transition-opacity"
         >
           + New Template
         </button>
@@ -45,16 +45,16 @@ export default function TemplatesPage() {
 
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-[#3b82f6]/30 border-t-[#3b82f6] rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       ) : (
         <div className="flex-1 min-h-0 overflow-hidden">
           {templates.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center gap-3">
-              <p className="text-sm text-gray-500">No templates yet</p>
+              <p className="text-sm text-dim">No templates yet</p>
               <button
                 onClick={() => setShowCreate(true)}
-                className="px-4 py-2 text-xs font-medium text-[#3b82f6] border border-[#3b82f6]/30 rounded-lg hover:bg-[#3b82f6]/10 transition-colors"
+                className="px-4 py-2 text-xs font-medium text-accent border border-accent/30 rounded-lg hover:bg-accent/10 transition-colors"
               >
                 Create Your First Template
               </button>
@@ -154,10 +154,10 @@ function CreateTemplateModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-lg bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-6 max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="w-full max-w-lg bg-card rounded-2xl border border-edge p-6 max-h-[90vh] flex flex-col overflow-hidden">
         <div className="flex items-center justify-between mb-4 flex-shrink-0">
-          <h2 className="text-lg font-semibold text-white">New Template</h2>
-          <button onClick={onClose} aria-label="Close modal" className="text-gray-500 hover:text-white transition-colors">
+          <h2 className="text-lg font-semibold text-heading">New Template</h2>
+          <button onClick={onClose} aria-label="Close modal" className="text-dim hover:text-heading transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -166,23 +166,23 @@ function CreateTemplateModal({
 
         <div className="flex-1 min-h-0 overflow-y-auto space-y-4 pr-1">
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Template Name</label>
+            <label className="block text-xs text-sub mb-1">Template Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Push Day"
-              className="w-full px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-[#3b82f6]"
+              className="w-full px-3 py-2 bg-inner border border-edge rounded-lg text-sm text-heading placeholder:text-dim focus:outline-none focus:border-accent"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Training Intent</label>
+            <label className="block text-xs text-sub mb-1">Training Intent</label>
             <select
               value={intent}
               onChange={(e) => setIntent(e.target.value as TrainingIntent)}
               aria-label="Select training intent"
-              className="w-full px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white focus:outline-none focus:border-[#3b82f6]"
+              className="w-full px-3 py-2 bg-inner border border-edge rounded-lg text-sm text-heading focus:outline-none focus:border-accent"
             >
               <option value="strength">Strength</option>
               <option value="hypertrophy">Hypertrophy</option>
@@ -192,50 +192,50 @@ function CreateTemplateModal({
           </div>
 
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Description (optional)</label>
+            <label className="block text-xs text-sub mb-1">Description (optional)</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief description..."
-              className="w-full px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-[#3b82f6]"
+              className="w-full px-3 py-2 bg-inner border border-edge rounded-lg text-sm text-heading placeholder:text-dim focus:outline-none focus:border-accent"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs text-gray-400">Exercises</label>
+              <label className="text-xs text-sub">Exercises</label>
               <button
                 onClick={addExercise}
-                className="text-xs text-[#3b82f6] hover:text-[#3b82f6]/80 transition-colors"
+                className="text-xs text-accent hover:text-accent/80 transition-colors"
               >
                 + Add Exercise
               </button>
             </div>
             <div className="space-y-2">
               {exercises.map((ex, i) => (
-                <div key={i} className="flex items-center gap-2 p-2 bg-[#14141a] rounded-lg">
+                <div key={i} className="flex items-center gap-2 p-2 bg-inner rounded-lg">
                   <input
                     type="text"
                     value={ex.exercise_name}
                     onChange={(e) => updateExercise(i, 'exercise_name', e.target.value)}
                     placeholder="Exercise name"
-                    className="flex-1 px-2 py-1.5 bg-transparent text-sm text-white placeholder:text-gray-600 focus:outline-none"
+                    className="flex-1 px-2 py-1.5 bg-transparent text-sm text-heading placeholder:text-dim focus:outline-none"
                   />
                   <input
                     type="number"
                     value={ex.target_sets}
                     onChange={(e) => updateExercise(i, 'target_sets', parseInt(e.target.value) || 1)}
-                    className="w-12 px-1 py-1.5 bg-[#22222c] rounded text-sm text-white text-center focus:outline-none"
+                    className="w-12 px-1 py-1.5 bg-elevated rounded text-sm text-heading text-center focus:outline-none"
                     min={1}
                     title="Sets"
                   />
-                  <span className="text-xs text-gray-500">&times;</span>
+                  <span className="text-xs text-dim">&times;</span>
                   <input
                     type="number"
                     value={ex.target_reps}
                     onChange={(e) => updateExercise(i, 'target_reps', parseInt(e.target.value) || 1)}
-                    className="w-12 px-1 py-1.5 bg-[#22222c] rounded text-sm text-white text-center focus:outline-none"
+                    className="w-12 px-1 py-1.5 bg-elevated rounded text-sm text-heading text-center focus:outline-none"
                     min={1}
                     title="Reps"
                   />
@@ -244,14 +244,14 @@ function CreateTemplateModal({
                     value={ex.target_load_kg}
                     onChange={(e) => updateExercise(i, 'target_load_kg', e.target.value)}
                     placeholder="kg"
-                    className="w-14 px-1 py-1.5 bg-[#22222c]/50 rounded text-sm text-white text-center placeholder:text-gray-700 focus:outline-none border border-dashed border-[#2a2a33]"
+                    className="w-14 px-1 py-1.5 bg-elevated/50 rounded text-sm text-heading text-center placeholder:text-dim focus:outline-none border border-dashed border-edge"
                     title="Weight in kg (optional)"
                   />
                   {exercises.length > 1 && (
                     <button
                       onClick={() => removeExercise(i)}
                       aria-label="Remove exercise"
-                      className="text-gray-600 hover:text-red-400 transition-colors"
+                      className="text-dim hover:text-red-400 transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -264,17 +264,17 @@ function CreateTemplateModal({
           </div>
         </div>
 
-        <div className="flex items-center gap-3 mt-4 pt-4 border-t border-[#2a2a33] flex-shrink-0">
+        <div className="flex items-center gap-3 mt-4 pt-4 border-t border-edge flex-shrink-0">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 text-sm font-medium text-gray-400 bg-[#14141a] rounded-lg hover:text-white transition-colors"
+            className="flex-1 py-2.5 text-sm font-medium text-sub bg-inner rounded-lg hover:text-heading transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={saving || !name.trim()}
-            className="flex-1 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="flex-1 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-accent to-accent-secondary rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {saving ? 'Creating...' : 'Create Template'}
           </button>

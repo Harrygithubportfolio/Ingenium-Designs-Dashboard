@@ -16,21 +16,21 @@ export default function TemplateCard({ template, onSelect, onEdit }: Props) {
   return (
     <div
       onClick={() => onSelect?.(template)}
-      className="bg-[#1a1a22] rounded-xl border border-[#2a2a33] p-4 hover:border-[#3b82f6]/40 transition-all cursor-pointer group"
+      className="bg-card rounded-xl border border-edge p-4 hover:border-accent/40 transition-all cursor-pointer group"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-white truncate group-hover:text-[#3b82f6] transition-colors">
+          <h3 className="text-sm font-semibold text-heading truncate group-hover:text-accent transition-colors">
             {template.name}
           </h3>
           {template.description && (
-            <p className="text-xs text-gray-500 mt-0.5 truncate">{template.description}</p>
+            <p className="text-xs text-dim mt-0.5 truncate">{template.description}</p>
           )}
         </div>
         <TrainingIntentBadge intent={template.training_intent} />
       </div>
 
-      <div className="flex items-center gap-4 text-xs text-gray-400">
+      <div className="flex items-center gap-4 text-xs text-sub">
         <span>{exerciseCount} exercises</span>
         <span>{totalSets} total sets</span>
       </div>
@@ -39,15 +39,15 @@ export default function TemplateCard({ template, onSelect, onEdit }: Props) {
         <div className="mt-3 space-y-1">
           {template.exercises.slice(0, 4).map((ex) => (
             <div key={ex.id} className="flex items-center justify-between text-xs">
-              <span className="text-gray-300 truncate">{ex.exercise_name}</span>
-              <span className="text-gray-500 flex-shrink-0 ml-2">
+              <span className="text-sub truncate">{ex.exercise_name}</span>
+              <span className="text-dim flex-shrink-0 ml-2">
                 {ex.target_sets}×{ex.target_reps}
                 {ex.target_load_kg ? ` @${ex.target_load_kg}kg` : ''}
               </span>
             </div>
           ))}
           {template.exercises.length > 4 && (
-            <p className="text-xs text-gray-500">+{template.exercises.length - 4} more</p>
+            <p className="text-xs text-dim">+{template.exercises.length - 4} more</p>
           )}
         </div>
       )}
@@ -58,7 +58,7 @@ export default function TemplateCard({ template, onSelect, onEdit }: Props) {
             e.stopPropagation();
             onEdit(template);
           }}
-          className="mt-3 text-xs text-[#3b82f6] hover:text-[#3b82f6]/80 transition-colors"
+          className="mt-3 text-xs text-accent hover:text-accent/80 transition-colors"
         >
           Edit Template
         </button>

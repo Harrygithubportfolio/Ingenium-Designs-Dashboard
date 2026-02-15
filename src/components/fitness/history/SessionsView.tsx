@@ -38,7 +38,7 @@ export default function SessionsView() {
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-[#3b82f6]/30 border-t-[#3b82f6] rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -46,8 +46,8 @@ export default function SessionsView() {
   if (sessions.length === 0) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-2">
-        <p className="text-gray-500 text-sm">No workout history yet</p>
-        <p className="text-gray-600 text-xs">Complete a gym session to see it here</p>
+        <p className="text-dim text-sm">No workout history yet</p>
+        <p className="text-dim text-xs">Complete a gym session to see it here</p>
       </div>
     );
   }
@@ -74,24 +74,24 @@ export default function SessionsView() {
               key={session.id}
               type="button"
               onClick={() => setSelected(session)}
-              className="w-full p-3 bg-[#1a1a22] border border-[#2a2a33] rounded-xl hover:border-[#3b82f6]/30 transition-all text-left group"
+              className="w-full p-3 bg-card border border-edge rounded-xl hover:border-accent/30 transition-all text-left group"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate group-hover:text-[#3b82f6] transition-colors">
+                  <p className="text-sm font-medium text-heading truncate group-hover:text-accent transition-colors">
                     {workoutName}
                   </p>
-                  <div className="flex items-center gap-2 mt-1 text-[11px] text-gray-500">
+                  <div className="flex items-center gap-2 mt-1 text-[11px] text-dim">
                     <span>{dayName} {date}</span>
-                    <span className="text-gray-700">|</span>
+                    <span className="text-dim">|</span>
                     <span>{formatDuration(session.total_duration_sec)}</span>
-                    <span className="text-gray-700">|</span>
+                    <span className="text-dim">|</span>
                     <span>{exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {session.total_volume_kg && (
-                    <span className="text-xs font-semibold text-white">
+                    <span className="text-xs font-semibold text-heading">
                       {Math.round(session.total_volume_kg).toLocaleString()} kg
                     </span>
                   )}
@@ -110,15 +110,15 @@ export default function SessionsView() {
                     key={ex.id}
                     className={`text-[10px] px-1.5 py-0.5 rounded border ${
                       ex.was_skipped
-                        ? 'text-gray-600 border-[#2a2a33]/50 line-through'
-                        : 'text-gray-400 border-[#2a2a33] bg-[#14141a]'
+                        ? 'text-dim border-edge/50 line-through'
+                        : 'text-sub border-edge bg-inner'
                     }`}
                   >
                     {ex.exercise_name}
                   </span>
                 ))}
                 {(session.exercises ?? []).length > 4 && (
-                  <span className="text-[10px] text-gray-600">
+                  <span className="text-[10px] text-dim">
                     +{(session.exercises ?? []).length - 4} more
                   </span>
                 )}

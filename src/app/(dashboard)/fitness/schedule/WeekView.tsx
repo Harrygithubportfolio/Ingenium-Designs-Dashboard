@@ -44,17 +44,17 @@ export default function WeekView({ weekStart, schedule, onSelectWorkout, onPrevW
         <button
           type="button"
           onClick={onPrevWeek}
-          className="p-2 text-gray-400 hover:text-white hover:bg-[#1a1a22] rounded-lg transition-colors"
+          className="p-2 text-sub hover:text-heading hover:bg-card rounded-lg transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <p className="text-sm font-medium text-white">{getWeekLabel(weekStart)}</p>
+        <p className="text-sm font-medium text-heading">{getWeekLabel(weekStart)}</p>
         <button
           type="button"
           onClick={onNextWeek}
-          className="p-2 text-gray-400 hover:text-white hover:bg-[#1a1a22] rounded-lg transition-colors"
+          className="p-2 text-sub hover:text-heading hover:bg-card rounded-lg transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -73,26 +73,26 @@ export default function WeekView({ weekStart, schedule, onSelectWorkout, onPrevW
               key={day.dateStr}
               className={`flex flex-col rounded-xl border p-3 min-h-[120px] ${
                 isToday
-                  ? 'border-[#3b82f6]/40 bg-[#3b82f6]/5'
-                  : 'border-[#2a2a33] bg-[#1a1a22]'
+                  ? 'border-accent/40 bg-accent/5'
+                  : 'border-edge bg-card'
               }`}
             >
               {/* Day header */}
               <div className="text-center mb-2 flex-shrink-0">
-                <p className={`text-xs font-semibold ${isToday ? 'text-[#3b82f6]' : 'text-gray-400'}`}>
+                <p className={`text-xs font-semibold ${isToday ? 'text-accent' : 'text-sub'}`}>
                   {day.dayName}
                 </p>
-                <p className={`text-lg font-bold ${isToday ? 'text-white' : 'text-gray-300'}`}>
+                <p className={`text-lg font-bold ${isToday ? 'text-heading' : 'text-sub'}`}>
                   {day.dateNum}
                 </p>
-                <p className="text-[10px] text-gray-600">{day.monthStr}</p>
+                <p className="text-[10px] text-dim">{day.monthStr}</p>
               </div>
 
               {/* Workout cards */}
               <div className="flex-1 space-y-1.5">
                 {dayWorkouts.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
-                    <span className="text-[10px] text-gray-600">Rest</span>
+                    <span className="text-[10px] text-dim">Rest</span>
                   </div>
                 ) : (
                   dayWorkouts.map((w) => (
@@ -100,9 +100,9 @@ export default function WeekView({ weekStart, schedule, onSelectWorkout, onPrevW
                       type="button"
                       key={w.id}
                       onClick={() => onSelectWorkout(w)}
-                      className="w-full p-2 bg-[#14141a] rounded-lg text-left hover:bg-[#22222c] border border-transparent hover:border-[#3b82f6]/30 transition-all cursor-pointer group"
+                      className="w-full p-2 bg-inner rounded-lg text-left hover:bg-elevated border border-transparent hover:border-accent/30 transition-all cursor-pointer group"
                     >
-                      <p className="text-[11px] font-medium text-white truncate group-hover:text-[#3b82f6] transition-colors">
+                      <p className="text-[11px] font-medium text-heading truncate group-hover:text-accent transition-colors">
                         {w.template?.name ?? 'Workout'}
                       </p>
                       <div className="flex items-center gap-1 mt-1 flex-wrap">

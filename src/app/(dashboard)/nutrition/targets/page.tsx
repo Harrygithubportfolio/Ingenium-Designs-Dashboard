@@ -61,19 +61,19 @@ export default function TargetsPage() {
   return (
     <div className="h-full flex flex-col gap-4 overflow-hidden">
       <header className="flex-shrink-0 flex items-center gap-3">
-        <Link href="/fitness-nutrition" className="text-gray-500 hover:text-white transition-colors">
+        <Link href="/fitness-nutrition" className="text-dim hover:text-heading transition-colors">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </Link>
-        <h1 className="text-lg font-semibold text-white">Daily Targets</h1>
+        <h1 className="text-lg font-semibold text-heading">Daily Targets</h1>
       </header>
 
       <div className="flex-1 min-h-0 flex items-center justify-center">
-        <div className="w-full max-w-md bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-6 space-y-6">
+        <div className="w-full max-w-md bg-card rounded-2xl border border-edge p-6 space-y-6">
           {/* Day Type */}
           <div>
-            <label className="block text-xs text-gray-400 mb-2">Day Type</label>
+            <label className="block text-xs text-sub mb-2">Day Type</label>
             <div className="flex gap-2">
               {dayTypes.map(([value, label]) => (
                 <button
@@ -81,8 +81,8 @@ export default function TargetsPage() {
                   onClick={() => setDayType(value)}
                   className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all ${
                     dayType === value
-                      ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
-                      : 'bg-[#14141a] text-gray-400 border border-[#2a2a33]'
+                      ? 'bg-accent/20 text-accent border border-accent/40'
+                      : 'bg-inner text-sub border border-edge'
                   }`}
                 >
                   {label}
@@ -93,7 +93,7 @@ export default function TargetsPage() {
 
           {/* Macro Targets */}
           <div className="space-y-4">
-            <MacroInput label="Calories" value={calories} onChange={setCalories} unit="kcal" color="text-white" />
+            <MacroInput label="Calories" value={calories} onChange={setCalories} unit="kcal" color="text-heading" />
             <MacroInput label="Protein" value={protein} onChange={setProtein} unit="g" color="text-blue-400" />
             <MacroInput label="Carbs" value={carbs} onChange={setCarbs} unit="g" color="text-amber-400" />
             <MacroInput label="Fat" value={fat} onChange={setFat} unit="g" color="text-red-400" />
@@ -102,7 +102,7 @@ export default function TargetsPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="w-full py-3 bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="w-full py-3 bg-gradient-to-r from-accent to-accent-secondary text-white font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {saved ? '✓ Saved!' : saving ? 'Saving...' : 'Save Targets'}
           </button>
@@ -134,9 +134,9 @@ function MacroInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           aria-label={`${label} target`}
-          className="flex-1 px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white focus:outline-none focus:border-[#3b82f6]"
+          className="flex-1 px-3 py-2 bg-inner border border-edge rounded-lg text-sm text-heading focus:outline-none focus:border-accent"
         />
-        <span className="text-xs text-gray-500 w-8">{unit}</span>
+        <span className="text-xs text-dim w-8">{unit}</span>
       </div>
     </div>
   );

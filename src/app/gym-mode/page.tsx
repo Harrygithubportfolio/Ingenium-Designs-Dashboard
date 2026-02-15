@@ -101,12 +101,12 @@ export default function GymModePage() {
   if (!current) {
     return (
       <div className="h-full flex flex-col items-center justify-center gap-4">
-        <p className="text-lg text-gray-400">No exercises in this session</p>
+        <p className="text-lg text-sub">No exercises in this session</p>
         <div className="flex flex-col gap-3 w-full max-w-sm">
-          <button onClick={handleChangeMode} className="w-full px-6 py-3 bg-white/10 rounded-xl text-white hover:bg-white/15 transition-colors">
+          <button onClick={handleChangeMode} className="w-full px-6 py-3 bg-white/10 rounded-xl text-heading hover:bg-white/15 transition-colors">
             Change Mode
           </button>
-          <button onClick={() => router.push('/fitness')} className="w-full px-6 py-3 text-gray-500 hover:text-white transition-colors">
+          <button onClick={() => router.push('/fitness')} className="w-full px-6 py-3 text-dim hover:text-heading transition-colors">
             Exit Gym Mode
           </button>
         </div>
@@ -142,7 +142,7 @@ function StartScreen({ todayWorkoutId, onStart, onExit }: { todayWorkoutId?: str
     <div className="h-full flex flex-col items-center justify-center gap-8 p-8">
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-2">Gym Mode</h1>
-        <p className="text-gray-400 text-lg">Focus. Execute. Log.</p>
+        <p className="text-sub text-lg">Focus. Execute. Log.</p>
       </div>
       <div className="flex flex-col gap-4 w-full max-w-sm">
         {todayWorkoutId && (
@@ -161,7 +161,7 @@ function StartScreen({ todayWorkoutId, onStart, onExit }: { todayWorkoutId?: str
         </button>
         <button
           onClick={onExit}
-          className="w-full py-3 text-gray-500 hover:text-white transition-colors"
+          className="w-full py-3 text-dim hover:text-heading transition-colors"
         >
           Back to Dashboard
         </button>
@@ -268,7 +268,7 @@ function ExerciseScreen({
               </svg>
             </button>
           )}
-          <div className="text-2xl font-mono font-bold text-white/80">{formatTime(elapsed)}</div>
+          <div className="text-2xl font-mono font-bold text-heading/80">{formatTime(elapsed)}</div>
         </div>
         <div className="flex items-center gap-3">
           <button onClick={onPause} className="p-3 bg-white/10 rounded-xl hover:bg-white/15 transition-colors" title="Pause">
@@ -287,13 +287,13 @@ function ExerciseScreen({
       {/* Exercise title */}
       <div className="text-center mb-6 flex-shrink-0">
         <h1 className="text-3xl md:text-4xl font-bold uppercase tracking-wide">{exercise.exercise_name}</h1>
-        <p className="text-gray-500 mt-1">Exercise {exerciseIndex + 1} of {totalExercises}</p>
+        <p className="text-dim mt-1">Exercise {exerciseIndex + 1} of {totalExercises}</p>
         {exercise.was_skipped && <p className="text-amber-400 text-sm mt-1">Skipped</p>}
       </div>
 
       {/* Target info */}
       <div className="text-center mb-4 flex-shrink-0">
-        <p className="text-gray-400">
+        <p className="text-sub">
           TARGET: {targetSets} sets × {targetReps} reps
           {targetLoad ? ` @ ${targetLoad}kg` : ''}
         </p>
@@ -303,7 +303,7 @@ function ExerciseScreen({
       <div className="flex-shrink-0 mb-6 space-y-2 max-h-48 overflow-y-auto">
         {sets.map((s, i) => (
           <div key={s.id} className="flex items-center justify-between px-4 py-2 bg-white/5 rounded-lg">
-            <span className="text-sm text-gray-400">SET {s.set_number}</span>
+            <span className="text-sm text-sub">SET {s.set_number}</span>
             <span className="text-sm font-semibold">{s.actual_weight_kg}kg × {s.actual_reps}</span>
             <span className="text-green-400 text-sm">✓</span>
           </div>
@@ -322,18 +322,18 @@ function ExerciseScreen({
           onClick={dismissRestTimer}
           className="flex-1 w-full flex flex-col items-center justify-center gap-4 cursor-pointer rounded-2xl border-2 border-blue-500/40 bg-blue-500/5 animate-pulse"
         >
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Rest Period</p>
+          <p className="text-xs text-dim uppercase tracking-wider">Rest Period</p>
           <div className="text-7xl md:text-8xl font-mono font-bold text-blue-400">
             {Math.floor(restSeconds / 60)}:{String(restSeconds % 60).padStart(2, '0')}
           </div>
-          <p className="text-lg text-gray-400 mt-2">Tap when ready</p>
+          <p className="text-lg text-sub mt-2">Tap when ready</p>
         </button>
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center gap-6">
           <div className="flex items-center gap-8">
             {/* Weight */}
             <div className="flex flex-col items-center gap-2">
-              <label className="text-xs text-gray-500 uppercase tracking-wider">Weight (kg)</label>
+              <label className="text-xs text-dim uppercase tracking-wider">Weight (kg)</label>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setWeight(Math.max(0, weight - 2.5))}
@@ -359,7 +359,7 @@ function ExerciseScreen({
 
             {/* Reps */}
             <div className="flex flex-col items-center gap-2">
-              <label className="text-xs text-gray-500 uppercase tracking-wider">Reps</label>
+              <label className="text-xs text-dim uppercase tracking-wider">Reps</label>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setReps(Math.max(1, reps - 1))}
@@ -428,14 +428,14 @@ function ExerciseScreen({
       {/* Add Exercise Modal */}
       {showAddExercise && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-          <div className="w-full max-w-sm bg-[#1a1a22] rounded-2xl p-6">
+          <div className="w-full max-w-sm bg-card rounded-2xl p-6">
             <h3 className="text-lg font-semibold mb-4">Add Exercise</h3>
             <input
               type="text"
               value={newExName}
               onChange={(e) => setNewExName(e.target.value)}
               placeholder="Exercise name"
-              className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 mb-4"
+              className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-heading placeholder:text-dim focus:outline-none focus:border-blue-500 mb-4"
               autoFocus
             />
             <div className="flex gap-3">
@@ -464,8 +464,8 @@ function ExerciseScreen({
 function PauseOverlay({ elapsed, onResume, onEnd }: { elapsed: number; onResume: () => void; onEnd: () => void }) {
   return (
     <div className="h-full flex flex-col items-center justify-center gap-8 bg-black/90 p-8">
-      <h1 className="text-5xl font-bold text-white/40">PAUSED</h1>
-      <p className="text-3xl font-mono text-white/60">{formatTime(elapsed)}</p>
+      <h1 className="text-5xl font-bold text-heading/40">PAUSED</h1>
+      <p className="text-3xl font-mono text-heading/60">{formatTime(elapsed)}</p>
       <div className="flex flex-col gap-4 w-full max-w-sm">
         <button onClick={onResume} className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl text-xl font-bold">
           Resume
@@ -496,21 +496,21 @@ function SessionSummary({ session, elapsed, onReflect }: { session: any; elapsed
     <div className="h-full flex flex-col items-center justify-center gap-6 p-8">
       <div className="text-center">
         <h1 className="text-3xl font-bold mb-2">Session Complete</h1>
-        <p className="text-xl text-gray-400 font-mono">{formatTime(elapsed)}</p>
+        <p className="text-xl text-sub font-mono">{formatTime(elapsed)}</p>
       </div>
 
       <div className="grid grid-cols-3 gap-4 w-full max-w-lg">
         <div className="bg-white/5 rounded-xl p-4 text-center">
-          <p className="text-3xl font-bold text-white">{exercises.length}</p>
-          <p className="text-xs text-gray-500 uppercase mt-1">Exercises</p>
+          <p className="text-3xl font-bold text-heading">{exercises.length}</p>
+          <p className="text-xs text-dim uppercase mt-1">Exercises</p>
         </div>
         <div className="bg-white/5 rounded-xl p-4 text-center">
-          <p className="text-3xl font-bold text-white">{totalSets}</p>
-          <p className="text-xs text-gray-500 uppercase mt-1">Sets</p>
+          <p className="text-3xl font-bold text-heading">{totalSets}</p>
+          <p className="text-xs text-dim uppercase mt-1">Sets</p>
         </div>
         <div className="bg-white/5 rounded-xl p-4 text-center">
           <p className="text-3xl font-bold text-blue-400">{Math.round(totalVolume).toLocaleString()}</p>
-          <p className="text-xs text-gray-500 uppercase mt-1">Volume (kg)</p>
+          <p className="text-xs text-dim uppercase mt-1">Volume (kg)</p>
         </div>
       </div>
 
@@ -518,8 +518,8 @@ function SessionSummary({ session, elapsed, onReflect }: { session: any; elapsed
       <div className="w-full max-w-lg space-y-2 max-h-48 overflow-hidden">
         {exercises.map((ex: ExecutionExercise) => (
           <div key={ex.id} className="flex items-center justify-between px-4 py-2 bg-white/5 rounded-lg">
-            <span className="text-sm text-white">{ex.exercise_name}</span>
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-heading">{ex.exercise_name}</span>
+            <span className="text-sm text-sub">
               {ex.was_skipped ? (
                 <span className="text-amber-400">Skipped</span>
               ) : (
@@ -589,7 +589,7 @@ function ReflectionScreen({ sessionId, onDone }: { sessionId: string; onDone: ()
                 ? r.value === 'strong' ? 'bg-green-500/20 text-green-400 border-2 border-green-500'
                   : r.value === 'normal' ? 'bg-blue-500/20 text-blue-400 border-2 border-blue-500'
                   : 'bg-red-500/20 text-red-400 border-2 border-red-500'
-                : 'bg-white/5 text-gray-400 border-2 border-transparent hover:bg-white/10'
+                : 'bg-white/5 text-sub border-2 border-transparent hover:bg-white/10'
             }`}
           >
             {r.label}
@@ -598,13 +598,13 @@ function ReflectionScreen({ sessionId, onDone }: { sessionId: string; onDone: ()
       </div>
 
       <div className="w-full max-w-md">
-        <label className="block text-sm text-gray-500 mb-2">Notes (optional)</label>
+        <label className="block text-sm text-dim mb-2">Notes (optional)</label>
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={3}
           placeholder="Any thoughts on this session..."
-          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 resize-none"
+          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-heading placeholder:text-dim focus:outline-none focus:border-blue-500 resize-none"
         />
       </div>
 

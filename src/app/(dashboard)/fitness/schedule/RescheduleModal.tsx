@@ -47,14 +47,14 @@ export default function RescheduleModal({ workout, open, onClose, onRescheduled 
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-sm mx-4 bg-[#1a1a22] border border-[#2a2a33] rounded-2xl p-6">
+      <div className="relative w-full max-w-sm mx-4 bg-card border border-edge rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-white">Reschedule Workout</h2>
+          <h2 className="text-sm font-semibold text-heading">Reschedule Workout</h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="text-gray-500 hover:text-white transition-colors"
+            className="text-dim hover:text-heading transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -64,23 +64,23 @@ export default function RescheduleModal({ workout, open, onClose, onRescheduled 
 
         <div className="space-y-4">
           <div>
-            <p className="text-xs text-gray-500 mb-1">Workout</p>
-            <p className="text-sm text-white font-medium">{workout.template?.name ?? 'Workout'}</p>
+            <p className="text-xs text-dim mb-1">Workout</p>
+            <p className="text-sm text-heading font-medium">{workout.template?.name ?? 'Workout'}</p>
           </div>
 
           <div>
-            <p className="text-xs text-gray-500 mb-1">Currently scheduled</p>
-            <p className="text-sm text-gray-300">{currentDate}</p>
+            <p className="text-xs text-dim mb-1">Currently scheduled</p>
+            <p className="text-sm text-sub">{currentDate}</p>
           </div>
 
           <div>
-            <label className="block text-xs text-gray-500 mb-1">New date</label>
+            <label className="block text-xs text-dim mb-1">New date</label>
             <input
               type="date"
               value={newDate}
               onChange={(e) => setNewDate(e.target.value)}
               aria-label="Select new workout date"
-              className="w-full px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white focus:outline-none focus:border-[#3b82f6]"
+              className="w-full px-3 py-2 bg-inner border border-edge rounded-lg text-sm text-heading focus:outline-none focus:border-accent"
             />
           </div>
 
@@ -93,7 +93,7 @@ export default function RescheduleModal({ workout, open, onClose, onRescheduled 
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 text-sm font-medium text-gray-400 bg-[#14141a] rounded-lg hover:text-white transition-colors"
+            className="flex-1 py-2.5 text-sm font-medium text-sub bg-inner rounded-lg hover:text-heading transition-colors"
           >
             Cancel
           </button>
@@ -101,7 +101,7 @@ export default function RescheduleModal({ workout, open, onClose, onRescheduled 
             type="button"
             onClick={handleSubmit}
             disabled={saving || !newDate}
-            className="flex-1 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="flex-1 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-accent to-accent-secondary rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {saving ? 'Rescheduling...' : 'Reschedule'}
           </button>

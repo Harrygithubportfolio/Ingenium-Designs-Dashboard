@@ -8,23 +8,23 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen w-full bg-[#0f0f14] text-white">
+    <div className="min-h-screen w-full bg-surface text-heading">
       <div className="mx-auto max-w-3xl px-6 py-12 md:py-16">
         {/* Header */}
         <div className="mb-10">
           <Link
             href="/calendar"
-            className="mb-6 inline-flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
+            className="mb-6 inline-flex items-center gap-2 text-sm text-sub transition-colors hover:text-heading"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
             Back to Dashboard
           </Link>
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Terms &amp; Conditions</h1>
-          <p className="mt-2 text-sm text-gray-400">Last updated: 15 February 2026</p>
+          <p className="mt-2 text-sm text-sub">Last updated: 15 February 2026</p>
         </div>
 
         {/* Content */}
-        <div className="space-y-8 text-gray-300 leading-relaxed [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-white [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-medium [&_h3]:text-white [&_ul]:ml-5 [&_ul]:list-disc [&_ul]:space-y-1">
+        <div className="space-y-8 text-sub leading-relaxed [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-heading [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-medium [&_h3]:text-heading [&_ul]:ml-5 [&_ul]:list-disc [&_ul]:space-y-1">
           <section>
             <h2>1. Agreement to Terms</h2>
             <p>
@@ -71,7 +71,7 @@ export default function TermsPage() {
               You retain ownership of all data you input into the Service. By using the Service, you
               grant us a limited licence to store, process, and display your data solely for the
               purpose of providing the Service to you. Our handling of your data is governed by our{' '}
-              <Link href="/privacy" className="text-[#3b82f6] underline underline-offset-2 hover:text-[#60a5fa]">
+              <Link href="/privacy" className="text-accent underline underline-offset-2 hover:text-accent">
                 Privacy Policy
               </Link>.
             </p>
@@ -156,7 +156,7 @@ export default function TermsPage() {
               If you have questions about these Terms &amp; Conditions, please contact us at:{' '}
               <a
                 href="mailto:support@ingeniumdesigns.co.uk"
-                className="text-[#3b82f6] underline underline-offset-2 hover:text-[#60a5fa]"
+                className="text-accent underline underline-offset-2 hover:text-accent"
               >
                 support@ingeniumdesigns.co.uk
               </a>
@@ -165,11 +165,11 @@ export default function TermsPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-12 border-t border-[#2a2a33] pt-6 text-sm text-gray-500">
+        <div className="mt-12 border-t border-edge pt-6 text-sm text-dim">
           <p>&copy; 2026 Ingenium Designs. All rights reserved.</p>
           <div className="mt-2 flex gap-4">
-            <Link href="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</Link>
-            <Link href="/terms" className="text-gray-400 hover:text-white">Terms &amp; Conditions</Link>
+            <Link href="/privacy" className="text-sub hover:text-heading">Privacy Policy</Link>
+            <Link href="/terms" className="text-sub hover:text-heading">Terms &amp; Conditions</Link>
           </div>
         </div>
       </div>

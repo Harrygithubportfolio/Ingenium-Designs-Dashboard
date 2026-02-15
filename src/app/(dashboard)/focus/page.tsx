@@ -62,7 +62,7 @@ export default function FocusPage() {
   if (!mounted) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#3b82f6]/30 border-t-[#3b82f6] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -83,7 +83,7 @@ export default function FocusPage() {
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeTab === 'morning'
               ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30'
-              : 'bg-[#1a1a22] text-gray-400 border border-[#2a2a33] hover:border-[#3a3a44]'
+              : 'bg-card text-sub border border-edge hover:border-edge'
           }`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,7 +101,7 @@ export default function FocusPage() {
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeTab === 'evening'
               ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-purple-400 border border-purple-500/30'
-              : 'bg-[#1a1a22] text-gray-400 border border-[#2a2a33] hover:border-[#3a3a44]'
+              : 'bg-card text-sub border border-edge hover:border-edge'
           }`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,10 +117,10 @@ export default function FocusPage() {
 
         {/* Quick stats */}
         {focus && (
-          <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-[#1a1a22] rounded-lg border border-[#2a2a33]">
+          <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-card rounded-lg border border-edge">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">Tasks</span>
-              <span className="text-sm font-bold text-white">
+              <span className="text-xs text-dim">Tasks</span>
+              <span className="text-sm font-bold text-heading">
                 {focus.supportingTasks.filter(t => t.completed).length + (focus.primaryFocusCompleted ? 1 : 0)}
                 /
                 {focus.supportingTasks.length + 1}
@@ -128,7 +128,7 @@ export default function FocusPage() {
             </div>
             {focus.primaryFocusCompleted && (
               <>
-                <div className="w-px h-4 bg-[#2a2a33]" />
+                <div className="w-px h-4 bg-edge" />
                 <div className="flex items-center gap-1 text-green-400">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />

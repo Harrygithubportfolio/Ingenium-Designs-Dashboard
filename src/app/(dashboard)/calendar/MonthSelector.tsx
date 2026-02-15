@@ -21,11 +21,11 @@ export default function MonthSelector({ month, year, onChange }: Props) {
 
   return (
     <div className="flex items-center justify-between mb-4">
-      <button onClick={prev} className="text-gray-300 hover:text-white">← Prev</button>
-      <h3 className="text-lg font-semibold text-white">
+      <button onClick={prev} className="text-sub hover:text-heading">← Prev</button>
+      <h3 className="text-lg font-semibold text-heading">
         {new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' })}
       </h3>
-      <button onClick={next} className="text-gray-300 hover:text-white">Next →</button>
+      <button onClick={next} className="text-sub hover:text-heading">Next →</button>
     </div>
   );
 }

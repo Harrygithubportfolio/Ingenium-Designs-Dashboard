@@ -131,17 +131,17 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
   // Editing mode
   if (isEditing) {
     return (
-      <div className="h-full bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] p-5 flex flex-col overflow-hidden">
+      <div className="h-full bg-gradient-to-br from-card to-inner rounded-2xl border border-edge p-5 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center gap-3 mb-5 flex-shrink-0">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">Set Your Focus</h2>
-            <p className="text-xs text-gray-500">What matters most today?</p>
+            <h2 className="text-lg font-semibold text-heading">Set Your Focus</h2>
+            <p className="text-xs text-dim">What matters most today?</p>
           </div>
         </div>
 
@@ -149,7 +149,7 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
         <div className="flex-1 min-h-0 overflow-y-auto space-y-5">
           {/* Primary Focus */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-sub mb-2">
               Today&apos;s Primary Focus
             </label>
             <input
@@ -157,13 +157,13 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
               value={primaryFocus}
               onChange={(e) => setPrimaryFocus(e.target.value)}
               placeholder="What's the ONE thing you must accomplish today?"
-              className="w-full px-4 py-3 bg-[#14141a] border border-[#2a2a33] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#3b82f6] transition-colors"
+              className="w-full px-4 py-3 bg-inner border border-edge rounded-xl text-heading placeholder-gray-500 focus:outline-none focus:border-accent transition-colors"
             />
           </div>
 
           {/* Intention Note */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-sub mb-2">
               <span className="text-amber-400">✨</span> {morningPrompt}
             </label>
             <textarea
@@ -171,15 +171,15 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
               onChange={(e) => setIntentionNote(e.target.value)}
               placeholder="Set your intention..."
               rows={2}
-              className="w-full px-4 py-3 bg-[#14141a] border border-[#2a2a33] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#3b82f6] transition-colors resize-none"
+              className="w-full px-4 py-3 bg-inner border border-edge rounded-xl text-heading placeholder-gray-500 focus:outline-none focus:border-accent transition-colors resize-none"
             />
           </div>
 
           {/* Supporting Tasks */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-gray-300">Supporting Tasks</label>
-              <span className="text-xs text-gray-500">{supportingTasks.length}/3 recommended</span>
+              <label className="text-sm font-medium text-sub">Supporting Tasks</label>
+              <span className="text-xs text-dim">{supportingTasks.length}/3 recommended</span>
             </div>
 
             {/* Task list */}
@@ -187,17 +187,17 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
               {supportingTasks.map((task) => (
                 <div
                   key={task.id}
-                  className="flex items-center gap-3 p-3 bg-[#14141a] border border-[#2a2a33] rounded-lg group"
+                  className="flex items-center gap-3 p-3 bg-inner border border-edge rounded-lg group"
                 >
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    task.source === 'goal' ? 'bg-[#3b82f6]' : 'bg-gray-500'
+                    task.source === 'goal' ? 'bg-accent' : 'bg-gray-500'
                   }`} />
-                  <span className="flex-1 text-sm text-gray-300">{task.title}</span>
+                  <span className="flex-1 text-sm text-sub">{task.title}</span>
                   <button
                     type="button"
                     onClick={() => handleRemoveTask(task.id)}
                     aria-label="Remove task"
-                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-400 transition-all"
+                    className="opacity-0 group-hover:opacity-100 p-1 text-dim hover:text-red-400 transition-all"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -215,13 +215,13 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
                 onChange={(e) => setNewTaskTitle(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
                 placeholder="Add a supporting task..."
-                className="flex-1 px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#3b82f6] transition-colors"
+                className="flex-1 px-3 py-2 bg-inner border border-edge rounded-lg text-sm text-heading placeholder-gray-500 focus:outline-none focus:border-accent transition-colors"
               />
               <button
                 type="button"
                 onClick={handleAddTask}
                 disabled={!newTaskTitle.trim()}
-                className="px-3 py-2 bg-[#22222c] border border-[#2a2a33] rounded-lg text-sm text-gray-300 hover:bg-[#2a2a33] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-2 bg-elevated border border-edge rounded-lg text-sm text-sub hover:bg-edge disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Add
               </button>
@@ -233,7 +233,7 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
                 <button
                   type="button"
                   onClick={() => setShowGoalPicker(!showGoalPicker)}
-                  className="text-xs text-[#3b82f6] hover:text-[#60a5fa] transition-colors flex items-center gap-1"
+                  className="text-xs text-accent hover:text-accent transition-colors flex items-center gap-1"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -242,13 +242,13 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
                 </button>
 
                 {showGoalPicker && (
-                  <div className="mt-2 p-3 bg-[#14141a] border border-[#2a2a33] rounded-lg max-h-48 overflow-y-auto">
+                  <div className="mt-2 p-3 bg-inner border border-edge rounded-lg max-h-48 overflow-y-auto">
                     {goals.map((goal) => (
                       <div key={goal.id} className="mb-2 last:mb-0">
                         <button
                           type="button"
                           onClick={() => handleAddFromGoal(goal)}
-                          className="w-full text-left px-2 py-1.5 text-sm text-gray-300 hover:bg-[#22222c] rounded transition-colors"
+                          className="w-full text-left px-2 py-1.5 text-sm text-sub hover:bg-elevated rounded transition-colors"
                         >
                           {goal.title}
                         </button>
@@ -257,7 +257,7 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
                             key={milestone.id}
                             type="button"
                             onClick={() => handleAddFromGoal(goal, milestone)}
-                            className="w-full text-left px-4 py-1 text-xs text-gray-400 hover:bg-[#22222c] rounded transition-colors"
+                            className="w-full text-left px-4 py-1 text-xs text-sub hover:bg-elevated rounded transition-colors"
                           >
                             ↳ {milestone.title}
                           </button>
@@ -272,12 +272,12 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
         </div>
 
         {/* Save button */}
-        <div className="flex-shrink-0 pt-4 border-t border-[#2a2a33] mt-4">
+        <div className="flex-shrink-0 pt-4 border-t border-edge mt-4">
           <button
             type="button"
             onClick={handleSave}
             disabled={!primaryFocus.trim()}
-            className="w-full py-3 bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full py-3 bg-gradient-to-r from-accent to-accent-secondary rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             Set Today&apos;s Focus
           </button>
@@ -288,7 +288,7 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
 
   // Display mode
   return (
-    <div className="h-full bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] p-5 flex flex-col overflow-hidden relative">
+    <div className="h-full bg-gradient-to-br from-card to-inner rounded-2xl border border-edge p-5 flex flex-col overflow-hidden relative">
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -296,20 +296,20 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">Today&apos;s Focus</h2>
-            <p className="text-xs text-gray-500">Stay intentional</p>
+            <h2 className="text-lg font-semibold text-heading">Today&apos;s Focus</h2>
+            <p className="text-xs text-dim">Stay intentional</p>
           </div>
         </div>
         <button
           type="button"
           onClick={() => setIsEditing(true)}
           aria-label="Edit focus"
-          className="p-2 text-gray-400 hover:text-white hover:bg-[#22222c] rounded-lg transition-colors"
+          className="p-2 text-sub hover:text-heading hover:bg-elevated rounded-lg transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -324,7 +324,7 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
           className={`p-4 rounded-xl border transition-all cursor-pointer ${
             focus?.primaryFocusCompleted
               ? 'bg-green-500/10 border-green-500/30'
-              : 'bg-[#3b82f6]/10 border-[#3b82f6]/30 hover:border-[#3b82f6]/50'
+              : 'bg-accent/10 border-accent/30 hover:border-accent/50'
           }`}
           onClick={handleTogglePrimaryFocus}
         >
@@ -332,17 +332,17 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
             <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
               focus?.primaryFocusCompleted
                 ? 'bg-green-500 border-green-500'
-                : 'border-[#3b82f6]'
+                : 'border-accent'
             }`}>
               {focus?.primaryFocusCompleted && (
-                <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               )}
             </div>
             <div className="flex-1">
-              <p className="text-xs text-[#3b82f6] font-medium uppercase tracking-wide mb-1">Primary Focus</p>
-              <p className={`text-lg font-medium ${focus?.primaryFocusCompleted ? 'text-gray-400 line-through' : 'text-white'}`}>
+              <p className="text-xs text-accent font-medium uppercase tracking-wide mb-1">Primary Focus</p>
+              <p className={`text-lg font-medium ${focus?.primaryFocusCompleted ? 'text-sub line-through' : 'text-heading'}`}>
                 {focus?.primaryFocus}
               </p>
             </div>
@@ -351,24 +351,24 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
 
         {/* Intention Note */}
         {focus?.intentionNote && (
-          <div className="p-3 bg-[#14141a] rounded-lg border border-[#2a2a33]">
+          <div className="p-3 bg-inner rounded-lg border border-edge">
             <p className="text-xs text-amber-400 mb-1">✨ Intention</p>
-            <p className="text-sm text-gray-300 italic">&ldquo;{focus.intentionNote}&rdquo;</p>
+            <p className="text-sm text-sub italic">&ldquo;{focus.intentionNote}&rdquo;</p>
           </div>
         )}
 
         {/* Supporting Tasks */}
         {supportingTasks.length > 0 && (
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Supporting Tasks</p>
+            <p className="text-xs text-dim uppercase tracking-wide mb-2">Supporting Tasks</p>
             <div className="space-y-2">
               {supportingTasks.map((task) => (
                 <div
                   key={task.id}
                   className={`flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer ${
                     task.completed
-                      ? 'bg-[#14141a] border-[#2a2a33]'
-                      : 'bg-[#14141a] border-[#2a2a33] hover:border-[#3a3a44]'
+                      ? 'bg-inner border-edge'
+                      : 'bg-inner border-edge hover:border-edge'
                   }`}
                   onClick={() => handleToggleTask(task.id)}
                 >
@@ -378,16 +378,16 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
                       : 'border-gray-500'
                   }`}>
                     {task.completed && (
-                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     )}
                   </div>
-                  <span className={`flex-1 text-sm ${task.completed ? 'text-gray-500 line-through' : 'text-gray-300'}`}>
+                  <span className={`flex-1 text-sm ${task.completed ? 'text-dim line-through' : 'text-sub'}`}>
                     {task.title}
                   </span>
                   {task.source === 'goal' && (
-                    <span className="text-[10px] text-[#3b82f6] bg-[#3b82f6]/10 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] text-accent bg-accent/10 px-2 py-0.5 rounded-full">
                       Goal
                     </span>
                   )}

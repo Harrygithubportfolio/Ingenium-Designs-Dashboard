@@ -8,23 +8,23 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen w-full bg-[#0f0f14] text-white">
+    <div className="min-h-screen w-full bg-surface text-heading">
       <div className="mx-auto max-w-3xl px-6 py-12 md:py-16">
         {/* Header */}
         <div className="mb-10">
           <Link
             href="/calendar"
-            className="mb-6 inline-flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
+            className="mb-6 inline-flex items-center gap-2 text-sm text-sub transition-colors hover:text-heading"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
             Back to Dashboard
           </Link>
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Privacy Policy</h1>
-          <p className="mt-2 text-sm text-gray-400">Last updated: 15 February 2026</p>
+          <p className="mt-2 text-sm text-sub">Last updated: 15 February 2026</p>
         </div>
 
         {/* Content */}
-        <div className="space-y-8 text-gray-300 leading-relaxed [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-white [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-medium [&_h3]:text-white [&_ul]:ml-5 [&_ul]:list-disc [&_ul]:space-y-1">
+        <div className="space-y-8 text-sub leading-relaxed [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-heading [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-medium [&_h3]:text-heading [&_ul]:ml-5 [&_ul]:list-disc [&_ul]:space-y-1">
           <section>
             <h2>1. Introduction</h2>
             <p>
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
               <li>Authenticate your identity and protect your account</li>
             </ul>
             <p className="mt-2">
-              We do <strong className="text-white">not</strong> sell, share, or disclose your personal data
+              We do <strong className="text-heading">not</strong> sell, share, or disclose your personal data
               to third parties for marketing or advertising purposes.
             </p>
           </section>
@@ -98,7 +98,7 @@ export default function PrivacyPage() {
                 href="https://developers.google.com/terms/api-services-user-data-policy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#3b82f6] underline underline-offset-2 hover:text-[#60a5fa]"
+                className="text-accent underline underline-offset-2 hover:text-accent"
               >
                 Google API Services User Data Policy
               </a>
@@ -118,19 +118,19 @@ export default function PrivacyPage() {
             <h2>6. Your Rights and Controls</h2>
             <p>You have the right to:</p>
             <ul>
-              <li><strong className="text-white">Disconnect Google Calendar</strong> — removes the active connection and stops syncing</li>
-              <li><strong className="text-white">Delete your data</strong> — contact us to request full deletion of your account and all associated data</li>
-              <li><strong className="text-white">Revoke Google access</strong> — you can also revoke access directly from your{' '}
+              <li><strong className="text-heading">Disconnect Google Calendar</strong> — removes the active connection and stops syncing</li>
+              <li><strong className="text-heading">Delete your data</strong> — contact us to request full deletion of your account and all associated data</li>
+              <li><strong className="text-heading">Revoke Google access</strong> — you can also revoke access directly from your{' '}
                 <a
                   href="https://myaccount.google.com/permissions"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#3b82f6] underline underline-offset-2 hover:text-[#60a5fa]"
+                  className="text-accent underline underline-offset-2 hover:text-accent"
                 >
                   Google Account permissions
                 </a>
               </li>
-              <li><strong className="text-white">Access your data</strong> — all your data is visible within the dashboard at all times</li>
+              <li><strong className="text-heading">Access your data</strong> — all your data is visible within the dashboard at all times</li>
             </ul>
           </section>
 
@@ -167,7 +167,7 @@ export default function PrivacyPage() {
               please contact us at:{' '}
               <a
                 href="mailto:support@ingeniumdesigns.co.uk"
-                className="text-[#3b82f6] underline underline-offset-2 hover:text-[#60a5fa]"
+                className="text-accent underline underline-offset-2 hover:text-accent"
               >
                 support@ingeniumdesigns.co.uk
               </a>
@@ -176,11 +176,11 @@ export default function PrivacyPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-12 border-t border-[#2a2a33] pt-6 text-sm text-gray-500">
+        <div className="mt-12 border-t border-edge pt-6 text-sm text-dim">
           <p>&copy; 2026 Ingenium Designs. All rights reserved.</p>
           <div className="mt-2 flex gap-4">
-            <Link href="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</Link>
-            <Link href="/terms" className="text-gray-400 hover:text-white">Terms &amp; Conditions</Link>
+            <Link href="/privacy" className="text-sub hover:text-heading">Privacy Policy</Link>
+            <Link href="/terms" className="text-sub hover:text-heading">Terms &amp; Conditions</Link>
           </div>
         </div>
       </div>

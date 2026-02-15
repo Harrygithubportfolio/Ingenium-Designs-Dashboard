@@ -150,25 +150,25 @@ export default function AiLogPage() {
   return (
     <div className="h-full flex flex-col gap-4 overflow-hidden">
       <header className="flex-shrink-0 flex items-center gap-3">
-        <Link href="/fitness-nutrition" className="text-gray-500 hover:text-white transition-colors">
+        <Link href="/fitness-nutrition" className="text-dim hover:text-heading transition-colors">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </Link>
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
-            <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
-          <h1 className="text-lg font-semibold text-white">AI Meal Log</h1>
+          <h1 className="text-lg font-semibold text-heading">AI Meal Log</h1>
         </div>
       </header>
 
       {error && (
         <div className="flex-shrink-0 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
           {error}
-          <button type="button" onClick={() => setError(null)} className="ml-2 text-red-300 hover:text-white">
+          <button type="button" onClick={() => setError(null)} className="ml-2 text-red-300 hover:text-heading">
             Dismiss
           </button>
         </div>
@@ -224,10 +224,10 @@ function InputStep({
 }) {
   return (
     <div className="flex-1 min-h-0 flex items-center justify-center">
-      <div className="w-full max-w-lg bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-6 space-y-5">
+      <div className="w-full max-w-lg bg-card rounded-2xl border border-edge p-6 space-y-5">
         {/* Meal Type */}
         <div>
-          <label className="block text-xs text-gray-400 mb-2">Meal Type</label>
+          <label className="block text-xs text-sub mb-2">Meal Type</label>
           <div className="flex flex-wrap gap-2">
             {mealTypes.map(([value, label]) => (
               <button
@@ -236,8 +236,8 @@ function InputStep({
                 onClick={() => setMealType(value)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   mealType === value
-                    ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
-                    : 'bg-[#14141a] text-gray-400 border border-[#2a2a33] hover:border-[#3b82f6]/20'
+                    ? 'bg-accent/20 text-accent border border-accent/40'
+                    : 'bg-inner text-sub border border-edge hover:border-accent/20'
                 }`}
               >
                 {label}
@@ -248,13 +248,13 @@ function InputStep({
 
         {/* Description */}
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Describe your meal</label>
+          <label className="block text-xs text-sub mb-1">Describe your meal</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
             placeholder="e.g. Grilled chicken breast with brown rice and steamed broccoli, glass of orange juice"
-            className="w-full px-3 py-2.5 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-[#3b82f6] resize-none"
+            className="w-full px-3 py-2.5 bg-inner border border-edge rounded-lg text-sm text-heading placeholder:text-dim focus:outline-none focus:border-accent resize-none"
           />
         </div>
 
@@ -309,13 +309,13 @@ function ReviewStep({
   return (
     <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-4 overflow-hidden">
       {/* Left: Estimated items */}
-      <div className="flex-1 bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-5 flex flex-col overflow-hidden">
+      <div className="flex-1 bg-card rounded-2xl border border-edge p-5 flex flex-col overflow-hidden">
         <div className="flex items-center justify-between flex-shrink-0 mb-4">
-          <h2 className="text-sm font-semibold text-white">Estimated Items</h2>
+          <h2 className="text-sm font-semibold text-heading">Estimated Items</h2>
           <button
             type="button"
             onClick={onBack}
-            className="text-xs text-gray-500 hover:text-[#3b82f6] transition-colors"
+            className="text-xs text-dim hover:text-accent transition-colors"
           >
             Re-estimate
           </button>
@@ -323,7 +323,7 @@ function ReviewStep({
 
         <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1">
           {items.map((item, i) => (
-            <div key={i} className="p-3 bg-[#14141a] rounded-xl space-y-2">
+            <div key={i} className="p-3 bg-inner rounded-xl space-y-2">
               {/* Header: name + badges + remove */}
               <div className="flex items-center gap-2">
                 <input
@@ -331,7 +331,7 @@ function ReviewStep({
                   value={item.food_name}
                   onChange={(e) => onUpdateItem(i, 'food_name', e.target.value)}
                   placeholder="Food name"
-                  className="flex-1 px-3 py-2 bg-[#22222c] rounded-lg text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-[#3b82f6]"
+                  className="flex-1 px-3 py-2 bg-elevated rounded-lg text-sm text-heading placeholder:text-dim focus:outline-none focus:ring-1 focus:ring-accent"
                 />
                 <DataSourceBadge source={item.data_source} />
                 {items.length > 1 && (
@@ -339,7 +339,7 @@ function ReviewStep({
                     type="button"
                     onClick={() => onRemoveItem(i)}
                     aria-label="Remove item"
-                    className="text-gray-600 hover:text-red-400 transition-colors p-1"
+                    className="text-dim hover:text-red-400 transition-colors p-1"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -355,9 +355,9 @@ function ReviewStep({
                   value={item.portion_description}
                   onChange={(e) => onUpdateItem(i, 'portion_description', e.target.value)}
                   placeholder="Portion (e.g. 200g)"
-                  className="flex-1 px-2 py-1.5 bg-[#22222c] rounded text-xs text-white placeholder:text-gray-600 focus:outline-none"
+                  className="flex-1 px-2 py-1.5 bg-elevated rounded text-xs text-heading placeholder:text-dim focus:outline-none"
                 />
-                <span className="text-[10px] text-gray-500">
+                <span className="text-[10px] text-dim">
                   {Math.round(item.confidence_score * 100)}% conf
                 </span>
               </div>
@@ -365,13 +365,13 @@ function ReviewStep({
               {/* Macros grid */}
               <div className="grid grid-cols-4 gap-2">
                 <div>
-                  <label className="text-[10px] text-gray-500">Cal</label>
+                  <label className="text-[10px] text-dim">Cal</label>
                   <input
                     type="number"
                     value={item.calories}
                     onChange={(e) => onUpdateItem(i, 'calories', e.target.value)}
                     aria-label="Calories"
-                    className="w-full px-2 py-1.5 bg-[#22222c] rounded text-xs text-white text-center placeholder:text-gray-600 focus:outline-none"
+                    className="w-full px-2 py-1.5 bg-elevated rounded text-xs text-heading text-center placeholder:text-dim focus:outline-none"
                   />
                 </div>
                 <div>
@@ -381,7 +381,7 @@ function ReviewStep({
                     value={item.protein_g}
                     onChange={(e) => onUpdateItem(i, 'protein_g', e.target.value)}
                     aria-label="Protein in grams"
-                    className="w-full px-2 py-1.5 bg-[#22222c] rounded text-xs text-white text-center placeholder:text-gray-600 focus:outline-none"
+                    className="w-full px-2 py-1.5 bg-elevated rounded text-xs text-heading text-center placeholder:text-dim focus:outline-none"
                   />
                 </div>
                 <div>
@@ -391,7 +391,7 @@ function ReviewStep({
                     value={item.carbs_g}
                     onChange={(e) => onUpdateItem(i, 'carbs_g', e.target.value)}
                     aria-label="Carbs in grams"
-                    className="w-full px-2 py-1.5 bg-[#22222c] rounded text-xs text-white text-center placeholder:text-gray-600 focus:outline-none"
+                    className="w-full px-2 py-1.5 bg-elevated rounded text-xs text-heading text-center placeholder:text-dim focus:outline-none"
                   />
                 </div>
                 <div>
@@ -401,7 +401,7 @@ function ReviewStep({
                     value={item.fat_g}
                     onChange={(e) => onUpdateItem(i, 'fat_g', e.target.value)}
                     aria-label="Fat in grams"
-                    className="w-full px-2 py-1.5 bg-[#22222c] rounded text-xs text-white text-center placeholder:text-gray-600 focus:outline-none"
+                    className="w-full px-2 py-1.5 bg-elevated rounded text-xs text-heading text-center placeholder:text-dim focus:outline-none"
                   />
                 </div>
               </div>
@@ -411,7 +411,7 @@ function ReviewStep({
           <button
             type="button"
             onClick={onAddItem}
-            className="w-full py-2 border border-dashed border-[#2a2a33] rounded-xl text-xs text-gray-500 hover:text-[#3b82f6] hover:border-[#3b82f6]/30 transition-colors"
+            className="w-full py-2 border border-dashed border-edge rounded-xl text-xs text-dim hover:text-accent hover:border-accent/30 transition-colors"
           >
             + Add Item
           </button>
@@ -419,25 +419,25 @@ function ReviewStep({
       </div>
 
       {/* Right: Summary */}
-      <div className="lg:w-64 bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-5 flex flex-col justify-between flex-shrink-0">
+      <div className="lg:w-64 bg-card rounded-2xl border border-edge p-5 flex flex-col justify-between flex-shrink-0">
         <div>
-          <h3 className="text-sm font-semibold text-white mb-4">Meal Summary</h3>
+          <h3 className="text-sm font-semibold text-heading mb-4">Meal Summary</h3>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-sm text-gray-400">Calories</span>
-              <span className="text-sm font-semibold text-white">{Math.round(totalCal)}</span>
+              <span className="text-sm text-sub">Calories</span>
+              <span className="text-sm font-semibold text-heading">{Math.round(totalCal)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-blue-400">Protein</span>
-              <span className="text-sm font-semibold text-white">{Math.round(totalP)}g</span>
+              <span className="text-sm font-semibold text-heading">{Math.round(totalP)}g</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-amber-400">Carbs</span>
-              <span className="text-sm font-semibold text-white">{Math.round(totalC)}g</span>
+              <span className="text-sm font-semibold text-heading">{Math.round(totalC)}g</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-red-400">Fat</span>
-              <span className="text-sm font-semibold text-white">{Math.round(totalF)}g</span>
+              <span className="text-sm font-semibold text-heading">{Math.round(totalF)}g</span>
             </div>
           </div>
         </div>
@@ -446,7 +446,7 @@ function ReviewStep({
           type="button"
           onClick={onSave}
           disabled={saving || items.every((i) => !i.food_name.trim())}
-          className="w-full py-3 mt-4 bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="w-full py-3 mt-4 bg-gradient-to-r from-accent to-accent-secondary text-white font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {saving ? 'Saving...' : 'Save Meal'}
         </button>

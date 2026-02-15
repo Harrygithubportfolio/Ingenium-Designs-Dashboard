@@ -207,14 +207,14 @@ export default function WeatherPage() {
       {/* Header */}
       <header className="flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] flex items-center justify-center">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-accent flex items-center justify-center">
+            <svg className="w-4 h-4 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
             </svg>
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-white">Weather</h1>
-            <p className="text-[11px] text-gray-500">
+            <h1 className="text-lg font-semibold text-heading">Weather</h1>
+            <p className="text-[11px] text-dim">
               {lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}` : 'Loading...'}
             </p>
           </div>
@@ -224,7 +224,7 @@ export default function WeatherPage() {
           type="button"
           onClick={fetchWeather}
           disabled={loading}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#1a1a22] hover:bg-[#22222c] border border-[#2a2a33] text-gray-400 hover:text-white text-xs font-medium transition-all disabled:opacity-50"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-card hover:bg-elevated border border-edge text-sub hover:text-heading text-xs font-medium transition-all disabled:opacity-50"
         >
           <svg className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -238,31 +238,31 @@ export default function WeatherPage() {
         {/* Left Column - Current Weather & Hourly */}
         <div className="xl:col-span-2 flex flex-col gap-4">
           {/* Current Weather Card */}
-          <div className="bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] p-5 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-card to-inner rounded-2xl border border-edge p-5 relative overflow-hidden">
             {/* Background decoration */}
-            <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#3b82f6]/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-20 -left-10 w-32 h-32 bg-[#8b5cf6]/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-10 w-32 h-32 bg-accent-secondary/5 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-5">
               {/* Icon */}
-              <div className="p-3 bg-[#22222c]/80 rounded-2xl border border-[#2a2a33]/50 backdrop-blur-sm">
+              <div className="p-3 bg-elevated/80 rounded-2xl border border-edge/50 backdrop-blur-sm">
                 <WeatherIcon type={currentIcon} size="2xl" />
               </div>
 
               {/* Temperature & Description */}
               <div className="flex-1">
-                <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
+                <div className="flex items-center gap-1.5 text-sub text-xs mb-1">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   </svg>
                   <span>{weather.current.location}, {weather.current.country}</span>
                 </div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-6xl font-bold text-white tracking-tight">{Math.round(weather.current.temp)}</span>
-                  <span className="text-2xl text-gray-500 font-light">°C</span>
+                  <span className="text-6xl font-bold text-heading tracking-tight">{Math.round(weather.current.temp)}</span>
+                  <span className="text-2xl text-dim font-light">°C</span>
                 </div>
-                <p className="text-[#3b82f6] font-medium text-sm mt-0.5">{capitalizeDescription(weather.current.weather[0].description)}</p>
-                <p className="text-gray-500 text-xs mt-0.5">Feels like {Math.round(weather.current.feels_like)}°C</p>
+                <p className="text-accent font-medium text-sm mt-0.5">{capitalizeDescription(weather.current.weather[0].description)}</p>
+                <p className="text-dim text-xs mt-0.5">Feels like {Math.round(weather.current.feels_like)}°C</p>
               </div>
 
               {/* Quick Stats */}
@@ -275,8 +275,8 @@ export default function WeatherPage() {
           </div>
 
           {/* Hourly Forecast */}
-          <div className="bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Next 12 Hours</h3>
+          <div className="bg-card rounded-2xl border border-edge p-4">
+            <h3 className="text-xs font-semibold text-sub uppercase tracking-wider mb-3">Next 12 Hours</h3>
             <div className="grid grid-cols-6 lg:grid-cols-12 gap-2">
               {weather.hourly.slice(0, 12).map((hour, index) => {
                 const hourIsDay = isDaytime(hour.dt, weather.current.sunrise, weather.current.sunset);
@@ -288,15 +288,15 @@ export default function WeatherPage() {
                     key={hour.dt}
                     className={`flex flex-col items-center py-2 px-1 rounded-xl transition-all ${
                       isNow
-                        ? 'bg-[#3b82f6]/15 ring-1 ring-[#3b82f6]/30'
-                        : 'bg-[#14141a] hover:bg-[#1e1e28]'
+                        ? 'bg-accent/15 ring-1 ring-accent/30'
+                        : 'bg-inner hover:bg-elevated'
                     }`}
                   >
-                    <span className={`text-[10px] font-medium mb-1.5 ${isNow ? 'text-[#3b82f6]' : 'text-gray-500'}`}>
+                    <span className={`text-[10px] font-medium mb-1.5 ${isNow ? 'text-accent' : 'text-dim'}`}>
                       {isNow ? 'Now' : formatHour(hour.dt, weather.timezone)}
                     </span>
                     <WeatherIcon type={iconType} size="sm" />
-                    <span className="text-xs font-bold text-white mt-1.5">{Math.round(hour.temp)}°</span>
+                    <span className="text-xs font-bold text-heading mt-1.5">{Math.round(hour.temp)}°</span>
                     {hour.pop > 0.1 && (
                       <span className="text-[9px] text-blue-400 mt-0.5">{Math.round(hour.pop * 100)}%</span>
                     )}
@@ -307,8 +307,8 @@ export default function WeatherPage() {
           </div>
 
           {/* 5-Day Forecast */}
-          <div className="bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">5-Day Forecast</h3>
+          <div className="bg-card rounded-2xl border border-edge p-4">
+            <h3 className="text-xs font-semibold text-sub uppercase tracking-wider mb-3">5-Day Forecast</h3>
             <div className="space-y-2">
               {weather.daily.map((day, index) => {
                 const iconType = mapWeatherToIcon(day.weather.id, true);
@@ -325,12 +325,12 @@ export default function WeatherPage() {
                     key={day.date}
                     className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
                       isToday
-                        ? 'bg-[#3b82f6]/10 ring-1 ring-[#3b82f6]/20'
-                        : 'bg-[#14141a] hover:bg-[#1e1e28]'
+                        ? 'bg-accent/10 ring-1 ring-accent/20'
+                        : 'bg-inner hover:bg-elevated'
                     }`}
                   >
                     <div className="w-16 flex-shrink-0">
-                      <span className={`text-sm font-medium ${isToday ? 'text-[#3b82f6]' : 'text-gray-300'}`}>
+                      <span className={`text-sm font-medium ${isToday ? 'text-accent' : 'text-sub'}`}>
                         {isToday ? 'Today' : day.day.slice(0, 3)}
                       </span>
                     </div>
@@ -341,18 +341,18 @@ export default function WeatherPage() {
                       {day.pop > 0.1 ? (
                         <span className="text-[10px] text-blue-400 font-medium">{Math.round(day.pop * 100)}%</span>
                       ) : (
-                        <span className="text-[10px] text-gray-600">—</span>
+                        <span className="text-[10px] text-dim">—</span>
                       )}
                     </div>
                     <div className="flex-1 flex items-center gap-3">
-                      <span className="text-xs text-gray-500 w-8 text-right font-medium">{day.temp_min}°</span>
-                      <div className="flex-1 h-1.5 bg-[#22222c] rounded-full relative overflow-hidden">
+                      <span className="text-xs text-dim w-8 text-right font-medium">{day.temp_min}°</span>
+                      <div className="flex-1 h-1.5 bg-elevated rounded-full relative overflow-hidden">
                         <div
                           className="absolute h-full bg-gradient-to-r from-blue-500 via-amber-400 to-orange-500 rounded-full"
                           style={{ left: `${barLeft}%`, width: `${Math.max(barWidth, 10)}%` }}
                         />
                       </div>
-                      <span className="text-xs font-semibold text-white w-8">{day.temp_max}°</span>
+                      <span className="text-xs font-semibold text-heading w-8">{day.temp_max}°</span>
                     </div>
                   </div>
                 );
@@ -364,8 +364,8 @@ export default function WeatherPage() {
         {/* Right Column - Details */}
         <div className="flex flex-col gap-4">
           {/* Sun & Moon */}
-          <div className="bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Sun & Moon</h3>
+          <div className="bg-card rounded-2xl border border-edge p-4">
+            <h3 className="text-xs font-semibold text-sub uppercase tracking-wider mb-3">Sun & Moon</h3>
             <div className="grid grid-cols-2 gap-3">
               <DetailCard
                 icon="sunrise"
@@ -383,8 +383,8 @@ export default function WeatherPage() {
           </div>
 
           {/* Conditions */}
-          <div className="bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Conditions</h3>
+          <div className="bg-card rounded-2xl border border-edge p-4">
+            <h3 className="text-xs font-semibold text-sub uppercase tracking-wider mb-3">Conditions</h3>
             <div className="grid grid-cols-2 gap-3">
               <DetailCard
                 icon="humidity"
@@ -414,8 +414,8 @@ export default function WeatherPage() {
           </div>
 
           {/* Air Quality placeholder */}
-          <div className="bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-4 flex-1">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Today&apos;s Summary</h3>
+          <div className="bg-card rounded-2xl border border-edge p-4 flex-1">
+            <h3 className="text-xs font-semibold text-sub uppercase tracking-wider mb-3">Today&apos;s Summary</h3>
             <div className="space-y-3">
               <SummaryRow
                 label="High / Low"
@@ -468,10 +468,10 @@ function QuickStat({ icon, label, value }: { icon: string; label: string; value:
   return (
     <div className="flex items-center gap-2 justify-end">
       <div className="text-right">
-        <p className="text-[10px] text-gray-500 uppercase tracking-wide">{label}</p>
-        <p className="text-sm font-semibold text-white">{value}</p>
+        <p className="text-[10px] text-dim uppercase tracking-wide">{label}</p>
+        <p className="text-sm font-semibold text-heading">{value}</p>
       </div>
-      <div className="text-gray-400">{iconMap[icon]}</div>
+      <div className="text-sub">{iconMap[icon]}</div>
     </div>
   );
 }
@@ -512,21 +512,21 @@ function DetailCard({ icon, label, value, color }: { icon: string; label: string
   };
 
   return (
-    <div className="bg-[#14141a] rounded-xl p-3 border border-[#2a2a33]/50 hover:border-[#2a2a33] transition-colors">
+    <div className="bg-inner rounded-xl p-3 border border-edge/50 hover:border-edge transition-colors">
       <div className={`${color} mb-2`}>
         {iconMap[icon]}
       </div>
-      <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5">{label}</p>
-      <p className="text-sm font-semibold text-white">{value}</p>
+      <p className="text-[10px] text-dim uppercase tracking-wide mb-0.5">{label}</p>
+      <p className="text-sm font-semibold text-heading">{value}</p>
     </div>
   );
 }
 
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-[#2a2a33]/50 last:border-0">
-      <span className="text-xs text-gray-500">{label}</span>
-      <span className="text-sm font-medium text-white">{value}</span>
+    <div className="flex items-center justify-between py-2 border-b border-edge/50 last:border-0">
+      <span className="text-xs text-dim">{label}</span>
+      <span className="text-sm font-medium text-heading">{value}</span>
     </div>
   );
 }
@@ -538,18 +538,18 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
 function ErrorDisplay({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
     <div className="h-full flex items-center justify-center p-4">
-      <div className="bg-[#1a1a22] rounded-2xl p-8 border border-red-500/20 text-center max-w-sm">
+      <div className="bg-card rounded-2xl p-8 border border-red-500/20 text-center max-w-sm">
         <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-red-500/10 flex items-center justify-center">
           <svg className="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h3 className="text-base font-semibold text-white mb-2">Unable to Load Weather</h3>
-        <p className="text-sm text-gray-400 mb-5">{message}</p>
+        <h3 className="text-base font-semibold text-heading mb-2">Unable to Load Weather</h3>
+        <p className="text-sm text-sub mb-5">{message}</p>
         <button
           type="button"
           onClick={onRetry}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white text-sm font-medium rounded-xl transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-xl transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -571,26 +571,26 @@ function LoadingSkeleton() {
       {/* Header skeleton */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#1a1a22]" />
+          <div className="w-9 h-9 rounded-lg bg-card" />
           <div>
-            <div className="w-20 h-4 bg-[#1a1a22] rounded mb-1" />
-            <div className="w-16 h-3 bg-[#1a1a22] rounded" />
+            <div className="w-20 h-4 bg-card rounded mb-1" />
+            <div className="w-16 h-3 bg-card rounded" />
           </div>
         </div>
-        <div className="w-20 h-8 bg-[#1a1a22] rounded-lg" />
+        <div className="w-20 h-8 bg-card rounded-lg" />
       </div>
 
       {/* Main content skeleton */}
       <div className="flex-1 grid grid-cols-1 xl:grid-cols-3 gap-4">
         <div className="xl:col-span-2 flex flex-col gap-4">
-          <div className="h-40 bg-[#1a1a22] rounded-2xl" />
-          <div className="h-32 bg-[#1a1a22] rounded-2xl" />
-          <div className="flex-1 bg-[#1a1a22] rounded-2xl min-h-[200px]" />
+          <div className="h-40 bg-card rounded-2xl" />
+          <div className="h-32 bg-card rounded-2xl" />
+          <div className="flex-1 bg-card rounded-2xl min-h-[200px]" />
         </div>
         <div className="flex flex-col gap-4">
-          <div className="h-32 bg-[#1a1a22] rounded-2xl" />
-          <div className="h-40 bg-[#1a1a22] rounded-2xl" />
-          <div className="flex-1 bg-[#1a1a22] rounded-2xl min-h-[120px]" />
+          <div className="h-32 bg-card rounded-2xl" />
+          <div className="h-40 bg-card rounded-2xl" />
+          <div className="flex-1 bg-card rounded-2xl min-h-[120px]" />
         </div>
       </div>
     </div>

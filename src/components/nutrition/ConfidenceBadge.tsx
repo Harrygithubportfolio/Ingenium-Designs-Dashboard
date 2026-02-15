@@ -15,7 +15,7 @@ export default function ConfidenceBadge({ score }: Props) {
       {Array.from({ length: 5 }, (_, i) => (
         <span
           key={i}
-          className={i < stars ? 'text-amber-400' : 'text-gray-600'}
+          className={i < stars ? 'text-amber-400' : 'text-dim'}
         >
           ★
         </span>

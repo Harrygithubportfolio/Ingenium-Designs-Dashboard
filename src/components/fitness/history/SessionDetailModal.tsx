@@ -42,17 +42,17 @@ export default function SessionDetailModal({ session, open, onClose }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-lg mx-4 bg-[#1a1a22] border border-[#2a2a33] rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
+      <div className="relative w-full max-w-lg mx-4 bg-card border border-edge rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#2a2a33] flex-shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-edge flex-shrink-0">
           <div>
-            <h2 className="text-sm font-semibold text-white">{workoutName}</h2>
-            <p className="text-xs text-gray-500 mt-0.5">{date}</p>
+            <h2 className="text-sm font-semibold text-heading">{workoutName}</h2>
+            <p className="text-xs text-dim mt-0.5">{date}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#14141a] transition-colors text-gray-400 hover:text-white"
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-inner transition-colors text-sub hover:text-heading"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -61,24 +61,24 @@ export default function SessionDetailModal({ session, open, onClose }: Props) {
         </div>
 
         {/* Stats row */}
-        <div className="flex items-center gap-4 px-4 py-3 border-b border-[#2a2a33] flex-shrink-0 text-xs">
+        <div className="flex items-center gap-4 px-4 py-3 border-b border-edge flex-shrink-0 text-xs">
           <div>
-            <span className="text-gray-500">Duration</span>
-            <p className="text-white font-medium">{formatDuration(session.total_duration_sec)}</p>
+            <span className="text-dim">Duration</span>
+            <p className="text-heading font-medium">{formatDuration(session.total_duration_sec)}</p>
           </div>
           <div>
-            <span className="text-gray-500">Volume</span>
-            <p className="text-white font-medium">
+            <span className="text-dim">Volume</span>
+            <p className="text-heading font-medium">
               {session.total_volume_kg ? `${Math.round(session.total_volume_kg).toLocaleString()} kg` : '—'}
             </p>
           </div>
           <div>
-            <span className="text-gray-500">Exercises</span>
-            <p className="text-white font-medium">{exercises.length}</p>
+            <span className="text-dim">Exercises</span>
+            <p className="text-heading font-medium">{exercises.length}</p>
           </div>
           {reflection?.session_rating && (
             <div>
-              <span className="text-gray-500">Rating</span>
+              <span className="text-dim">Rating</span>
               <p className={`font-medium px-1.5 py-0.5 rounded text-[10px] mt-0.5 w-fit ${RATING_STYLES[reflection.session_rating]}`}>
                 {reflection.session_rating}
               </p>
@@ -95,12 +95,12 @@ export default function SessionDetailModal({ session, open, onClose }: Props) {
                 key={ex.id}
                 className={`p-3 rounded-xl border ${
                   ex.was_skipped
-                    ? 'bg-[#14141a]/50 border-[#2a2a33]/30 opacity-50'
-                    : 'bg-[#14141a] border-[#2a2a33]/50'
+                    ? 'bg-inner/50 border-edge/30 opacity-50'
+                    : 'bg-inner border-edge/50'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm font-medium text-heading">
                     {ex.exercise_name}
                     {ex.is_additional && (
                       <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400">added</span>
@@ -115,13 +115,13 @@ export default function SessionDetailModal({ session, open, onClose }: Props) {
                   <div className="space-y-1">
                     {sets.map((s) => (
                       <div key={s.id} className="flex items-center justify-between text-xs">
-                        <span className="text-gray-500">Set {s.set_number}</span>
-                        <span className="text-white font-medium">{s.actual_weight_kg}kg x {s.actual_reps}</span>
+                        <span className="text-dim">Set {s.set_number}</span>
+                        <span className="text-heading font-medium">{s.actual_weight_kg}kg x {s.actual_reps}</span>
                       </div>
                     ))}
                   </div>
                 ) : !ex.was_skipped ? (
-                  <p className="text-xs text-gray-600 italic">No sets logged</p>
+                  <p className="text-xs text-dim italic">No sets logged</p>
                 ) : null}
               </div>
             );
@@ -130,9 +130,9 @@ export default function SessionDetailModal({ session, open, onClose }: Props) {
 
         {/* Reflection note */}
         {reflection?.reflection_note && (
-          <div className="px-4 py-3 border-t border-[#2a2a33] flex-shrink-0">
-            <p className="text-[10px] text-gray-500 uppercase mb-1">Reflection</p>
-            <p className="text-xs text-gray-300 italic">{reflection.reflection_note}</p>
+          <div className="px-4 py-3 border-t border-edge flex-shrink-0">
+            <p className="text-[10px] text-dim uppercase mb-1">Reflection</p>
+            <p className="text-xs text-sub italic">{reflection.reflection_note}</p>
           </div>
         )}
       </div>

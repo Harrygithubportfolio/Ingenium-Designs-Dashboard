@@ -80,17 +80,17 @@ export default function MonthView({ year, month, schedule, onSelectDate, selecte
         <button
           type="button"
           onClick={onPrevMonth}
-          className="p-2 text-gray-400 hover:text-white hover:bg-[#1a1a22] rounded-lg transition-colors"
+          className="p-2 text-sub hover:text-heading hover:bg-card rounded-lg transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <p className="text-sm font-medium text-white">{monthLabel}</p>
+        <p className="text-sm font-medium text-heading">{monthLabel}</p>
         <button
           type="button"
           onClick={onNextMonth}
-          className="p-2 text-gray-400 hover:text-white hover:bg-[#1a1a22] rounded-lg transition-colors"
+          className="p-2 text-sub hover:text-heading hover:bg-card rounded-lg transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -101,7 +101,7 @@ export default function MonthView({ year, month, schedule, onSelectDate, selecte
       {/* Day name headers */}
       <div className="grid grid-cols-7 gap-1 flex-shrink-0">
         {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => (
-          <div key={d} className="text-center text-[10px] text-gray-600 font-medium py-1">
+          <div key={d} className="text-center text-[10px] text-dim font-medium py-1">
             {d}
           </div>
         ))}
@@ -124,16 +124,16 @@ export default function MonthView({ year, month, schedule, onSelectDate, selecte
                 !day.inMonth ? 'opacity-30' : ''
               } ${
                 isSelected
-                  ? 'bg-[#3b82f6]/15 border border-[#3b82f6]/40'
+                  ? 'bg-accent/15 border border-accent/40'
                   : isToday
-                    ? 'bg-[#3b82f6]/5 border border-[#3b82f6]/20'
+                    ? 'bg-accent/5 border border-accent/20'
                     : hasWorkouts
-                      ? 'hover:bg-[#1a1a22] border border-transparent cursor-pointer'
+                      ? 'hover:bg-card border border-transparent cursor-pointer'
                       : 'border border-transparent cursor-default'
               }`}
             >
               <p className={`text-xs font-medium ${
-                isToday ? 'text-[#3b82f6]' : day.inMonth ? 'text-gray-300' : 'text-gray-700'
+                isToday ? 'text-accent' : day.inMonth ? 'text-sub' : 'text-dim'
               }`}>
                 {day.date.getDate()}
               </p>
@@ -156,8 +156,8 @@ export default function MonthView({ year, month, schedule, onSelectDate, selecte
 
       {/* Selected date detail panel */}
       {selectedDate && selectedWorkouts.length > 0 && (
-        <div className="flex-1 overflow-y-auto space-y-2 border-t border-[#2a2a33] pt-3">
-          <p className="text-xs text-gray-500 font-medium">
+        <div className="flex-1 overflow-y-auto space-y-2 border-t border-edge pt-3">
+          <p className="text-xs text-dim font-medium">
             {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-GB', {
               weekday: 'long',
               day: 'numeric',
@@ -169,26 +169,26 @@ export default function MonthView({ year, month, schedule, onSelectDate, selecte
             return (
               <div
                 key={w.id}
-                className="p-3 bg-[#1a1a22] border border-[#2a2a33] rounded-xl"
+                className="p-3 bg-card border border-edge rounded-xl"
               >
-                <p className="text-sm font-medium text-white">{w.template?.name ?? 'Workout'}</p>
+                <p className="text-sm font-medium text-heading">{w.template?.name ?? 'Workout'}</p>
                 <div className="flex items-center gap-2 mt-1">
                   {w.template && (
-                    <span className="text-[10px] text-gray-500">{w.template.training_intent}</span>
+                    <span className="text-[10px] text-dim">{w.template.training_intent}</span>
                   )}
-                  <span className="text-[10px] text-gray-600">|</span>
-                  <span className="text-[10px] text-gray-500">{exercises.length} exercises</span>
+                  <span className="text-[10px] text-dim">|</span>
+                  <span className="text-[10px] text-dim">{exercises.length} exercises</span>
                 </div>
                 {exercises.length > 0 && (
                   <div className="mt-2 space-y-1">
                     {exercises.slice(0, 4).map((ex) => (
-                      <p key={ex.id} className="text-[11px] text-gray-400">
+                      <p key={ex.id} className="text-[11px] text-sub">
                         {ex.exercise_name} — {ex.target_sets}x{ex.target_reps}
                         {ex.target_load_kg ? ` @${ex.target_load_kg}kg` : ''}
                       </p>
                     ))}
                     {exercises.length > 4 && (
-                      <p className="text-[10px] text-gray-600">+{exercises.length - 4} more</p>
+                      <p className="text-[10px] text-dim">+{exercises.length - 4} more</p>
                     )}
                   </div>
                 )}

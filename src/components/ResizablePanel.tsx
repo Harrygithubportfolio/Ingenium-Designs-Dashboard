@@ -97,8 +97,8 @@ export default function ResizablePanel({
           <div
             className={`${
               orientation === 'vertical' ? 'h-full' : 'w-full h-full'
-            } bg-[#3b82f6]/0 group-hover:bg-[#3b82f6]/50 transition-all ${
-              isResizing ? 'bg-[#3b82f6]' : ''
+            } bg-accent/0 group-hover:bg-accent/50 transition-all ${
+              isResizing ? 'bg-accent' : ''
             }`}
           />
         </div>

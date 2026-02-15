@@ -90,10 +90,10 @@ export default function DailySummaryCard({ events, consumed, targets }: Props) {
   const ratingStyle = result ? RATING_STYLES[result.rating] ?? RATING_STYLES.good : null;
 
   return (
-    <div className="mt-3 p-3 bg-[#14141a] rounded-xl border border-[#2a2a33]/50">
+    <div className="mt-3 p-3 bg-inner rounded-xl border border-edge/50">
       {/* Goal selector */}
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-[10px] text-gray-500 uppercase flex-shrink-0">Goal:</span>
+        <span className="text-[10px] text-dim uppercase flex-shrink-0">Goal:</span>
         <div className="flex items-center gap-1 flex-wrap">
           {GOAL_PRESETS.map((preset) => (
             <button
@@ -102,8 +102,8 @@ export default function DailySummaryCard({ events, consumed, targets }: Props) {
               onClick={() => setSelectedGoal(preset.value)}
               className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-all ${
                 selectedGoal === preset.value
-                  ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
-                  : 'text-gray-400 hover:text-white bg-[#1a1a22] border border-[#2a2a33]'
+                  ? 'bg-accent/20 text-accent border border-accent/40'
+                  : 'text-sub hover:text-heading bg-card border border-edge'
               }`}
             >
               {preset.label}
@@ -136,26 +136,26 @@ export default function DailySummaryCard({ events, consumed, targets }: Props) {
           {/* Rating header */}
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${ratingStyle?.dot}`} />
-            <span className="text-xs font-medium text-white">{ratingStyle?.label}</span>
+            <span className="text-xs font-medium text-heading">{ratingStyle?.label}</span>
             <button
               type="button"
               onClick={() => { setResult(null); setError(null); }}
-              className="ml-auto text-[10px] text-gray-500 hover:text-gray-300 transition-colors"
+              className="ml-auto text-[10px] text-dim hover:text-sub transition-colors"
             >
               Refresh
             </button>
           </div>
 
           {/* Summary */}
-          <p className="text-xs text-gray-300 leading-relaxed">{result.summary}</p>
+          <p className="text-xs text-sub leading-relaxed">{result.summary}</p>
 
           {/* Tips */}
           {result.tips.length > 0 && (
             <div className="space-y-1">
-              <p className="text-[10px] text-gray-500 uppercase">Tips</p>
+              <p className="text-[10px] text-dim uppercase">Tips</p>
               {result.tips.map((tip, i) => (
-                <div key={i} className="flex items-start gap-2 text-xs text-gray-400">
-                  <span className="text-[#3b82f6] flex-shrink-0 mt-0.5">-</span>
+                <div key={i} className="flex items-start gap-2 text-xs text-sub">
+                  <span className="text-accent flex-shrink-0 mt-0.5">-</span>
                   <span>{tip}</span>
                 </div>
               ))}

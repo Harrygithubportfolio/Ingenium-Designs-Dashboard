@@ -22,8 +22,8 @@ export default function CalorieRing({ consumed, target, size = 160 }: Props) {
           cy={center}
           r={radius}
           fill="none"
-          stroke="#22222c"
           strokeWidth={8}
+          style={{ stroke: 'var(--bg-elevated)' }}
         />
         {/* Progress ring */}
         <circle
@@ -31,7 +31,7 @@ export default function CalorieRing({ consumed, target, size = 160 }: Props) {
           cy={center}
           r={radius}
           fill="none"
-          stroke={percentage >= 100 ? '#22c55e' : '#3b82f6'}
+          style={{ stroke: percentage >= 100 ? '#22c55e' : 'var(--accent)' }}
           strokeWidth={8}
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -40,8 +40,8 @@ export default function CalorieRing({ consumed, target, size = 160 }: Props) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold text-white">{Math.round(consumed)}</span>
-        <span className="text-xs text-gray-500">/ {Math.round(target)} kcal</span>
+        <span className="text-2xl font-bold text-heading">{Math.round(consumed)}</span>
+        <span className="text-xs text-dim">/ {Math.round(target)} kcal</span>
       </div>
     </div>
   );

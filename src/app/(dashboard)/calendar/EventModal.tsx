@@ -18,14 +18,14 @@ export default function EventModal({ event, onClose, onEdit }: Props) {
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="bg-[#1f1f27] border border-[#2a2a33] p-6 rounded-xl w-full max-w-md shadow-xl"
+        className="bg-elevated border border-edge p-6 rounded-xl w-full max-w-md shadow-xl"
         initial={{ scale: 0.8, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.8, opacity: 0, y: 20 }}
         transition={{ duration: 0.25 }}
       >
         <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-2xl font-bold text-white">{event.title}</h2>
+          <h2 className="text-2xl font-bold text-heading">{event.title}</h2>
           {event.source === 'google' && (
             <span className="px-2 py-0.5 text-[0.65rem] font-medium rounded-full bg-emerald-500/20 text-emerald-400">
               Google
@@ -33,7 +33,7 @@ export default function EventModal({ event, onClose, onEdit }: Props) {
           )}
         </div>
 
-        <div className="space-y-2 text-gray-300">
+        <div className="space-y-2 text-sub">
           <p><strong>Date:</strong> {event.event_date}</p>
           {event.start_time && (
             <p>
@@ -55,7 +55,7 @@ export default function EventModal({ event, onClose, onEdit }: Props) {
 
         <button
           onClick={onClose}
-          className="mt-2 w-full py-2 bg-[#2a2a33] rounded-lg hover:bg-[#3a3a44] transition"
+          className="mt-2 w-full py-2 bg-edge rounded-lg hover:bg-edge transition"
         >
           Close
         </button>

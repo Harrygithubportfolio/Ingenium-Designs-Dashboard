@@ -156,26 +156,26 @@ export default function CalendarView() {
       {/* HEADER */}
       <header className="flex-shrink-0 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center flex-shrink-0">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-accent-secondary flex items-center justify-center flex-shrink-0">
+            <svg className="w-4 h-4 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-white">Calendar</h1>
-            <p className="text-gray-500 text-[11px]">Your events at a glance</p>
+            <h1 className="text-lg font-semibold text-heading">Calendar</h1>
+            <p className="text-dim text-[11px]">Your events at a glance</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="inline-flex rounded-lg bg-[#1a1a22] p-1 border border-[#2a2a33]">
+          <div className="inline-flex rounded-lg bg-card p-1 border border-edge">
             <button
               type="button"
               onClick={() => setTab('planner')}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                 tab === 'planner'
-                  ? 'bg-[#3b82f6] text-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-accent text-white'
+                  : 'text-sub hover:text-heading'
               }`}
             >
               Planner
@@ -185,8 +185,8 @@ export default function CalendarView() {
               onClick={() => setTab('month')}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                 tab === 'month'
-                  ? 'bg-[#3b82f6] text-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-accent text-white'
+                  : 'text-sub hover:text-heading'
               }`}
             >
               Month
@@ -196,7 +196,7 @@ export default function CalendarView() {
           <button
             type="button"
             onClick={() => setAdding(true)}
-            className="px-4 py-2 text-xs font-medium rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white hover:from-[#2563eb] hover:to-[#7c3aed] transition-all shadow-lg shadow-[#3b82f6]/20"
+            className="px-4 py-2 text-xs font-medium rounded-lg bg-gradient-to-r from-accent to-accent-secondary text-white hover:from-accent-hover hover:to-accent-secondary transition-all shadow-lg shadow-accent/20"
           >
             + New
           </button>
@@ -208,9 +208,9 @@ export default function CalendarView() {
 
       {/* LOADING INDICATOR */}
       {loading && (
-        <div className="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#1a1a22] border border-[#2a2a33]">
-          <div className="w-3 h-3 rounded-full border-2 border-[#3b82f6] border-t-transparent animate-spin" />
-          <span className="text-xs text-gray-400">Loading events...</span>
+        <div className="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card border border-edge">
+          <div className="w-3 h-3 rounded-full border-2 border-accent border-t-transparent animate-spin" />
+          <span className="text-xs text-sub">Loading events...</span>
         </div>
       )}
 

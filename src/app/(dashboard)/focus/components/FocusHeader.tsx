@@ -98,12 +98,12 @@ export default function FocusHeader({ userName = 'Harry' }: FocusHeaderProps) {
           {getTimeIcon()}
         </div>
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-white">
-            {getGreeting()}, <span className="text-[#3b82f6]">{userName}</span>
+          <h1 className="text-xl md:text-2xl font-bold text-heading">
+            {getGreeting()}, <span className="text-accent">{userName}</span>
           </h1>
-          <div className="flex items-center gap-3 text-sm text-gray-400">
+          <div className="flex items-center gap-3 text-sm text-sub">
             <span>{formatDate(currentTime)}</span>
-            <span className="text-gray-600">•</span>
+            <span className="text-dim">•</span>
             <span className="font-mono">{formatTime(currentTime)}</span>
           </div>
         </div>
@@ -111,21 +111,21 @@ export default function FocusHeader({ userName = 'Harry' }: FocusHeaderProps) {
 
       {/* Right: Weather Context */}
       {weather && (
-        <div className="flex items-center gap-4 p-3 bg-[#1a1a22]/80 rounded-xl border border-[#2a2a33] backdrop-blur-sm">
+        <div className="flex items-center gap-4 p-3 bg-card/80 rounded-xl border border-edge backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <WeatherIcon conditionId={weather.current.weather[0].id} isDay={isDay} />
             <div>
               <div className="flex items-baseline gap-1">
-                <span className="text-xl font-bold text-white">{Math.round(weather.current.temp)}</span>
-                <span className="text-sm text-gray-500">°C</span>
+                <span className="text-xl font-bold text-heading">{Math.round(weather.current.temp)}</span>
+                <span className="text-sm text-dim">°C</span>
               </div>
-              <p className="text-xs text-gray-500 capitalize">{weather.current.weather[0].description}</p>
+              <p className="text-xs text-dim capitalize">{weather.current.weather[0].description}</p>
             </div>
           </div>
 
-          <div className="w-px h-10 bg-[#2a2a33]" />
+          <div className="w-px h-10 bg-edge" />
 
-          <div className="flex flex-col gap-1 text-xs text-gray-400">
+          <div className="flex flex-col gap-1 text-xs text-sub">
             <div className="flex items-center gap-2">
               <svg className="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />

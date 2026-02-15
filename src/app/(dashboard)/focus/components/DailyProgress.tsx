@@ -9,14 +9,14 @@ interface DailyProgressProps {
 export default function DailyProgress({ focus }: DailyProgressProps) {
   if (!focus) {
     return (
-      <div className="h-full p-5 bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] flex flex-col items-center justify-center">
-        <div className="w-16 h-16 rounded-full bg-[#22222c] flex items-center justify-center mb-3">
-          <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="h-full p-5 bg-gradient-to-br from-card to-inner rounded-2xl border border-edge flex flex-col items-center justify-center">
+        <div className="w-16 h-16 rounded-full bg-elevated flex items-center justify-center mb-3">
+          <svg className="w-8 h-8 text-dim" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <p className="text-sm text-gray-400">No focus set yet</p>
-        <p className="text-xs text-gray-500">Set your daily focus to track progress</p>
+        <p className="text-sm text-sub">No focus set yet</p>
+        <p className="text-xs text-dim">Set your daily focus to track progress</p>
       </div>
     );
   }
@@ -31,11 +31,11 @@ export default function DailyProgress({ focus }: DailyProgressProps) {
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="h-full p-5 bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="h-full p-5 bg-gradient-to-br from-card to-inner rounded-2xl border border-edge flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className={`w-40 h-40 rounded-full blur-3xl transition-all ${
-          progress >= 100 ? 'bg-green-500/20' : 'bg-[#3b82f6]/10'
+          progress >= 100 ? 'bg-green-500/20' : 'bg-accent/10'
         }`} />
       </div>
 
@@ -48,8 +48,8 @@ export default function DailyProgress({ focus }: DailyProgressProps) {
             cy="64"
             r={radius}
             fill="none"
-            stroke="#22222c"
             strokeWidth="8"
+            style={{ stroke: 'var(--bg-elevated)' }}
           />
           {/* Progress ring */}
           <circle
@@ -66,31 +66,31 @@ export default function DailyProgress({ focus }: DailyProgressProps) {
           />
           <defs>
             <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={progress >= 100 ? '#22c55e' : '#3b82f6'} />
-              <stop offset="100%" stopColor={progress >= 100 ? '#16a34a' : '#8b5cf6'} />
+              <stop offset="0%" style={{ stopColor: progress >= 100 ? '#22c55e' : 'var(--accent)' }} />
+              <stop offset="100%" style={{ stopColor: progress >= 100 ? '#16a34a' : 'var(--accent-secondary)' }} />
             </linearGradient>
           </defs>
         </svg>
 
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className={`text-3xl font-bold ${progress >= 100 ? 'text-green-400' : 'text-white'}`}>
+          <span className={`text-3xl font-bold ${progress >= 100 ? 'text-green-400' : 'text-heading'}`}>
             {progress}%
           </span>
-          <span className="text-xs text-gray-500">complete</span>
+          <span className="text-xs text-dim">complete</span>
         </div>
       </div>
 
       {/* Stats */}
       <div className="flex items-center gap-4 text-center">
         <div>
-          <p className="text-xl font-bold text-white">{completedTasks}</p>
-          <p className="text-xs text-gray-500">Done</p>
+          <p className="text-xl font-bold text-heading">{completedTasks}</p>
+          <p className="text-xs text-dim">Done</p>
         </div>
-        <div className="w-px h-8 bg-[#2a2a33]" />
+        <div className="w-px h-8 bg-edge" />
         <div>
-          <p className="text-xl font-bold text-gray-400">{totalTasks - completedTasks}</p>
-          <p className="text-xs text-gray-500">Remaining</p>
+          <p className="text-xl font-bold text-sub">{totalTasks - completedTasks}</p>
+          <p className="text-xs text-dim">Remaining</p>
         </div>
       </div>
 

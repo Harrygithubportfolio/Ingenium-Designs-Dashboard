@@ -13,8 +13,8 @@ export default function AgendaView({ schedule, onSelectWorkout }: Props) {
   if (schedule.length === 0) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-2">
-        <p className="text-gray-500 text-sm">No workouts scheduled</p>
-        <p className="text-gray-600 text-xs">Tap &quot;+ Schedule&quot; to add one</p>
+        <p className="text-dim text-sm">No workouts scheduled</p>
+        <p className="text-dim text-xs">Tap &quot;+ Schedule&quot; to add one</p>
       </div>
     );
   }
@@ -44,13 +44,13 @@ export default function AgendaView({ schedule, onSelectWorkout }: Props) {
           <div key={date}>
             {/* Date header */}
             <div className="flex items-center gap-2 mb-2">
-              <p className={`text-xs font-semibold ${isToday ? 'text-[#3b82f6]' : isPast ? 'text-gray-600' : 'text-gray-400'}`}>
+              <p className={`text-xs font-semibold ${isToday ? 'text-accent' : isPast ? 'text-dim' : 'text-sub'}`}>
                 {isToday ? 'Today' : dateLabel}
               </p>
               {isToday && (
-                <span className="text-[10px] text-gray-500">{dateLabel}</span>
+                <span className="text-[10px] text-dim">{dateLabel}</span>
               )}
-              <div className="flex-1 h-px bg-[#2a2a33]" />
+              <div className="flex-1 h-px bg-edge" />
             </div>
 
             {/* Workout cards */}
@@ -64,13 +64,13 @@ export default function AgendaView({ schedule, onSelectWorkout }: Props) {
                     onClick={() => onSelectWorkout(w)}
                     className={`w-full p-4 rounded-xl border text-left transition-all group ${
                       isToday
-                        ? 'bg-[#1a1a22] border-[#3b82f6]/30 hover:border-[#3b82f6]/50'
-                        : 'bg-[#1a1a22] border-[#2a2a33] hover:border-[#3b82f6]/30'
+                        ? 'bg-card border-accent/30 hover:border-accent/50'
+                        : 'bg-card border-edge hover:border-accent/30'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white group-hover:text-[#3b82f6] transition-colors truncate">
+                        <p className="text-sm font-medium text-heading group-hover:text-accent transition-colors truncate">
                           {w.template?.name ?? 'Workout'}
                         </p>
                         <div className="flex items-center gap-2 mt-1.5">
@@ -86,13 +86,13 @@ export default function AgendaView({ schedule, onSelectWorkout }: Props) {
                         {exercises.slice(0, 3).map((ex) => (
                           <span
                             key={ex.id}
-                            className="text-[10px] px-1.5 py-0.5 rounded text-gray-400 border border-[#2a2a33] bg-[#14141a]"
+                            className="text-[10px] px-1.5 py-0.5 rounded text-sub border border-edge bg-inner"
                           >
                             {ex.exercise_name}
                           </span>
                         ))}
                         {exercises.length > 3 && (
-                          <span className="text-[10px] text-gray-600">+{exercises.length - 3} more</span>
+                          <span className="text-[10px] text-dim">+{exercises.length - 3} more</span>
                         )}
                       </div>
                     )}

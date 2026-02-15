@@ -30,23 +30,23 @@ export default function IntakeEventCard({ event, onEdit }: Props) {
   return (
     <div
       onClick={() => onEdit?.(event)}
-      className="flex items-center gap-3 p-3 bg-[#14141a] rounded-xl hover:bg-[#1a1a22] transition-colors cursor-pointer"
+      className="flex items-center gap-3 p-3 bg-inner rounded-xl hover:bg-card transition-colors cursor-pointer"
     >
       <span className="text-lg flex-shrink-0">{MEAL_TYPE_ICONS[event.meal_type]}</span>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-white">
+          <span className="text-sm font-medium text-heading">
             {MEAL_TYPE_LABELS[event.meal_type]}
           </span>
-          <span className="text-xs text-gray-500">{time}</span>
+          <span className="text-xs text-dim">{time}</span>
         </div>
-        <p className="text-xs text-gray-400 truncate">
+        <p className="text-xs text-sub truncate">
           {items.map((i) => i.food_name).join(', ')}
         </p>
       </div>
       <div className="text-right flex-shrink-0">
-        <p className="text-sm font-semibold text-white">{Math.round(totalCal)} cal</p>
-        <p className="text-[10px] text-gray-500">
+        <p className="text-sm font-semibold text-heading">{Math.round(totalCal)} cal</p>
+        <p className="text-[10px] text-dim">
           P:{Math.round(totalP)}g C:{Math.round(totalC)}g F:{Math.round(totalF)}g
         </p>
       </div>

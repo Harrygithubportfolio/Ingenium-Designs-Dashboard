@@ -44,10 +44,10 @@ export default function PlannerView({
       key={event.id}
       type="button"
       onClick={() => onSelectEvent(event)}
-      className={`w-full rounded-xl border px-3 py-2.5 text-left hover:border-[#3b82f6] hover:bg-[#1e1e28] transition-all group ${
+      className={`w-full rounded-xl border px-3 py-2.5 text-left hover:border-accent hover:bg-elevated transition-all group ${
         event.source === 'google'
-          ? 'border-l-[3px] border-l-emerald-500 border-y-[#2a2a33] border-r-[#2a2a33] bg-[#1a1a22]'
-          : 'border-[#2a2a33] bg-[#1a1a22]'
+          ? 'border-l-[3px] border-l-emerald-500 border-y-edge border-r-edge bg-card'
+          : 'border-edge bg-card'
       }`}
     >
       <div className="flex items-center justify-between gap-2">
@@ -57,19 +57,19 @@ export default function PlannerView({
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
             </span>
           )}
-          <p className="text-sm font-medium text-white group-hover:text-[#3b82f6] truncate">
+          <p className="text-sm font-medium text-heading group-hover:text-accent truncate">
             {event.title}
           </p>
         </div>
         {event.start_time && (
-          <span className="text-xs text-gray-400 flex-shrink-0">
+          <span className="text-xs text-sub flex-shrink-0">
             {event.start_time.slice(0, 5)}
             {event.end_time && ` – ${event.end_time.slice(0, 5)}`}
           </span>
         )}
       </div>
       {event.location && (
-        <p className="mt-1 text-xs text-gray-500 truncate">
+        <p className="mt-1 text-xs text-dim truncate">
           {event.location}
         </p>
       )}
@@ -84,8 +84,8 @@ export default function PlannerView({
         onClick={() => setResizeEnabled(!resizeEnabled)}
         className={`absolute top-0 right-0 z-20 px-3 py-1.5 text-xs font-medium rounded-lg transition-all shadow-lg ${
           resizeEnabled
-            ? 'bg-[#3b82f6] text-white'
-            : 'bg-[#1a1a22] text-gray-400 border border-[#2a2a33] hover:border-[#3b82f6]'
+            ? 'bg-accent text-white'
+            : 'bg-card text-sub border border-edge hover:border-accent'
         }`}
       >
         {resizeEnabled ? 'Resize Mode' : 'Enable Resize'}
@@ -98,18 +98,18 @@ export default function PlannerView({
         maxSize={70}
         resizable={resizeEnabled}
       >
-        <div className="h-full bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] p-4 md:p-5 flex flex-col min-h-0 overflow-hidden hover:border-[#3b82f6]/40 transition-all">
+        <div className="h-full bg-gradient-to-br from-card to-inner rounded-2xl border border-edge p-4 md:p-5 flex flex-col min-h-0 overflow-hidden hover:border-accent/40 transition-all">
           {/* Header */}
           <div className="flex items-center justify-between gap-2 mb-3 flex-shrink-0">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-accent-secondary flex items-center justify-center">
+                <svg className="w-4 h-4 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
               <div className="min-w-0">
-                <span className="text-sm font-semibold text-white">Day View</span>
-                <p className="text-xs text-gray-500 truncate">
+                <span className="text-sm font-semibold text-heading">Day View</span>
+                <p className="text-xs text-dim truncate">
                   {currentDate.toLocaleDateString('default', {
                     weekday: 'long',
                     month: 'long',
@@ -122,21 +122,21 @@ export default function PlannerView({
               <button
                 type="button"
                 onClick={onPrevDay}
-                className="px-2 py-1 text-xs rounded-lg bg-[#1a1a22] border border-[#2a2a33] text-gray-400 hover:text-[#3b82f6] hover:border-[#3b82f6] transition-all"
+                className="px-2 py-1 text-xs rounded-lg bg-card border border-edge text-sub hover:text-accent hover:border-accent transition-all"
               >
                 &larr;
               </button>
               <button
                 type="button"
                 onClick={() => setCurrentDate(new Date())}
-                className="px-3 py-1 text-xs rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white hover:from-[#2563eb] hover:to-[#7c3aed] transition-all"
+                className="px-3 py-1 text-xs rounded-lg bg-gradient-to-r from-accent to-accent-secondary text-white hover:from-accent-hover hover:to-accent-secondary transition-all"
               >
                 Today
               </button>
               <button
                 type="button"
                 onClick={onNextDay}
-                className="px-2 py-1 text-xs rounded-lg bg-[#1a1a22] border border-[#2a2a33] text-gray-400 hover:text-[#3b82f6] hover:border-[#3b82f6] transition-all"
+                className="px-2 py-1 text-xs rounded-lg bg-card border border-edge text-sub hover:text-accent hover:border-accent transition-all"
               >
                 &rarr;
               </button>
@@ -147,7 +147,7 @@ export default function PlannerView({
           <div className="flex-1 min-h-0 overflow-y-auto">
             {dayEvents.length === 0 ? (
               <div className="flex items-center justify-center h-full">
-                <p className="text-sm text-gray-500">No events scheduled for this day</p>
+                <p className="text-sm text-dim">No events scheduled for this day</p>
               </div>
             ) : (
               <div className="grid gap-2 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
@@ -160,25 +160,25 @@ export default function PlannerView({
 
       {/* WEEK STRIP */}
       <div className="flex-1 min-h-0">
-        <div className="h-full bg-gradient-to-br from-[#1a1a22] to-[#14141a] rounded-2xl border border-[#2a2a33] p-4 md:p-5 flex flex-col gap-3 overflow-hidden hover:border-[#3b82f6]/40 transition-all">
+        <div className="h-full bg-gradient-to-br from-card to-inner rounded-2xl border border-edge p-4 md:p-5 flex flex-col gap-3 overflow-hidden hover:border-accent/40 transition-all">
           <div className="flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
-              <span className="text-sm font-semibold text-white">Week</span>
+              <span className="text-sm font-semibold text-heading">Week</span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => onWeekChange(-1)}
-                className="px-2 py-1 text-xs rounded-lg bg-[#1a1a22] border border-[#2a2a33] text-gray-400 hover:text-[#3b82f6] hover:border-[#3b82f6] transition-all"
+                className="px-2 py-1 text-xs rounded-lg bg-card border border-edge text-sub hover:text-accent hover:border-accent transition-all"
               >
                 &larr;
               </button>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-sub">
                 {weekStart.toLocaleDateString('default', {
                   day: 'numeric',
                   month: 'short',
@@ -196,7 +196,7 @@ export default function PlannerView({
               <button
                 type="button"
                 onClick={() => onWeekChange(1)}
-                className="px-2 py-1 text-xs rounded-lg bg-[#1a1a22] border border-[#2a2a33] text-gray-400 hover:text-[#3b82f6] hover:border-[#3b82f6] transition-all"
+                className="px-2 py-1 text-xs rounded-lg bg-card border border-edge text-sub hover:text-accent hover:border-accent transition-all"
               >
                 &rarr;
               </button>
@@ -218,24 +218,24 @@ export default function PlannerView({
                   onClick={() => setCurrentDate(d)}
                   className={`flex-1 flex flex-col items-center justify-center rounded-xl border px-2 py-2 text-xs transition-all min-w-0 ${
                     isSelected
-                      ? 'border-[#3b82f6] bg-[#3b82f6]/10 scale-105'
+                      ? 'border-accent bg-accent/10 scale-105'
                       : isTodayFlag
-                      ? 'border-[#3b82f6]/50 bg-[#1a1a22]'
-                      : 'border-[#2a2a33] bg-[#1a1a22] hover:border-[#3b82f6]/50'
+                      ? 'border-accent/50 bg-card'
+                      : 'border-edge bg-card hover:border-accent/50'
                   }`}
                 >
-                  <span className={`text-[0.65rem] ${isSelected ? 'text-[#3b82f6]' : 'text-gray-500'}`}>
+                  <span className={`text-[0.65rem] ${isSelected ? 'text-accent' : 'text-dim'}`}>
                     {d.toLocaleDateString('default', { weekday: 'short' })}
                   </span>
-                  <span className={`mt-1 text-sm font-semibold ${isSelected ? 'text-[#3b82f6]' : 'text-white'}`}>
+                  <span className={`mt-1 text-sm font-semibold ${isSelected ? 'text-accent' : 'text-heading'}`}>
                     {d.getDate()}
                   </span>
                   {isTodayFlag && !isSelected && (
-                    <span className="mt-1 text-[0.6rem] text-[#3b82f6]">Today</span>
+                    <span className="mt-1 text-[0.6rem] text-accent">Today</span>
                   )}
                   {dayHasEvents && (
                     <span className={`mt-1 h-1.5 w-1.5 rounded-full ${
-                      hasGoogleEvent ? 'bg-emerald-500' : isSelected ? 'bg-[#3b82f6]' : 'bg-emerald-500'
+                      hasGoogleEvent ? 'bg-emerald-500' : isSelected ? 'bg-accent' : 'bg-emerald-500'
                     }`} />
                   )}
                 </button>

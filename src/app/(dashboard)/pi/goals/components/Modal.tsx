@@ -15,7 +15,7 @@ export default function Modal({ children, onClose }: ModalProps) {
       />
 
       {/* Card */}
-      <div className="relative w-full max-w-lg mx-6 rounded-2xl border border-[#2a2a33] bg-[#1a1a22] p-8 shadow-2xl">
+      <div className="relative w-full max-w-lg mx-6 rounded-2xl border border-edge bg-card p-8 shadow-2xl">
         {children}
       </div>
     </div>
