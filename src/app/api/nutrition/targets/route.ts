@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ data: null, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } }, { status: 401 });
+  }
+
   const date = request.nextUrl.searchParams.get('date') ?? new Date().toISOString().split('T')[0];
 
   const { data, error } = await supabase
@@ -15,6 +21,12 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ data: null, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } }, { status: 401 });
+  }
+
   const body = await request.json();
   const { target_date, day_type, target_calories, target_protein_g, target_carbs_g, target_fat_g } = body;
 
@@ -25,6 +37,7 @@ export async function PUT(request: NextRequest) {
   const { data, error } = await supabase
     .from('daily_nutrition_targets')
     .upsert({
+      user_id: user.id,
       target_date,
       day_type: day_type ?? 'rest',
       target_calories,

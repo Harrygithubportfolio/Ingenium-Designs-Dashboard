@@ -8,7 +8,7 @@ export interface AiEstimatedItem {
   carbs_g: number;
   fat_g: number;
   confidence_score: number; // 0.0-1.0
-  data_source: 'claude' | 'usda' | 'nutritionix' | 'claude+usda';
+  data_source: 'claude' | 'gemini' | 'usda' | 'nutritionix' | 'claude+usda' | 'gemini+usda';
 }
 
 export interface EstimationRequest {

@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ data: null, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } }, { status: 401 });
+  }
+
   const { data, error } = await supabase
     .from('gym_sessions')
     .select('*, exercises:execution_exercises(*, sets:execution_sets(*))')

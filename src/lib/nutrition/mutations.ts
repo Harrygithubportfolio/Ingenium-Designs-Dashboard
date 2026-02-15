@@ -1,5 +1,4 @@
-import { supabase } from '@/lib/supabaseClient';
-import { getUserId } from '@/lib/getUserId';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   IntakeEvent,
   IntakeItem,
@@ -15,9 +14,7 @@ import { computeDailySummary } from './queries';
 
 // --- Intake Events ---
 
-export async function createManualIntake(input: ManualIntakeInput) {
-  const userId = await getUserId();
-
+export async function createManualIntake(supabase: SupabaseClient, userId: string, input: ManualIntakeInput) {
   const { data: event, error: eErr } = await supabase
     .from('intake_events')
     .insert({
@@ -49,7 +46,7 @@ export async function createManualIntake(input: ManualIntakeInput) {
   return event as IntakeEvent;
 }
 
-export async function editIntakeItem(itemId: string, input: EditIntakeItemInput) {
+export async function editIntakeItem(supabase: SupabaseClient, itemId: string, input: EditIntakeItemInput) {
   const updates: Record<string, unknown> = {
     was_edited: true,
     updated_at: new Date().toISOString(),
@@ -71,7 +68,7 @@ export async function editIntakeItem(itemId: string, input: EditIntakeItemInput)
   return data as IntakeItem;
 }
 
-export async function deleteIntakeEvent(eventId: string) {
+export async function deleteIntakeEvent(supabase: SupabaseClient, eventId: string) {
   const { error } = await supabase
     .from('intake_events')
     .delete()
@@ -81,9 +78,7 @@ export async function deleteIntakeEvent(eventId: string) {
 
 // --- Daily Targets ---
 
-export async function upsertDailyTargets(input: DailyTargetInput) {
-  const userId = await getUserId();
-
+export async function upsertDailyTargets(supabase: SupabaseClient, userId: string, input: DailyTargetInput) {
   const { data, error } = await supabase
     .from('daily_nutrition_targets')
     .upsert(
@@ -108,9 +103,8 @@ export async function upsertDailyTargets(input: DailyTargetInput) {
 
 // --- Reflections ---
 
-export async function createNutritionReflection(input: NutritionReflectionInput) {
-  const userId = await getUserId();
-  const summary = await computeDailySummary(input.date);
+export async function createNutritionReflection(supabase: SupabaseClient, userId: string, input: NutritionReflectionInput) {
+  const summary = await computeDailySummary(supabase, input.date);
 
   // Compute adherence
   const calorieAdherence = summary.targets.calories > 0
@@ -175,9 +169,7 @@ export interface AiTextIntakeInput {
   notes?: string;
 }
 
-export async function createAiTextIntake(input: AiTextIntakeInput) {
-  const userId = await getUserId();
-
+export async function createAiTextIntake(supabase: SupabaseClient, userId: string, input: AiTextIntakeInput) {
   const { data: event, error: eErr } = await supabase
     .from('intake_events')
     .insert({
@@ -212,6 +204,7 @@ export async function createAiTextIntake(input: AiTextIntakeInput) {
 // --- Backfill AI Estimates ---
 
 export async function backfillAiEstimates(
+  supabase: SupabaseClient,
   updates: {
     item_id: string;
     estimated_calories: number;

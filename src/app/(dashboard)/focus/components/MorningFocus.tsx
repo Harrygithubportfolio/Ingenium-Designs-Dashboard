@@ -8,7 +8,7 @@ import {
   generateId,
   getTodayString,
 } from '../utils/focusTypes';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabase/client';
 
 interface Goal {
   id: string;
@@ -37,6 +37,7 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
   useEffect(() => {
     const loadGoals = async () => {
       try {
+        const supabase = createClient();
         const { data } = await supabase
           .from('goals')
           .select('*, milestones(*)')

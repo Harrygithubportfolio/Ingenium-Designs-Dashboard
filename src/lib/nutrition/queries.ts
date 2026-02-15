@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabaseClient';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   IntakeEvent,
   DailyNutritionTarget,
@@ -8,7 +8,7 @@ import type {
 } from './types';
 import { getEffectiveValue } from './types';
 
-export async function fetchIntakeEvents(date: string) {
+export async function fetchIntakeEvents(supabase: SupabaseClient, date: string) {
   const startOfDay = `${date}T00:00:00`;
   const endOfDay = `${date}T23:59:59`;
 
@@ -22,7 +22,7 @@ export async function fetchIntakeEvents(date: string) {
   return (data as IntakeEvent[]) ?? [];
 }
 
-export async function fetchDailyTargets(date: string) {
+export async function fetchDailyTargets(supabase: SupabaseClient, date: string) {
   const { data, error } = await supabase
     .from('daily_nutrition_targets')
     .select('*')
@@ -32,7 +32,7 @@ export async function fetchDailyTargets(date: string) {
   return data as DailyNutritionTarget | null;
 }
 
-export async function fetchNutritionReflection(date: string) {
+export async function fetchNutritionReflection(supabase: SupabaseClient, date: string) {
   const { data, error } = await supabase
     .from('nutrition_reflections')
     .select('*')
@@ -42,10 +42,10 @@ export async function fetchNutritionReflection(date: string) {
   return data as NutritionReflection | null;
 }
 
-export async function computeDailySummary(date: string): Promise<DailySummary> {
+export async function computeDailySummary(supabase: SupabaseClient, date: string): Promise<DailySummary> {
   const [events, targets] = await Promise.all([
-    fetchIntakeEvents(date),
-    fetchDailyTargets(date),
+    fetchIntakeEvents(supabase, date),
+    fetchDailyTargets(supabase, date),
   ]);
 
   const consumed: MacroTotals = { calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0 };

@@ -8,6 +8,7 @@ import {
   getEffectiveValue,
 } from '@/lib/nutrition/types';
 import { deleteIntakeEvent } from '@/lib/nutrition/mutations';
+import { createClient } from '@/lib/supabase/client';
 import ConfidenceBadge from './ConfidenceBadge';
 
 interface Props {
@@ -119,7 +120,8 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
     }
     setDeleting(true);
     try {
-      await deleteIntakeEvent(event.id);
+      const supabase = createClient();
+      await deleteIntakeEvent(supabase, event.id);
       onRefresh();
       onClose();
     } catch (err) {

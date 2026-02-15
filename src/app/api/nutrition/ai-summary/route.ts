@@ -1,13 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
+import { createClient } from '@/lib/supabase/server';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { getAiProvider, isAiConfigured } from '@/lib/ai/provider';
+import { parseAiJson } from '@/lib/ai/parse-json';
 import { fetchIntakeEvents, fetchDailyTargets } from '@/lib/nutrition/queries';
 import { getEffectiveValue } from '@/lib/nutrition/types';
 import { buildDailySummaryPrompt } from '@/lib/nutrition/ai-summary-prompt';
-import { supabase } from '@/lib/supabaseClient';
-
-const MODEL = 'claude-sonnet-4-5-20250929';
 
 export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json(
+      { data: null, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+      { status: 401 }
+    );
+  }
+
+  const { allowed, retryAfterMs } = checkRateLimit(user.id);
+  if (!allowed) {
+    return NextResponse.json(
+      { data: null, error: { code: 'RATE_LIMITED', message: 'Too many requests' } },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil(retryAfterMs / 1000)) } }
+    );
+  }
+
   try {
     const body = await request.json();
     const { date, goal_override } = body as { date: string; goal_override?: string };
@@ -19,23 +36,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.ANTHROPIC_API_KEY) {
+    if (!isAiConfigured()) {
       return NextResponse.json(
-        { data: null, error: { code: 'CONFIG_ERROR', message: 'AI is not configured' } },
+        { data: null, error: { code: 'CONFIG_ERROR', message: 'AI is not configured. Set AI_PROVIDER and the corresponding API key.' } },
         { status: 503 }
       );
     }
 
     // Fetch today's data
     const [events, targets] = await Promise.all([
-      fetchIntakeEvents(date),
-      fetchDailyTargets(date),
+      fetchIntakeEvents(supabase, date),
+      fetchDailyTargets(supabase, date),
     ]);
 
     if (events.length === 0) {
       return NextResponse.json({
         data: {
-          summary: 'No meals have been logged today yet. Start tracking to get personalized feedback!',
+          summary: 'No meals have been logged today yet. Start tracking to get personalised feedback!',
           rating: 'needs_work',
           tips: ['Log your meals throughout the day for accurate tracking', 'Start with breakfast to build the habit'],
         },
@@ -80,7 +97,7 @@ export async function POST(request: NextRequest) {
       })),
     }));
 
-    const { system, user } = buildDailySummaryPrompt({
+    const { system, user: userPrompt } = buildDailySummaryPrompt({
       meals,
       consumed,
       targets: defaultTargets,
@@ -88,30 +105,16 @@ export async function POST(request: NextRequest) {
       goalOverride: goal_override,
     });
 
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
-    const message = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: 512,
-      system,
-      messages: [{ role: 'user', content: user }],
+    const provider = getAiProvider();
+    const result = await provider.complete({
+      prompt: { system, user: userPrompt },
+      maxTokens: 512,
+      jsonMode: true,
     });
 
-    const textBlock = message.content.find((b) => b.type === 'text');
-    if (!textBlock || textBlock.type !== 'text') {
-      throw new Error('No text response from Claude');
-    }
-
-    let parsed: { summary: string; rating: string; tips: string[] };
-    try {
-      parsed = JSON.parse(textBlock.text);
-    } catch {
-      const jsonMatch = textBlock.text.match(/```(?:json)?\s*([\s\S]*?)```/);
-      if (jsonMatch) {
-        parsed = JSON.parse(jsonMatch[1]);
-      } else {
-        throw new Error('Failed to parse AI summary response');
-      }
-    }
+    const parsed = parseAiJson<{ summary: string; rating: string; tips: string[] }>(
+      result.text
+    );
 
     return NextResponse.json({ data: parsed, error: null });
   } catch (err: unknown) {

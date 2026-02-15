@@ -6,6 +6,7 @@ import { useFitnessSchedule } from '@/store/useFitnessSchedule';
 import TemplateCard from '@/components/fitness/TemplateCard';
 import type { WorkoutTemplate, CreateTemplateInput, TrainingIntent } from '@/lib/fitness/types';
 import { createTemplate, archiveTemplate } from '@/lib/fitness/mutations';
+import { createClient } from '@/lib/supabase/client';
 
 export default function TemplatesPage() {
   const { templates, fetchTemplates } = useFitnessSchedule();
@@ -18,7 +19,8 @@ export default function TemplatesPage() {
 
   const handleArchive = async (template: WorkoutTemplate) => {
     if (!confirm(`Archive "${template.name}"?`)) return;
-    await archiveTemplate(template.id);
+    const supabase = createClient();
+    await archiveTemplate(supabase, template.id);
     await fetchTemplates();
   };
 
@@ -138,7 +140,10 @@ function CreateTemplateModal({
             target_load_kg: ex.target_load_kg ? parseFloat(ex.target_load_kg) : undefined,
           })),
       };
-      await createTemplate(input);
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      await createTemplate(supabase, user.id, input);
       onCreated();
     } catch (err) {
       console.error('Create template error:', err);

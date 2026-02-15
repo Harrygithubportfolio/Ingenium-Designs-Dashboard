@@ -1,5 +1,4 @@
-import { supabase } from '@/lib/supabaseClient';
-import { getUserId } from '@/lib/getUserId';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   CreateTemplateInput,
   LogSetInput,
@@ -12,9 +11,7 @@ import type {
 
 // --- Templates ---
 
-export async function createTemplate(input: CreateTemplateInput) {
-  const userId = await getUserId();
-
+export async function createTemplate(supabase: SupabaseClient, userId: string, input: CreateTemplateInput) {
   const { data: template, error: tErr } = await supabase
     .from('workout_templates')
     .insert({
@@ -38,7 +35,7 @@ export async function createTemplate(input: CreateTemplateInput) {
   return template;
 }
 
-export async function updateTemplate(id: string, input: CreateTemplateInput) {
+export async function updateTemplate(supabase: SupabaseClient, id: string, input: CreateTemplateInput) {
   const { error: tErr } = await supabase
     .from('workout_templates')
     .update({
@@ -65,7 +62,7 @@ export async function updateTemplate(id: string, input: CreateTemplateInput) {
   if (eErr) throw new Error(eErr.message);
 }
 
-export async function archiveTemplate(id: string) {
+export async function archiveTemplate(supabase: SupabaseClient, id: string) {
   const { error } = await supabase
     .from('workout_templates')
     .update({ is_archived: true, updated_at: new Date().toISOString() })
@@ -75,9 +72,7 @@ export async function archiveTemplate(id: string) {
 
 // --- Scheduling ---
 
-export async function scheduleWorkout(templateId: string, date: string) {
-  const userId = await getUserId();
-
+export async function scheduleWorkout(supabase: SupabaseClient, userId: string, templateId: string, date: string) {
   const { data, error } = await supabase
     .from('scheduled_workouts')
     .insert({ user_id: userId, template_id: templateId, scheduled_date: date })
@@ -87,9 +82,7 @@ export async function scheduleWorkout(templateId: string, date: string) {
   return data;
 }
 
-export async function rescheduleWorkout(id: string, newDate: string) {
-  const userId = await getUserId();
-
+export async function rescheduleWorkout(supabase: SupabaseClient, userId: string, id: string, newDate: string) {
   // Mark original as rescheduled
   const { error: uErr } = await supabase
     .from('scheduled_workouts')
@@ -126,9 +119,7 @@ export async function rescheduleWorkout(id: string, newDate: string) {
 
 // --- Gym Sessions ---
 
-export async function startGymSession(scheduledWorkoutId?: string) {
-  const userId = await getUserId();
-
+export async function startGymSession(supabase: SupabaseClient, userId: string, scheduledWorkoutId?: string) {
   // If starting from a scheduled workout, get the template
   let templateId: string | null = null;
   if (scheduledWorkoutId) {
@@ -183,7 +174,7 @@ export async function startGymSession(scheduledWorkoutId?: string) {
   return session as GymSession;
 }
 
-export async function logSet(sessionId: string, input: LogSetInput) {
+export async function logSet(supabase: SupabaseClient, sessionId: string, input: LogSetInput) {
   // Get the next set number
   const { data: existing, error: cErr } = await supabase
     .from('execution_sets')
@@ -210,7 +201,7 @@ export async function logSet(sessionId: string, input: LogSetInput) {
   return data as ExecutionSet;
 }
 
-export async function addExerciseToSession(sessionId: string, exerciseName: string) {
+export async function addExerciseToSession(supabase: SupabaseClient, sessionId: string, exerciseName: string) {
   // Get next sort_order
   const { data: existing, error: cErr } = await supabase
     .from('execution_exercises')
@@ -236,7 +227,7 @@ export async function addExerciseToSession(sessionId: string, exerciseName: stri
   return data as ExecutionExercise;
 }
 
-export async function skipExercise(exerciseId: string) {
+export async function skipExercise(supabase: SupabaseClient, exerciseId: string) {
   const { error } = await supabase
     .from('execution_exercises')
     .update({ was_skipped: true })
@@ -245,6 +236,7 @@ export async function skipExercise(exerciseId: string) {
 }
 
 export async function updateSessionStatus(
+  supabase: SupabaseClient,
   sessionId: string,
   status: 'active' | 'paused' | 'completed' | 'abandoned'
 ) {
@@ -308,9 +300,7 @@ export async function updateSessionStatus(
 
 // --- Reflections ---
 
-export async function createReflection(gymSessionId: string) {
-  const userId = await getUserId();
-
+export async function createReflection(supabase: SupabaseClient, userId: string, gymSessionId: string) {
   // Get session data for computation
   const { data: session } = await supabase
     .from('gym_sessions')
@@ -368,7 +358,7 @@ export async function createReflection(gymSessionId: string) {
   return data as WorkoutReflection;
 }
 
-export async function updateReflection(gymSessionId: string, input: ReflectionInput) {
+export async function updateReflection(supabase: SupabaseClient, gymSessionId: string, input: ReflectionInput) {
   const { data, error } = await supabase
     .from('workout_reflections')
     .update({

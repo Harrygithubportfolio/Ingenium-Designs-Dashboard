@@ -10,10 +10,11 @@ import CalorieRing from '@/components/nutrition/CalorieRing';
 import IntakeEventCard from '@/components/nutrition/IntakeEventCard';
 import MealDetailModal from '@/components/nutrition/MealDetailModal';
 import DailySummaryCard from '@/components/nutrition/DailySummaryCard';
+import HistoryTab from '@/components/fitness/history/HistoryTab';
 import type { ScheduledWorkout } from '@/lib/fitness/types';
 import type { IntakeEvent } from '@/lib/nutrition/types';
 
-type Tab = 'fitness' | 'nutrition';
+type Tab = 'fitness' | 'nutrition' | 'history';
 
 export default function FitnessNutritionPage() {
   const [activeTab, setActiveTab] = useState<Tab>('fitness');
@@ -68,7 +69,7 @@ export default function FitnessNutritionPage() {
 
           {/* Contextual action buttons */}
           <div className="flex items-center gap-2">
-            {activeTab === 'fitness' ? (
+            {activeTab === 'fitness' && (
               <>
                 <Link
                   href="/fitness/templates"
@@ -83,7 +84,8 @@ export default function FitnessNutritionPage() {
                   Schedule
                 </Link>
               </>
-            ) : (
+            )}
+            {activeTab === 'nutrition' && (
               <>
                 <Link
                   href="/nutrition/targets"
@@ -132,11 +134,22 @@ export default function FitnessNutritionPage() {
           >
             Nutrition
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('history')}
+            className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
+              activeTab === 'history'
+                ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
+                : 'text-gray-400 hover:text-white border border-transparent'
+            }`}
+          >
+            History
+          </button>
         </div>
       </header>
 
       {/* Tab Content */}
-      {activeTab === 'fitness' ? (
+      {activeTab === 'fitness' && (
         <FitnessTab
           loading={fitnessLoading}
           todayWorkout={todayWorkout}
@@ -145,7 +158,8 @@ export default function FitnessNutritionPage() {
           weekSchedule={weekSchedule}
           templatesCount={templates.length}
         />
-      ) : (
+      )}
+      {activeTab === 'nutrition' && (
         <NutritionTab
           loading={nutritionLoading}
           consumed={consumed}
@@ -156,6 +170,7 @@ export default function FitnessNutritionPage() {
           onRefresh={fetchDay}
         />
       )}
+      {activeTab === 'history' && <HistoryTab />}
     </div>
   );
 }

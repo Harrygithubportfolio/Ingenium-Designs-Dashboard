@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createManualIntake } from '@/lib/nutrition/mutations';
+import { createClient } from '@/lib/supabase/client';
 import { useNutritionDay } from '@/store/useNutritionDay';
 import type { MealType } from '@/lib/nutrition/types';
 import { MEAL_TYPE_LABELS } from '@/lib/nutrition/types';
@@ -56,7 +57,10 @@ export default function LogMealPage() {
     if (validEntries.length === 0) return;
     setSaving(true);
     try {
-      await createManualIntake({
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      await createManualIntake(supabase, user.id, {
         meal_type: mealType,
         items: validEntries.map((e) => ({
           food_name: e.food_name.trim(),

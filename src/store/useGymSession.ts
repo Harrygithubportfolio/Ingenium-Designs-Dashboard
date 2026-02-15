@@ -1,7 +1,8 @@
 import { create } from 'zustand';
-import type { GymSession, ExecutionExercise, ExecutionSet, LogSetInput } from '@/lib/fitness/types';
+import type { GymSession, ExecutionSet, LogSetInput } from '@/lib/fitness/types';
 import * as mutations from '@/lib/fitness/mutations';
 import { fetchActiveGymSession, fetchGymSession } from '@/lib/fitness/queries';
+import { createClient } from '@/lib/supabase/client';
 
 interface GymSessionState {
   // State
@@ -44,7 +45,8 @@ export const useGymSession = create<GymSessionState>((set, get) => ({
   checkForActiveSession: async () => {
     set({ loading: true });
     try {
-      const session = await fetchActiveGymSession();
+      const supabase = createClient();
+      const session = await fetchActiveGymSession(supabase);
       if (session) {
         const elapsed = Math.floor(
           (Date.now() - new Date(session.started_at).getTime()) / 1000
@@ -66,9 +68,12 @@ export const useGymSession = create<GymSessionState>((set, get) => ({
   startSession: async (scheduledWorkoutId?: string) => {
     set({ loading: true, error: null });
     try {
-      const session = await mutations.startGymSession(scheduledWorkoutId);
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const session = await mutations.startGymSession(supabase, user.id, scheduledWorkoutId);
       // Re-fetch to get full session with exercises
-      const fullSession = await fetchGymSession(session.id);
+      const fullSession = await fetchGymSession(supabase, session.id);
       set({
         session: fullSession,
         status: 'active',
@@ -86,7 +91,8 @@ export const useGymSession = create<GymSessionState>((set, get) => ({
     const { session } = get();
     if (!session) return;
     try {
-      const fresh = await fetchGymSession(session.id);
+      const supabase = createClient();
+      const fresh = await fetchGymSession(supabase, session.id);
       set({ session: fresh });
     } catch (err) {
       console.error('refreshSession error:', err);
@@ -97,7 +103,8 @@ export const useGymSession = create<GymSessionState>((set, get) => ({
     const { session, status } = get();
     if (!session || status !== 'active') return;
     try {
-      await mutations.updateSessionStatus(session.id, 'paused');
+      const supabase = createClient();
+      await mutations.updateSessionStatus(supabase, session.id, 'paused');
       set({ status: 'paused', timerRunning: false });
     } catch (err) {
       set({ error: (err as Error).message });
@@ -108,7 +115,8 @@ export const useGymSession = create<GymSessionState>((set, get) => ({
     const { session, status } = get();
     if (!session || status !== 'paused') return;
     try {
-      await mutations.updateSessionStatus(session.id, 'active');
+      const supabase = createClient();
+      await mutations.updateSessionStatus(supabase, session.id, 'active');
       set({ status: 'active', timerRunning: true });
     } catch (err) {
       set({ error: (err as Error).message });
@@ -119,7 +127,8 @@ export const useGymSession = create<GymSessionState>((set, get) => ({
     const { session, status } = get();
     if (!session || (status !== 'active' && status !== 'paused')) return null;
     try {
-      const completed = await mutations.updateSessionStatus(session.id, 'completed');
+      const supabase = createClient();
+      const completed = await mutations.updateSessionStatus(supabase, session.id, 'completed');
       set({ status: 'completed', timerRunning: false });
       return completed;
     } catch (err) {
@@ -132,7 +141,8 @@ export const useGymSession = create<GymSessionState>((set, get) => ({
     const { session, status } = get();
     if (!session || (status !== 'active' && status !== 'paused')) return;
     try {
-      await mutations.updateSessionStatus(session.id, 'abandoned');
+      const supabase = createClient();
+      await mutations.updateSessionStatus(supabase, session.id, 'abandoned');
       set({ status: 'abandoned', timerRunning: false });
     } catch (err) {
       set({ error: (err as Error).message });
@@ -143,8 +153,8 @@ export const useGymSession = create<GymSessionState>((set, get) => ({
     const { session, status } = get();
     if (!session || status !== 'active') return null;
     try {
-      const newSet = await mutations.logSet(session.id, input);
-      // Update local state
+      const supabase = createClient();
+      const newSet = await mutations.logSet(supabase, session.id, input);
       await get().refreshSession();
       return newSet;
     } catch (err) {
@@ -157,7 +167,8 @@ export const useGymSession = create<GymSessionState>((set, get) => ({
     const { session, status } = get();
     if (!session || status !== 'active') return;
     try {
-      await mutations.addExerciseToSession(session.id, name);
+      const supabase = createClient();
+      await mutations.addExerciseToSession(supabase, session.id, name);
       await get().refreshSession();
     } catch (err) {
       set({ error: (err as Error).message });
@@ -171,8 +182,8 @@ export const useGymSession = create<GymSessionState>((set, get) => ({
     const current = exercises[currentExerciseIndex];
     if (!current) return;
     try {
-      await mutations.skipExercise(current.id);
-      // Move to next
+      const supabase = createClient();
+      await mutations.skipExercise(supabase, current.id);
       if (currentExerciseIndex < exercises.length - 1) {
         set({ currentExerciseIndex: currentExerciseIndex + 1 });
       }

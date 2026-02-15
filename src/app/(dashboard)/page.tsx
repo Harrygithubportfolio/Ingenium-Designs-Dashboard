@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabase/client';
 import {
   type WeatherData,
   type WeatherIconType,
@@ -206,6 +206,7 @@ function GoalsPreview() {
   useEffect(() => {
     const load = async () => {
       try {
+        const supabase = createClient();
         const { data } = await supabase
           .from('goals')
           .select('*, milestones(*)')

@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ data: null, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } }, { status: 401 });
+  }
+
   const archived = request.nextUrl.searchParams.get('archived') === 'true';
 
   let query = supabase
@@ -18,6 +24,12 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ data: null, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } }, { status: 401 });
+  }
+
   const body = await request.json();
   const { name, training_intent, description, exercises } = body;
 
@@ -27,7 +39,7 @@ export async function POST(request: NextRequest) {
 
   const { data: template, error: tErr } = await supabase
     .from('workout_templates')
-    .insert({ name, training_intent, description: description ?? null })
+    .insert({ user_id: user.id, name, training_intent, description: description ?? null })
     .select()
     .single();
   if (tErr) return NextResponse.json({ data: null, error: { code: 'INSERT_ERROR', message: tErr.message } }, { status: 500 });

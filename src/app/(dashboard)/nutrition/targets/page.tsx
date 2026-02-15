@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useNutritionDay } from '@/store/useNutritionDay';
 import { upsertDailyTargets } from '@/lib/nutrition/mutations';
+import { createClient } from '@/lib/supabase/client';
 import type { DayType } from '@/lib/nutrition/types';
 import { DAY_TYPE_LABELS } from '@/lib/nutrition/types';
 
@@ -34,7 +35,10 @@ export default function TargetsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await upsertDailyTargets({
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      await upsertDailyTargets(supabase, user.id, {
         target_date: new Date().toISOString().split('T')[0],
         day_type: dayType,
         target_calories: parseFloat(calories) || 0,

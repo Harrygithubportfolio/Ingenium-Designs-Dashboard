@@ -9,7 +9,17 @@ const STYLES: Record<string, { bg: string; text: string; label: string }> = {
     text: 'text-emerald-400',
     label: 'USDA',
   },
+  gemini: {
+    bg: 'bg-purple-500/15',
+    text: 'text-purple-400',
+    label: 'AI',
+  },
   'claude+usda': {
+    bg: 'bg-gradient-to-r from-purple-500/15 to-emerald-500/15',
+    text: 'text-blue-300',
+    label: 'AI+USDA',
+  },
+  'gemini+usda': {
     bg: 'bg-gradient-to-r from-purple-500/15 to-emerald-500/15',
     text: 'text-blue-300',
     label: 'AI+USDA',

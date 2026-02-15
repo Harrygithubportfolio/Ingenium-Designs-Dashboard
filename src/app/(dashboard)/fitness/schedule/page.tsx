@@ -4,124 +4,211 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence } from 'framer-motion';
 import { useFitnessSchedule } from '@/store/useFitnessSchedule';
-import WorkoutStatusBadge from '@/components/fitness/WorkoutStatusBadge';
-import TrainingIntentBadge from '@/components/fitness/TrainingIntentBadge';
 import WorkoutDetailModal from '@/components/fitness/WorkoutDetailModal';
 import type { WorkoutTemplate, ScheduledWorkout } from '@/lib/fitness/types';
 import { scheduleWorkout } from '@/lib/fitness/mutations';
+import { createClient } from '@/lib/supabase/client';
+import WeekView from './WeekView';
+import AgendaView from './AgendaView';
+import MonthView from './MonthView';
+import RescheduleModal from './RescheduleModal';
+
+type ScheduleView = 'week' | 'agenda' | 'month';
+
+function getMonday(d: Date) {
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  date.setDate(date.getDate() + diff);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
 
 export default function SchedulePage() {
-  const { weekSchedule, templates, loading, refresh, fetchTemplates } = useFitnessSchedule();
+  const { weekSchedule, monthSchedule, templates, loading, fetchWeek, fetchMonth, fetchTemplates } = useFitnessSchedule();
+
+  const [activeView, setActiveView] = useState<ScheduleView>('week');
+  const [weekStart, setWeekStart] = useState(() => getMonday(new Date()));
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState<ScheduledWorkout | null>(null);
+  const [workoutToReschedule, setWorkoutToReschedule] = useState<ScheduledWorkout | null>(null);
 
+  // Fetch templates on mount
   useEffect(() => {
-    refresh();
+    fetchTemplates();
   }, []);
 
-  const days = getWeekDays();
+  // Fetch schedule data based on active view
+  useEffect(() => {
+    if (activeView === 'week' || activeView === 'agenda') {
+      const from = weekStart.toISOString().split('T')[0];
+      const to = new Date(weekStart.getTime() + 6 * 86400000).toISOString().split('T')[0];
+      fetchWeek(from, to);
+    } else {
+      fetchMonth(currentYear, currentMonth);
+    }
+  }, [activeView, weekStart, currentMonth, currentYear]);
+
+  const handlePrevWeek = () => {
+    const prev = new Date(weekStart);
+    prev.setDate(prev.getDate() - 7);
+    setWeekStart(prev);
+  };
+
+  const handleNextWeek = () => {
+    const next = new Date(weekStart);
+    next.setDate(next.getDate() + 7);
+    setWeekStart(next);
+  };
+
+  const handlePrevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+    setSelectedDate(null);
+  };
+
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+    setSelectedDate(null);
+  };
+
+  const handleRefresh = () => {
+    if (activeView === 'week' || activeView === 'agenda') {
+      const from = weekStart.toISOString().split('T')[0];
+      const to = new Date(weekStart.getTime() + 6 * 86400000).toISOString().split('T')[0];
+      fetchWeek(from, to);
+    } else {
+      fetchMonth(currentYear, currentMonth);
+    }
+  };
 
   return (
     <div className="h-full flex flex-col gap-4 overflow-hidden">
-      <header className="flex-shrink-0 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/fitness-nutrition" className="text-gray-500 hover:text-white transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </Link>
-          <h1 className="text-lg font-semibold text-white">Weekly Schedule</h1>
+      {/* Header */}
+      <header className="flex-shrink-0 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/fitness-nutrition" className="text-gray-500 hover:text-white transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </Link>
+            <h1 className="text-lg font-semibold text-white">Schedule</h1>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowScheduleModal(true)}
+            className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-lg hover:opacity-90 transition-opacity"
+          >
+            + Schedule
+          </button>
         </div>
-        <button
-          onClick={() => setShowScheduleModal(true)}
-          className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-lg hover:opacity-90 transition-opacity"
-        >
-          + Schedule Workout
-        </button>
+
+        {/* View toggle */}
+        <div className="flex items-center bg-[#14141a] rounded-lg border border-[#2a2a33] p-0.5 w-fit">
+          {(['week', 'agenda', 'month'] as const).map((view) => (
+            <button
+              key={view}
+              type="button"
+              onClick={() => setActiveView(view)}
+              className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all capitalize ${
+                activeView === view
+                  ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
+                  : 'text-gray-400 hover:text-white border border-transparent'
+              }`}
+            >
+              {view}
+            </button>
+          ))}
+        </div>
       </header>
 
+      {/* Content */}
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="w-6 h-6 border-2 border-[#3b82f6]/30 border-t-[#3b82f6] rounded-full animate-spin" />
         </div>
+      ) : activeView === 'week' ? (
+        <WeekView
+          weekStart={weekStart}
+          schedule={weekSchedule}
+          onSelectWorkout={setSelectedWorkout}
+          onPrevWeek={handlePrevWeek}
+          onNextWeek={handleNextWeek}
+        />
+      ) : activeView === 'agenda' ? (
+        <AgendaView
+          schedule={weekSchedule}
+          onSelectWorkout={setSelectedWorkout}
+        />
       ) : (
-        <div className="flex-1 min-h-0 grid grid-cols-7 gap-2 overflow-hidden">
-          {days.map((day) => {
-            const dayWorkouts = weekSchedule.filter(
-              (w) => w.scheduled_date === day.dateStr
-            );
-            const isToday = day.dateStr === new Date().toISOString().split('T')[0];
-
-            return (
-              <div
-                key={day.dateStr}
-                className={`flex flex-col rounded-xl border p-3 overflow-hidden ${
-                  isToday
-                    ? 'border-[#3b82f6]/40 bg-[#3b82f6]/5'
-                    : 'border-[#2a2a33] bg-[#1a1a22]'
-                }`}
-              >
-                <div className="text-center mb-2 flex-shrink-0">
-                  <p className={`text-xs font-semibold ${isToday ? 'text-[#3b82f6]' : 'text-gray-400'}`}>
-                    {day.dayName}
-                  </p>
-                  <p className="text-[10px] text-gray-500">{day.dateLabel}</p>
-                </div>
-
-                <div className="flex-1 min-h-0 space-y-1.5">
-                  {dayWorkouts.length === 0 ? (
-                    <div className="h-full flex items-center justify-center">
-                      <span className="text-xs text-gray-600">Rest</span>
-                    </div>
-                  ) : (
-                    dayWorkouts.map((w) => (
-                      <button
-                        type="button"
-                        key={w.id}
-                        onClick={() => setSelectedWorkout(w)}
-                        className="w-full p-2 bg-[#14141a] rounded-lg text-left hover:bg-[#22222c] border border-transparent hover:border-[#3b82f6]/30 transition-all cursor-pointer group"
-                      >
-                        <p className="text-xs font-medium text-white truncate group-hover:text-[#3b82f6] transition-colors">
-                          {w.template?.name ?? 'Workout'}
-                        </p>
-                        {w.template && (
-                          <TrainingIntentBadge intent={w.template.training_intent} />
-                        )}
-                        <div className="mt-1">
-                          <WorkoutStatusBadge status={w.status} />
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <MonthView
+          year={currentYear}
+          month={currentMonth}
+          schedule={monthSchedule}
+          onSelectDate={(d) => setSelectedDate(d || null)}
+          selectedDate={selectedDate}
+          onPrevMonth={handlePrevMonth}
+          onNextMonth={handleNextMonth}
+        />
       )}
 
+      {/* Schedule Workout Modal */}
       {showScheduleModal && (
         <ScheduleModal
           templates={templates}
           onClose={() => setShowScheduleModal(false)}
           onScheduled={() => {
             setShowScheduleModal(false);
-            refresh();
+            handleRefresh();
           }}
         />
       )}
 
+      {/* Workout Detail Modal */}
       <AnimatePresence>
         {selectedWorkout && (
           <WorkoutDetailModal
             workout={selectedWorkout}
             onClose={() => setSelectedWorkout(null)}
+            onReschedule={() => {
+              setWorkoutToReschedule(selectedWorkout);
+              setSelectedWorkout(null);
+            }}
           />
         )}
       </AnimatePresence>
+
+      {/* Reschedule Modal */}
+      {workoutToReschedule && (
+        <RescheduleModal
+          workout={workoutToReschedule}
+          open={!!workoutToReschedule}
+          onClose={() => setWorkoutToReschedule(null)}
+          onRescheduled={() => {
+            setWorkoutToReschedule(null);
+            handleRefresh();
+          }}
+        />
+      )}
     </div>
   );
 }
+
+// ─── Schedule Modal ──────────────────────────────────────────
 
 function ScheduleModal({
   templates,
@@ -140,7 +227,10 @@ function ScheduleModal({
     if (!selectedTemplate || !date) return;
     setSaving(true);
     try {
-      await scheduleWorkout(selectedTemplate, date);
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      await scheduleWorkout(supabase, user.id, selectedTemplate, date);
       onScheduled();
     } catch (err) {
       console.error('Schedule error:', err);
@@ -154,7 +244,7 @@ function ScheduleModal({
       <div className="w-full max-w-md bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-white">Schedule Workout</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
+          <button type="button" onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -191,12 +281,14 @@ function ScheduleModal({
 
         <div className="flex items-center gap-3 mt-6">
           <button
+            type="button"
             onClick={onClose}
             className="flex-1 py-2.5 text-sm font-medium text-gray-400 bg-[#14141a] rounded-lg hover:text-white transition-colors"
           >
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleSubmit}
             disabled={saving || !selectedTemplate}
             className="flex-1 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
@@ -207,20 +299,4 @@ function ScheduleModal({
       </div>
     </div>
   );
-}
-
-function getWeekDays() {
-  const today = new Date();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
-
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    return {
-      dateStr: d.toISOString().split('T')[0],
-      dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
-      dateLabel: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    };
-  });
 }

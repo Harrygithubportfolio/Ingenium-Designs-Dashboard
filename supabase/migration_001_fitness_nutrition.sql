@@ -289,38 +289,68 @@ ALTER TABLE nutrition_reflections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ai_insights ENABLE ROW LEVEL SECURITY;
 
 -- Policies (DROP IF EXISTS + CREATE to be idempotent)
-DROP POLICY IF EXISTS "Users manage own templates" ON workout_templates;
-CREATE POLICY "Users manage own templates" ON workout_templates FOR ALL USING (true) WITH CHECK (true);
+-- Tables with user_id column: auth.uid()::text = user_id
 
-DROP POLICY IF EXISTS "Users manage own template exercises" ON template_exercises;
-CREATE POLICY "Users manage own template exercises" ON template_exercises FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Users manage own templates" ON workout_templates;
+CREATE POLICY "Users manage own templates" ON workout_templates
+  FOR ALL USING (auth.uid()::text = user_id) WITH CHECK (auth.uid()::text = user_id);
 
 DROP POLICY IF EXISTS "Users manage own schedule" ON scheduled_workouts;
-CREATE POLICY "Users manage own schedule" ON scheduled_workouts FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Users manage own schedule" ON scheduled_workouts
+  FOR ALL USING (auth.uid()::text = user_id) WITH CHECK (auth.uid()::text = user_id);
 
 DROP POLICY IF EXISTS "Users manage own sessions" ON gym_sessions;
-CREATE POLICY "Users manage own sessions" ON gym_sessions FOR ALL USING (true) WITH CHECK (true);
-
-DROP POLICY IF EXISTS "Users manage own execution exercises" ON execution_exercises;
-CREATE POLICY "Users manage own execution exercises" ON execution_exercises FOR ALL USING (true) WITH CHECK (true);
-
-DROP POLICY IF EXISTS "Users manage own sets" ON execution_sets;
-CREATE POLICY "Users manage own sets" ON execution_sets FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Users manage own sessions" ON gym_sessions
+  FOR ALL USING (auth.uid()::text = user_id) WITH CHECK (auth.uid()::text = user_id);
 
 DROP POLICY IF EXISTS "Users manage own reflections" ON workout_reflections;
-CREATE POLICY "Users manage own reflections" ON workout_reflections FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Users manage own reflections" ON workout_reflections
+  FOR ALL USING (auth.uid()::text = user_id) WITH CHECK (auth.uid()::text = user_id);
 
 DROP POLICY IF EXISTS "Users manage own intake" ON intake_events;
-CREATE POLICY "Users manage own intake" ON intake_events FOR ALL USING (true) WITH CHECK (true);
-
-DROP POLICY IF EXISTS "Users manage own intake items" ON intake_items;
-CREATE POLICY "Users manage own intake items" ON intake_items FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Users manage own intake" ON intake_events
+  FOR ALL USING (auth.uid()::text = user_id) WITH CHECK (auth.uid()::text = user_id);
 
 DROP POLICY IF EXISTS "Users manage own targets" ON daily_nutrition_targets;
-CREATE POLICY "Users manage own targets" ON daily_nutrition_targets FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Users manage own targets" ON daily_nutrition_targets
+  FOR ALL USING (auth.uid()::text = user_id) WITH CHECK (auth.uid()::text = user_id);
 
 DROP POLICY IF EXISTS "Users manage own nutrition reflections" ON nutrition_reflections;
-CREATE POLICY "Users manage own nutrition reflections" ON nutrition_reflections FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Users manage own nutrition reflections" ON nutrition_reflections
+  FOR ALL USING (auth.uid()::text = user_id) WITH CHECK (auth.uid()::text = user_id);
 
 DROP POLICY IF EXISTS "Users manage own insights" ON ai_insights;
-CREATE POLICY "Users manage own insights" ON ai_insights FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Users manage own insights" ON ai_insights
+  FOR ALL USING (auth.uid()::text = user_id) WITH CHECK (auth.uid()::text = user_id);
+
+-- Child tables: use parent FK to verify ownership
+
+DROP POLICY IF EXISTS "Users manage own template exercises" ON template_exercises;
+CREATE POLICY "Users manage own template exercises" ON template_exercises
+  FOR ALL USING (EXISTS (
+    SELECT 1 FROM workout_templates WHERE workout_templates.id = template_exercises.template_id
+      AND auth.uid()::text = workout_templates.user_id
+  ));
+
+DROP POLICY IF EXISTS "Users manage own execution exercises" ON execution_exercises;
+CREATE POLICY "Users manage own execution exercises" ON execution_exercises
+  FOR ALL USING (EXISTS (
+    SELECT 1 FROM gym_sessions WHERE gym_sessions.id = execution_exercises.gym_session_id
+      AND auth.uid()::text = gym_sessions.user_id
+  ));
+
+DROP POLICY IF EXISTS "Users manage own sets" ON execution_sets;
+CREATE POLICY "Users manage own sets" ON execution_sets
+  FOR ALL USING (EXISTS (
+    SELECT 1 FROM execution_exercises
+      JOIN gym_sessions ON gym_sessions.id = execution_exercises.gym_session_id
+    WHERE execution_exercises.id = execution_sets.execution_exercise_id
+      AND auth.uid()::text = gym_sessions.user_id
+  ));
+
+DROP POLICY IF EXISTS "Users manage own intake items" ON intake_items;
+CREATE POLICY "Users manage own intake items" ON intake_items
+  FOR ALL USING (EXISTS (
+    SELECT 1 FROM intake_events WHERE intake_events.id = intake_items.intake_event_id
+      AND auth.uid()::text = intake_events.user_id
+  ));

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useNutritionDay } from '@/store/useNutritionDay';
 import { createNutritionReflection } from '@/lib/nutrition/mutations';
 import { fetchNutritionReflection } from '@/lib/nutrition/queries';
+import { createClient } from '@/lib/supabase/client';
 import type { HungerLevel, NutritionReflection } from '@/lib/nutrition/types';
 import { HUNGER_LEVEL_LABELS } from '@/lib/nutrition/types';
 
@@ -24,7 +25,8 @@ export default function NutritionReflectionPage() {
   useEffect(() => {
     const load = async () => {
       await fetchDay();
-      const ref = await fetchNutritionReflection(today);
+      const supabase = createClient();
+      const ref = await fetchNutritionReflection(supabase, today);
       if (ref) {
         setExisting(ref);
         setNote(ref.reflection_note ?? '');
@@ -51,7 +53,10 @@ export default function NutritionReflectionPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await createNutritionReflection({
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      await createNutritionReflection(supabase, user.id, {
         date: today,
         reflection_note: note || undefined,
         hunger_level: hunger ?? undefined,

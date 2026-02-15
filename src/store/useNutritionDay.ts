@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { IntakeEvent, DailySummary, DailyNutritionTarget } from '@/lib/nutrition/types';
 import { fetchIntakeEvents, fetchDailyTargets, computeDailySummary } from '@/lib/nutrition/queries';
+import { createClient } from '@/lib/supabase/client';
 
 interface NutritionDayState {
   date: string;
@@ -34,10 +35,11 @@ export const useNutritionDay = create<NutritionDayState>((set, get) => ({
     const d = date ?? get().date;
     set({ loading: true });
     try {
+      const supabase = createClient();
       const [events, targets, summary] = await Promise.all([
-        fetchIntakeEvents(d),
-        fetchDailyTargets(d),
-        computeDailySummary(d),
+        fetchIntakeEvents(supabase, d),
+        fetchDailyTargets(supabase, d),
+        computeDailySummary(supabase, d),
       ]);
       set({ events, targets, summary, loading: false });
     } catch (err) {

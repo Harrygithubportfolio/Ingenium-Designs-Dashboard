@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ data: null, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } }, { status: 401 });
+  }
+
   const body = await request.json();
   const { scheduled_workout_id } = body;
 
@@ -19,6 +25,7 @@ export async function POST(request: NextRequest) {
   const { data: session, error: sErr } = await supabase
     .from('gym_sessions')
     .insert({
+      user_id: user.id,
       scheduled_workout_id: scheduled_workout_id ?? null,
       template_id: templateId,
       status: 'active',

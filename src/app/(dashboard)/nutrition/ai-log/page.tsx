@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createAiTextIntake } from '@/lib/nutrition/mutations';
+import { createClient } from '@/lib/supabase/client';
 import { useNutritionDay } from '@/store/useNutritionDay';
 import type { MealType } from '@/lib/nutrition/types';
 import { MEAL_TYPE_LABELS } from '@/lib/nutrition/types';
@@ -112,7 +113,10 @@ export default function AiLogPage() {
 
     setSaving(true);
     try {
-      await createAiTextIntake({
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      await createAiTextIntake(supabase, user.id, {
         meal_type: mealType,
         raw_description: description,
         items: validItems.map((item) => ({

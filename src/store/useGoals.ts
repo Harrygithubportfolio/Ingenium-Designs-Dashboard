@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/client";
 
 export type GoalStatus = "active" | "completed" | "archived";
 
@@ -29,6 +29,7 @@ export const useGoals = create<GoalsState>((set, get) => ({
 
   fetchGoals: async () => {
     set({ loading: true });
+    const supabase = createClient();
     const { data, error } = await supabase
       .from("goals")
       .select("*")
@@ -42,6 +43,7 @@ export const useGoals = create<GoalsState>((set, get) => ({
   },
 
   subscribeToRealtime: () => {
+    const supabase = createClient();
     const channel = supabase
       .channel("goals-realtime")
       .on(
@@ -57,16 +59,22 @@ export const useGoals = create<GoalsState>((set, get) => ({
   },
 
   addGoal: async (title, description = "") => {
-    const { error } = await supabase.from("goals").insert({ title, description });
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error("addGoal error: not authenticated");
+      return;
+    }
+    const { error } = await supabase.from("goals").insert({ title, description, user_id: user.id });
     if (error) {
       console.error("addGoal error:", error);
       return;
     }
-    // Re-fetch immediately so the UI updates even if realtime is slow
     await get().fetchGoals();
   },
 
   updateGoal: async (id, updates) => {
+    const supabase = createClient();
     const { error } = await supabase
       .from("goals")
       .update({ ...updates, updated_at: new Date().toISOString() })
@@ -79,6 +87,7 @@ export const useGoals = create<GoalsState>((set, get) => ({
   },
 
   deleteGoal: async (id) => {
+    const supabase = createClient();
     const { error } = await supabase.from("goals").delete().eq("id", id);
     if (error) {
       console.error("deleteGoal error:", error);

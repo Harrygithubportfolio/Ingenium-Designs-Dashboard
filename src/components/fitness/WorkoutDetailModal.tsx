@@ -10,9 +10,10 @@ import WorkoutStatusBadge from './WorkoutStatusBadge';
 interface Props {
   workout: ScheduledWorkout;
   onClose: () => void;
+  onReschedule?: () => void;
 }
 
-export default function WorkoutDetailModal({ workout, onClose }: Props) {
+export default function WorkoutDetailModal({ workout, onClose, onReschedule }: Props) {
   const template = workout.template;
   const exercises = template?.exercises?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
   const scheduledDate = new Date(workout.scheduled_date);
@@ -112,14 +113,25 @@ export default function WorkoutDetailModal({ workout, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        {canStart && (
-          <div className="p-5 border-t border-[#2a2a33] flex-shrink-0">
-            <Link
-              href="/gym-mode"
-              className="block w-full py-3 bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white font-semibold rounded-xl text-center hover:opacity-90 transition-opacity"
-            >
-              Start Gym Mode
-            </Link>
+        {(canStart || onReschedule) && (
+          <div className="p-5 border-t border-[#2a2a33] flex-shrink-0 flex items-center gap-3">
+            {onReschedule && workout.status === 'scheduled' && (
+              <button
+                type="button"
+                onClick={onReschedule}
+                className="px-4 py-3 text-sm font-medium text-gray-400 bg-[#14141a] border border-[#2a2a33] rounded-xl hover:text-white hover:border-[#3b82f6]/30 transition-all"
+              >
+                Reschedule
+              </button>
+            )}
+            {canStart && (
+              <Link
+                href="/gym-mode"
+                className="flex-1 block py-3 bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white font-semibold rounded-xl text-center hover:opacity-90 transition-opacity"
+              >
+                Start Gym Mode
+              </Link>
+            )}
           </div>
         )}
       </motion.div>

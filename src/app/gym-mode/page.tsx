@@ -6,6 +6,7 @@ import { useGymSession } from '@/store/useGymSession';
 import { useFitnessSchedule } from '@/store/useFitnessSchedule';
 import { useTimer, formatTime } from '@/hooks/useTimer';
 import { createReflection, updateReflection } from '@/lib/fitness/mutations';
+import { createClient } from '@/lib/supabase/client';
 import type { SessionRating, LogSetInput, ExecutionExercise, GymSession } from '@/lib/fitness/types';
 
 type GymView = 'loading' | 'start' | 'exercise' | 'paused' | 'summary' | 'reflection';
@@ -215,13 +216,27 @@ function ExerciseScreen({
   const [reps, setReps] = useState(targetReps);
   const [showAddExercise, setShowAddExercise] = useState(false);
   const [newExName, setNewExName] = useState('');
+  const [restTimerActive, setRestTimerActive] = useState(false);
+  const [restSeconds, setRestSeconds] = useState(0);
+  const MAX_SETS = 10;
 
   // Reset inputs when exercise changes
   useEffect(() => {
     const lw = sets.length > 0 ? sets[sets.length - 1].actual_weight_kg : (targetLoad ?? 0);
     setWeight(lw);
     setReps(targetReps);
+    setRestTimerActive(false);
+    setRestSeconds(0);
   }, [exercise.id]);
+
+  // Rest timer tick
+  useEffect(() => {
+    if (!restTimerActive) return;
+    const interval = setInterval(() => {
+      setRestSeconds((s) => s + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [restTimerActive]);
 
   const handleLogSet = () => {
     onLogSet({
@@ -229,6 +244,16 @@ function ExerciseScreen({
       actual_weight_kg: weight,
       actual_reps: reps,
     });
+    // Start rest timer if not at max sets
+    if (completedSets + 1 < MAX_SETS) {
+      setRestTimerActive(true);
+      setRestSeconds(0);
+    }
+  };
+
+  const dismissRestTimer = () => {
+    setRestTimerActive(false);
+    setRestSeconds(0);
   };
 
   return (
@@ -275,7 +300,7 @@ function ExerciseScreen({
       </div>
 
       {/* Completed sets */}
-      <div className="flex-shrink-0 mb-6 space-y-2 max-h-32 overflow-hidden">
+      <div className="flex-shrink-0 mb-6 space-y-2 max-h-48 overflow-y-auto">
         {sets.map((s, i) => (
           <div key={s.id} className="flex items-center justify-between px-4 py-2 bg-white/5 rounded-lg">
             <span className="text-sm text-gray-400">SET {s.set_number}</span>
@@ -283,76 +308,91 @@ function ExerciseScreen({
             <span className="text-green-400 text-sm">✓</span>
           </div>
         ))}
-        {completedSets < targetSets && (
+        {completedSets < MAX_SETS && !restTimerActive && (
           <div className="flex items-center justify-center px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-lg">
             <span className="text-sm text-blue-400">SET {completedSets + 1} — CURRENT</span>
           </div>
         )}
       </div>
 
-      {/* Weight / Reps input — LARGE touch targets */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-6">
-        <div className="flex items-center gap-8">
-          {/* Weight */}
-          <div className="flex flex-col items-center gap-2">
-            <label className="text-xs text-gray-500 uppercase tracking-wider">Weight (kg)</label>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setWeight(Math.max(0, weight - 2.5))}
-                className="w-14 h-14 bg-white/10 rounded-xl text-2xl font-bold hover:bg-white/15 transition-colors"
-              >
-                −
-              </button>
-              <input
-                type="number"
-                value={weight}
-                onChange={(e) => setWeight(parseFloat(e.target.value) || 0)}
-                aria-label="Weight in kilograms"
-                className="w-24 h-16 bg-white/5 border border-white/10 rounded-xl text-3xl font-bold text-center focus:outline-none focus:border-blue-500"
-              />
-              <button
-                onClick={() => setWeight(weight + 2.5)}
-                className="w-14 h-14 bg-white/10 rounded-xl text-2xl font-bold hover:bg-white/15 transition-colors"
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          {/* Reps */}
-          <div className="flex flex-col items-center gap-2">
-            <label className="text-xs text-gray-500 uppercase tracking-wider">Reps</label>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setReps(Math.max(1, reps - 1))}
-                className="w-14 h-14 bg-white/10 rounded-xl text-2xl font-bold hover:bg-white/15 transition-colors"
-              >
-                −
-              </button>
-              <input
-                type="number"
-                value={reps}
-                onChange={(e) => setReps(parseInt(e.target.value) || 1)}
-                aria-label="Number of repetitions"
-                className="w-24 h-16 bg-white/5 border border-white/10 rounded-xl text-3xl font-bold text-center focus:outline-none focus:border-blue-500"
-              />
-              <button
-                onClick={() => setReps(reps + 1)}
-                className="w-14 h-14 bg-white/10 rounded-xl text-2xl font-bold hover:bg-white/15 transition-colors"
-              >
-                +
-              </button>
-            </div>
-          </div>
-        </div>
-
+      {/* Weight / Reps input OR Rest Timer */}
+      {restTimerActive ? (
         <button
-          onClick={handleLogSet}
-          className="w-full max-w-md py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl text-xl font-bold hover:opacity-90 transition-opacity"
+          type="button"
+          onClick={dismissRestTimer}
+          className="flex-1 w-full flex flex-col items-center justify-center gap-4 cursor-pointer rounded-2xl border-2 border-blue-500/40 bg-blue-500/5 animate-pulse"
         >
-          LOG SET
+          <p className="text-xs text-gray-500 uppercase tracking-wider">Rest Period</p>
+          <div className="text-7xl md:text-8xl font-mono font-bold text-blue-400">
+            {Math.floor(restSeconds / 60)}:{String(restSeconds % 60).padStart(2, '0')}
+          </div>
+          <p className="text-lg text-gray-400 mt-2">Tap when ready</p>
         </button>
-      </div>
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center gap-6">
+          <div className="flex items-center gap-8">
+            {/* Weight */}
+            <div className="flex flex-col items-center gap-2">
+              <label className="text-xs text-gray-500 uppercase tracking-wider">Weight (kg)</label>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setWeight(Math.max(0, weight - 2.5))}
+                  className="w-14 h-14 bg-white/10 rounded-xl text-2xl font-bold hover:bg-white/15 transition-colors"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  value={weight}
+                  onChange={(e) => setWeight(parseFloat(e.target.value) || 0)}
+                  aria-label="Weight in kilograms"
+                  className="w-24 h-16 bg-white/5 border border-white/10 rounded-xl text-3xl font-bold text-center focus:outline-none focus:border-blue-500"
+                />
+                <button
+                  onClick={() => setWeight(weight + 2.5)}
+                  className="w-14 h-14 bg-white/10 rounded-xl text-2xl font-bold hover:bg-white/15 transition-colors"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Reps */}
+            <div className="flex flex-col items-center gap-2">
+              <label className="text-xs text-gray-500 uppercase tracking-wider">Reps</label>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setReps(Math.max(1, reps - 1))}
+                  className="w-14 h-14 bg-white/10 rounded-xl text-2xl font-bold hover:bg-white/15 transition-colors"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  value={reps}
+                  onChange={(e) => setReps(parseInt(e.target.value) || 1)}
+                  aria-label="Number of repetitions"
+                  className="w-24 h-16 bg-white/5 border border-white/10 rounded-xl text-3xl font-bold text-center focus:outline-none focus:border-blue-500"
+                />
+                <button
+                  onClick={() => setReps(reps + 1)}
+                  className="w-14 h-14 bg-white/10 rounded-xl text-2xl font-bold hover:bg-white/15 transition-colors"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={handleLogSet}
+            disabled={completedSets >= MAX_SETS}
+            className="w-full max-w-md py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl text-xl font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            {completedSets >= MAX_SETS ? 'MAX SETS REACHED' : 'LOG SET'}
+          </button>
+        </div>
+      )}
 
       {/* Bottom nav */}
       <div className="flex-shrink-0 flex items-center justify-between gap-3 mt-4">
@@ -511,11 +551,14 @@ function ReflectionScreen({ sessionId, onDone }: { sessionId: string; onDone: ()
   const handleSave = async () => {
     setSaving(true);
     try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
       // Create the auto-generated reflection first
-      await createReflection(sessionId);
+      await createReflection(supabase, user.id, sessionId);
       // Then add user input
       if (rating || note) {
-        await updateReflection(sessionId, {
+        await updateReflection(supabase, sessionId, {
           session_rating: rating ?? undefined,
           reflection_note: note || undefined,
         });

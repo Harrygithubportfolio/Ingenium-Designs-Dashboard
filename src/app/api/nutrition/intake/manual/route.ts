@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ data: null, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } }, { status: 401 });
+  }
+
   const body = await request.json();
   const { meal_type, items, notes } = body;
 
@@ -11,7 +17,7 @@ export async function POST(request: NextRequest) {
 
   const { data: event, error: eErr } = await supabase
     .from('intake_events')
-    .insert({ intake_method: 'manual', meal_type, notes: notes ?? null })
+    .insert({ user_id: user.id, intake_method: 'manual', meal_type, notes: notes ?? null })
     .select()
     .single();
   if (eErr) return NextResponse.json({ data: null, error: { code: 'INSERT_ERROR', message: eErr.message } }, { status: 500 });

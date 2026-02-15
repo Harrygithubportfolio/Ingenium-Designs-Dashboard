@@ -6,7 +6,7 @@ import { getDateString, formatDay } from '@/lib/weather';
 // CONFIGURATION
 // ============================================
 
-const API_KEY = '0e05aafccdc0ad13f519b1798c0ab565';
+const API_KEY = process.env.OPENWEATHER_API_KEY!;
 const LAT = '53.9921';
 const LON = '-1.5418';
 

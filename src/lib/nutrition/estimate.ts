@@ -1,45 +1,30 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { getAiProvider } from '@/lib/ai/provider';
+import { parseAiJson } from '@/lib/ai/parse-json';
 import { buildEstimationPrompt } from './ai-prompt';
 import { lookupUsda } from './usda-lookup';
 import type { AiEstimatedItem, EstimationRequest, EstimationResponse } from './ai-types';
 
-const MODEL = 'claude-sonnet-4-5-20250929';
-
 export async function estimateMealFromText(
   input: EstimationRequest
 ): Promise<EstimationResponse> {
-  const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY!,
+  const provider = getAiProvider();
+  const prompt = buildEstimationPrompt(input.description);
+
+  const result = await provider.complete({
+    prompt,
+    maxTokens: 2048,
+    jsonMode: true,
   });
 
-  const { system, user } = buildEstimationPrompt(input.description);
+  const parsed = parseAiJson<{ items: Omit<AiEstimatedItem, 'data_source'>[] }>(
+    result.text
+  );
 
-  const message = await anthropic.messages.create({
-    model: MODEL,
-    max_tokens: 2048,
-    system,
-    messages: [{ role: 'user', content: user }],
-  });
-
-  // Extract text content from response
-  const textBlock = message.content.find((b) => b.type === 'text');
-  if (!textBlock || textBlock.type !== 'text') {
-    throw new Error('No text response from Claude');
-  }
-
-  // Parse JSON from response
-  let parsed: { items: Omit<AiEstimatedItem, 'data_source'>[] };
-  try {
-    parsed = JSON.parse(textBlock.text);
-  } catch {
-    // Try to extract JSON from markdown code block if Claude wraps it
-    const jsonMatch = textBlock.text.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) {
-      parsed = JSON.parse(jsonMatch[1]);
-    } else {
-      throw new Error('Failed to parse AI response as JSON');
-    }
-  }
+  // Determine data_source labels based on provider
+  const aiOnlySource: AiEstimatedItem['data_source'] =
+    provider.name === 'anthropic' ? 'claude' : 'gemini';
+  const aiPlusUsdaSource: AiEstimatedItem['data_source'] =
+    provider.name === 'anthropic' ? 'claude+usda' : 'gemini+usda';
 
   // Cross-reference with USDA for each item
   const enhancedItems: AiEstimatedItem[] = await Promise.all(
@@ -53,7 +38,7 @@ export async function estimateMealFromText(
         const usdaCarbs = Math.round(usda.carbs_g * scale * 10) / 10;
         const usdaFat = Math.round(usda.fat_g * scale * 10) / 10;
 
-        // Check how close Claude and USDA agree
+        // Check how close AI and USDA agree
         const calDiff =
           Math.abs(item.calories - usdaCals) / Math.max(item.calories, 1);
 
@@ -68,7 +53,7 @@ export async function estimateMealFromText(
               Math.round(((item.carbs_g + usdaCarbs) / 2) * 10) / 10,
             fat_g: Math.round(((item.fat_g + usdaFat) / 2) * 10) / 10,
             confidence_score: Math.min(1.0, item.confidence_score + 0.15),
-            data_source: 'claude+usda' as const,
+            data_source: aiPlusUsdaSource,
           };
         } else {
           // Large divergence — prefer USDA (lab-measured)
@@ -84,13 +69,13 @@ export async function estimateMealFromText(
         }
       }
 
-      return { ...item, data_source: 'claude' as const };
+      return { ...item, data_source: aiOnlySource };
     })
   );
 
   return {
     items: enhancedItems,
     raw_description: input.description,
-    model_used: MODEL,
+    model_used: result.modelUsed,
   };
 }
