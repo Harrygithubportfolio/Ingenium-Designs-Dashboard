@@ -13,7 +13,12 @@ export async function GET(request: NextRequest) {
   const error = request.nextUrl.searchParams.get('error');
 
   // Build redirect URL for the calendar page
-  const baseUrl = request.nextUrl.origin;
+  // Use x-forwarded-host (set by Railway/proxies) to get the real public domain
+  const forwardedHost = request.headers.get('x-forwarded-host');
+  const forwardedProto = request.headers.get('x-forwarded-proto') || 'https';
+  const baseUrl = forwardedHost
+    ? `${forwardedProto}://${forwardedHost}`
+    : request.nextUrl.origin;
   const calendarUrl = `${baseUrl}/calendar`;
 
   if (error) {
