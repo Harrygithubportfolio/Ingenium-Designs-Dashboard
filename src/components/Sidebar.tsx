@@ -138,8 +138,7 @@ const primaryNavItems: NavItem[] = [
   { name: 'Dashboard', href: '/', icon: <Icons.Dashboard /> },
   { name: 'Calendar', href: '/calendar', icon: <Icons.Calendar /> },
   { name: 'Weather', href: '/weather', icon: <Icons.Weather /> },
-  { name: 'Fitness', href: '/fitness', icon: <Icons.Fitness /> },
-  { name: 'Nutrition', href: '/nutrition', icon: <Icons.Fitness /> },
+  { name: 'Fitness & Nutrition', href: '/fitness-nutrition', icon: <Icons.Fitness /> },
   { name: 'Focus', href: '/focus', icon: <Icons.Focus /> },
   { name: 'Goals', href: '/goals', icon: <Icons.Goals /> },
   { name: 'AI Chatbot', href: '/chatbot', icon: <Icons.AI /> },
@@ -202,7 +201,8 @@ export default function Sidebar({ isPrimary, isCollapsed, onToggleCollapse }: Si
           </p>
           <ul className="space-y-1">
             {navItems.map((item, index) => {
-              const isActive = pathname === item.href;
+              const isActive = pathname === item.href ||
+                (item.href === '/fitness-nutrition' && (pathname.startsWith('/fitness') || pathname.startsWith('/nutrition')));
               return (
                 <li
                   key={item.href}

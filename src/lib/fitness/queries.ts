@@ -28,7 +28,7 @@ export async function fetchTemplate(id: string) {
 export async function fetchSchedule(from: string, to: string) {
   const { data, error } = await supabase
     .from('scheduled_workouts')
-    .select('*, template:workout_templates(id, name, training_intent)')
+    .select('*, template:workout_templates(id, name, training_intent, description, exercises:template_exercises(*))')
     .gte('scheduled_date', from)
     .lte('scheduled_date', to)
     .order('scheduled_date', { ascending: true });

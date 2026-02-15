@@ -2,15 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { AnimatePresence } from 'framer-motion';
 import { useFitnessSchedule } from '@/store/useFitnessSchedule';
 import WorkoutStatusBadge from '@/components/fitness/WorkoutStatusBadge';
 import TrainingIntentBadge from '@/components/fitness/TrainingIntentBadge';
-import type { WorkoutTemplate } from '@/lib/fitness/types';
+import WorkoutDetailModal from '@/components/fitness/WorkoutDetailModal';
+import type { WorkoutTemplate, ScheduledWorkout } from '@/lib/fitness/types';
 import { scheduleWorkout } from '@/lib/fitness/mutations';
 
 export default function SchedulePage() {
   const { weekSchedule, templates, loading, refresh, fetchTemplates } = useFitnessSchedule();
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [selectedWorkout, setSelectedWorkout] = useState<ScheduledWorkout | null>(null);
 
   useEffect(() => {
     refresh();
@@ -22,7 +25,7 @@ export default function SchedulePage() {
     <div className="h-full flex flex-col gap-4 overflow-hidden">
       <header className="flex-shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/fitness" className="text-gray-500 hover:text-white transition-colors">
+          <Link href="/fitness-nutrition" className="text-gray-500 hover:text-white transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -72,8 +75,13 @@ export default function SchedulePage() {
                     </div>
                   ) : (
                     dayWorkouts.map((w) => (
-                      <div key={w.id} className="p-2 bg-[#14141a] rounded-lg">
-                        <p className="text-xs font-medium text-white truncate">
+                      <button
+                        type="button"
+                        key={w.id}
+                        onClick={() => setSelectedWorkout(w)}
+                        className="w-full p-2 bg-[#14141a] rounded-lg text-left hover:bg-[#22222c] border border-transparent hover:border-[#3b82f6]/30 transition-all cursor-pointer group"
+                      >
+                        <p className="text-xs font-medium text-white truncate group-hover:text-[#3b82f6] transition-colors">
                           {w.template?.name ?? 'Workout'}
                         </p>
                         {w.template && (
@@ -82,7 +90,7 @@ export default function SchedulePage() {
                         <div className="mt-1">
                           <WorkoutStatusBadge status={w.status} />
                         </div>
-                      </div>
+                      </button>
                     ))
                   )}
                 </div>
@@ -102,6 +110,15 @@ export default function SchedulePage() {
           }}
         />
       )}
+
+      <AnimatePresence>
+        {selectedWorkout && (
+          <WorkoutDetailModal
+            workout={selectedWorkout}
+            onClose={() => setSelectedWorkout(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -4,7 +4,7 @@
 
 // --- Enums ---
 
-export type IntakeMethod = 'photo' | 'manual';
+export type IntakeMethod = 'photo' | 'manual' | 'ai_text';
 
 export type MealType =
   | 'breakfast'

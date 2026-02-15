@@ -3,12 +3,14 @@ import { getUserId } from '@/lib/getUserId';
 import type {
   IntakeEvent,
   IntakeItem,
+  MealType,
   ManualIntakeInput,
   EditIntakeItemInput,
   DailyTargetInput,
   NutritionReflection,
   NutritionReflectionInput,
 } from './types';
+import type { AiEstimatedItem } from './ai-types';
 import { computeDailySummary } from './queries';
 
 // --- Intake Events ---
@@ -162,4 +164,47 @@ export async function createNutritionReflection(input: NutritionReflectionInput)
     .single();
   if (error) throw new Error(error.message);
   return data as NutritionReflection;
+}
+
+// --- AI Text Intake ---
+
+export interface AiTextIntakeInput {
+  meal_type: MealType;
+  items: AiEstimatedItem[];
+  raw_description: string;
+  notes?: string;
+}
+
+export async function createAiTextIntake(input: AiTextIntakeInput) {
+  const userId = await getUserId();
+
+  const { data: event, error: eErr } = await supabase
+    .from('intake_events')
+    .insert({
+      user_id: userId,
+      intake_method: 'ai_text',
+      meal_type: input.meal_type,
+      notes: input.raw_description + (input.notes ? `\n---\n${input.notes}` : ''),
+    })
+    .select()
+    .single();
+  if (eErr) throw new Error(eErr.message);
+
+  const items = input.items.map((item) => ({
+    intake_event_id: event.id,
+    food_name: item.food_name,
+    portion_description: item.portion_description ?? null,
+    portion_grams: item.portion_grams ?? null,
+    estimated_calories: item.calories,
+    estimated_protein_g: item.protein_g,
+    estimated_carbs_g: item.carbs_g,
+    estimated_fat_g: item.fat_g,
+    confidence_score: item.confidence_score,
+    was_edited: false,
+  }));
+
+  const { error: iErr } = await supabase.from('intake_items').insert(items);
+  if (iErr) throw new Error(iErr.message);
+
+  return event as IntakeEvent;
 }

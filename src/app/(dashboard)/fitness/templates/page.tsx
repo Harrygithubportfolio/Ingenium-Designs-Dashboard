@@ -26,7 +26,7 @@ export default function TemplatesPage() {
     <div className="h-full flex flex-col gap-4 overflow-hidden">
       <header className="flex-shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/fitness" className="text-gray-500 hover:text-white transition-colors">
+          <Link href="/fitness-nutrition" className="text-gray-500 hover:text-white transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
