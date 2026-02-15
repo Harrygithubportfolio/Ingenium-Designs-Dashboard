@@ -73,11 +73,11 @@ export default function Home() {
             href="/fitness"
           />
           <NavCard
-            title="AI Assistant"
-            description="Ready to help"
-            icon="bot"
-            gradient="from-purple-500 to-violet-500"
-            href="/chatbot"
+            title="Spotify"
+            description="Your music"
+            icon="music"
+            gradient="from-green-500 to-emerald-500"
+            href="/spotify"
           />
           <NavCard
             title="Quick Notes"
