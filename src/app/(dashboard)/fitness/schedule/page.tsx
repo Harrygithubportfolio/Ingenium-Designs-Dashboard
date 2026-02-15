@@ -244,7 +244,7 @@ function ScheduleModal({
       <div className="w-full max-w-md bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-white">Schedule Workout</h2>
-          <button type="button" onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
+          <button type="button" onClick={onClose} aria-label="Close modal" className="text-gray-500 hover:text-white transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -257,6 +257,7 @@ function ScheduleModal({
             <select
               value={selectedTemplate}
               onChange={(e) => setSelectedTemplate(e.target.value)}
+              aria-label="Select workout template"
               className="w-full px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white focus:outline-none focus:border-[#3b82f6]"
             >
               <option value="">Select a template...</option>
@@ -274,6 +275,7 @@ function ScheduleModal({
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              aria-label="Select workout date"
               className="w-full px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white focus:outline-none focus:border-[#3b82f6]"
             />
           </div>

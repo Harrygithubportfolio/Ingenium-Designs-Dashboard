@@ -64,6 +64,7 @@ export default function ExerciseSearch({ onSelect, selected }: Props) {
               setQuery('');
               onSelect('');
             }}
+            aria-label="Clear selection"
             className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded text-gray-500 hover:text-white hover:bg-[#2a2a33] transition-colors"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
