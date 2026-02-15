@@ -133,6 +133,7 @@ function MacroInput({
           type="number"
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          aria-label={`${label} target`}
           className="flex-1 px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white focus:outline-none focus:border-[#3b82f6]"
         />
         <span className="text-xs text-gray-500 w-8">{unit}</span>

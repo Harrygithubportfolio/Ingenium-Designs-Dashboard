@@ -59,6 +59,7 @@ export default function EditGoalModal({ goal, onClose }: EditGoalModalProps) {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            aria-label="Goal title"
             className="w-full rounded-xl border border-[#2a2a33] bg-[#0f0f14] px-4 py-4 text-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#3b82f6] transition-colors"
           />
         </div>
@@ -71,6 +72,7 @@ export default function EditGoalModal({ goal, onClose }: EditGoalModalProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
+            aria-label="Goal description"
             className="w-full rounded-xl border border-[#2a2a33] bg-[#0f0f14] px-4 py-4 text-base text-white placeholder-gray-600 focus:outline-none focus:border-[#3b82f6] transition-colors resize-none"
           />
         </div>

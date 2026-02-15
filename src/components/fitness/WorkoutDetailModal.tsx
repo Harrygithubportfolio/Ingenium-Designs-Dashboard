@@ -53,6 +53,7 @@ export default function WorkoutDetailModal({ workout, onClose, onReschedule }: P
             </div>
             <button
               onClick={onClose}
+              aria-label="Close modal"
               className="ml-3 p-1.5 text-gray-500 hover:text-white hover:bg-[#22222c] rounded-lg transition-colors flex-shrink-0"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

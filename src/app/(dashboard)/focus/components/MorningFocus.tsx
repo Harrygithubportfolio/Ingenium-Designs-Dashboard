@@ -196,6 +196,7 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
                   <button
                     type="button"
                     onClick={() => handleRemoveTask(task.id)}
+                    aria-label="Remove task"
                     className="opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-400 transition-all"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -307,6 +308,7 @@ export default function MorningFocus({ focus, onFocusChange }: MorningFocusProps
         <button
           type="button"
           onClick={() => setIsEditing(true)}
+          aria-label="Edit focus"
           className="p-2 text-gray-400 hover:text-white hover:bg-[#22222c] rounded-lg transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

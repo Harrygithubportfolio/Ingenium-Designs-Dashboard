@@ -15,9 +15,8 @@
   --accent-hover: #2563eb;
   --accent-glow: rgba(59, 130, 246, 0.15);
   --accent-subtle: rgba(59, 130, 246, 0.1);
-}
-
-@theme inline {
+  
+  /* Theme tokens */
   --color-background: var(--bg-primary);
   --color-foreground: var(--text-primary);
   --color-sidebar: var(--bg-sidebar);
@@ -31,11 +30,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Scrollbar styling with fallback for older browsers */
 * {
+  /* Modern browsers (Chrome 121+, Firefox) */
   scrollbar-width: thin;
   scrollbar-color: var(--border-color) transparent;
 }
 
+/* Webkit browsers (Chrome, Safari, Edge) */
 *::-webkit-scrollbar {
   width: 6px;
   height: 6px;

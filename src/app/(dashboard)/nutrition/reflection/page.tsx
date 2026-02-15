@@ -105,7 +105,7 @@ export default function NutritionReflectionPage() {
             <div className="w-full h-3 bg-[#22222c] rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-full transition-all duration-500"
-                style={{ width: `${avgAdh}%` }}
+                style={{ ['--progress-width' as string]: `${avgAdh}%`, width: 'var(--progress-width)' } as React.CSSProperties}
               />
             </div>
           </div>
@@ -223,7 +223,7 @@ function AdherenceRow({
       <div className="w-full h-1.5 bg-[#22222c] rounded-full overflow-hidden">
         <div
           className="h-full bg-[#3b82f6] rounded-full transition-all duration-300"
-          style={{ width: `${Math.min(100, pct)}%` }}
+          style={{ ['--progress-width' as string]: `${Math.min(100, pct)}%`, width: 'var(--progress-width)' } as React.CSSProperties}
         />
       </div>
     </div>

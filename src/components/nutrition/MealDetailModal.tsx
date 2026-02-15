@@ -161,6 +161,7 @@ export default function MealDetailModal({ event, open, onClose, onRefresh }: Pro
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close modal"
             className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#14141a] transition-colors text-gray-400 hover:text-white"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -157,7 +157,7 @@ function CreateTemplateModal({
       <div className="w-full max-w-lg bg-[#1a1a22] rounded-2xl border border-[#2a2a33] p-6 max-h-[90vh] flex flex-col overflow-hidden">
         <div className="flex items-center justify-between mb-4 flex-shrink-0">
           <h2 className="text-lg font-semibold text-white">New Template</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
+          <button onClick={onClose} aria-label="Close modal" className="text-gray-500 hover:text-white transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -181,6 +181,7 @@ function CreateTemplateModal({
             <select
               value={intent}
               onChange={(e) => setIntent(e.target.value as TrainingIntent)}
+              aria-label="Select training intent"
               className="w-full px-3 py-2 bg-[#14141a] border border-[#2a2a33] rounded-lg text-sm text-white focus:outline-none focus:border-[#3b82f6]"
             >
               <option value="strength">Strength</option>
@@ -249,6 +250,7 @@ function CreateTemplateModal({
                   {exercises.length > 1 && (
                     <button
                       onClick={() => removeExercise(i)}
+                      aria-label="Remove exercise"
                       className="text-gray-600 hover:text-red-400 transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

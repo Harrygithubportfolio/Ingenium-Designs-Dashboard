@@ -132,6 +132,7 @@ export default function LogMealPage() {
                   {entries.length > 1 && (
                     <button
                       onClick={() => removeEntry(i)}
+                      aria-label="Remove food entry"
                       className="text-gray-600 hover:text-red-400 transition-colors p-1"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

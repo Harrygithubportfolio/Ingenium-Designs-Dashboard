@@ -338,6 +338,7 @@ function ReviewStep({
                   <button
                     type="button"
                     onClick={() => onRemoveItem(i)}
+                    aria-label="Remove item"
                     className="text-gray-600 hover:text-red-400 transition-colors p-1"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,6 +370,7 @@ function ReviewStep({
                     type="number"
                     value={item.calories}
                     onChange={(e) => onUpdateItem(i, 'calories', e.target.value)}
+                    aria-label="Calories"
                     className="w-full px-2 py-1.5 bg-[#22222c] rounded text-xs text-white text-center placeholder:text-gray-600 focus:outline-none"
                   />
                 </div>
@@ -378,6 +380,7 @@ function ReviewStep({
                     type="number"
                     value={item.protein_g}
                     onChange={(e) => onUpdateItem(i, 'protein_g', e.target.value)}
+                    aria-label="Protein in grams"
                     className="w-full px-2 py-1.5 bg-[#22222c] rounded text-xs text-white text-center placeholder:text-gray-600 focus:outline-none"
                   />
                 </div>
@@ -387,6 +390,7 @@ function ReviewStep({
                     type="number"
                     value={item.carbs_g}
                     onChange={(e) => onUpdateItem(i, 'carbs_g', e.target.value)}
+                    aria-label="Carbs in grams"
                     className="w-full px-2 py-1.5 bg-[#22222c] rounded text-xs text-white text-center placeholder:text-gray-600 focus:outline-none"
                   />
                 </div>
@@ -396,6 +400,7 @@ function ReviewStep({
                     type="number"
                     value={item.fat_g}
                     onChange={(e) => onUpdateItem(i, 'fat_g', e.target.value)}
+                    aria-label="Fat in grams"
                     className="w-full px-2 py-1.5 bg-[#22222c] rounded text-xs text-white text-center placeholder:text-gray-600 focus:outline-none"
                   />
                 </div>
