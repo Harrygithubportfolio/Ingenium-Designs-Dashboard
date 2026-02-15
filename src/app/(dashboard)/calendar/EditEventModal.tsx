@@ -2,36 +2,45 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CalendarEvent } from './mock-data';
+import { useCalendar } from '@/store/useCalendar';
+import type { CalendarEvent } from '@/lib/calendar/types';
 
 interface Props {
   event: CalendarEvent;
   onClose: () => void;
-  onSave: (event: CalendarEvent) => void;
-  onDelete: (id: number) => void;
+  onSave: () => void;
+  onDelete: () => void;
 }
 
 export default function EditEventModal({ event, onClose, onSave, onDelete }: Props) {
+  const { updateEvent, deleteEvent } = useCalendar();
   const [title, setTitle] = useState(event.title);
-  const [date, setDate] = useState(event.date);
-  const [time, setTime] = useState(event.time || '');
+  const [date, setDate] = useState(event.event_date);
+  const [startTime, setStartTime] = useState(event.start_time?.slice(0, 5) || '');
+  const [endTime, setEndTime] = useState(event.end_time?.slice(0, 5) || '');
   const [location, setLocation] = useState(event.location || '');
   const [description, setDescription] = useState(event.description || '');
+  const [isAllDay, setIsAllDay] = useState(event.is_all_day);
+  const [saving, setSaving] = useState(false);
 
-  const save = () => {
-    onSave({
-      ...event,
+  const save = async () => {
+    setSaving(true);
+    await updateEvent(event.id, {
       title,
-      date,
-      time,
-      location,
-      description,
+      event_date: date,
+      start_time: isAllDay ? undefined : startTime || undefined,
+      end_time: isAllDay ? undefined : endTime || undefined,
+      location: location || undefined,
+      description: description || undefined,
+      is_all_day: isAllDay,
     });
-    onClose();
+    setSaving(false);
+    onSave();
   };
 
-  const handleDelete = () => {
-    onDelete(event.id);
+  const handleDelete = async () => {
+    await deleteEvent(event.id);
+    onDelete();
   };
 
   return (
@@ -48,7 +57,20 @@ export default function EditEventModal({ event, onClose, onSave, onDelete }: Pro
         exit={{ scale: 0.8, opacity: 0, y: 20 }}
         transition={{ duration: 0.25 }}
       >
-        <h2 className="text-2xl font-bold text-white mb-4">Edit Event</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-2xl font-bold text-white">Edit Event</h2>
+          {event.source === 'google' && (
+            <span className="px-2 py-0.5 text-[0.65rem] font-medium rounded-full bg-emerald-500/20 text-emerald-400">
+              Google
+            </span>
+          )}
+        </div>
+
+        {event.source === 'google' && (
+          <p className="text-xs text-emerald-400/80 mb-3">
+            Changes will sync back to Google Calendar.
+          </p>
+        )}
 
         <div className="space-y-3">
           <input
@@ -66,13 +88,40 @@ export default function EditEventModal({ event, onClose, onSave, onDelete }: Pro
             onChange={e => setDate(e.target.value)}
           />
 
-          <input
-            type="time"
-            className="w-full p-2 rounded bg-[#2a2a33] text-white"
-            aria-label="Event time"
-            value={time}
-            onChange={e => setTime(e.target.value)}
-          />
+          <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isAllDay}
+              onChange={e => setIsAllDay(e.target.checked)}
+              className="rounded bg-[#2a2a33] border-[#3a3a44]"
+            />
+            All day
+          </label>
+
+          {!isAllDay && (
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <label className="text-xs text-gray-400 mb-1 block">Start</label>
+                <input
+                  type="time"
+                  className="w-full p-2 rounded bg-[#2a2a33] text-white"
+                  aria-label="Start time"
+                  value={startTime}
+                  onChange={e => setStartTime(e.target.value)}
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-xs text-gray-400 mb-1 block">End</label>
+                <input
+                  type="time"
+                  className="w-full p-2 rounded bg-[#2a2a33] text-white"
+                  aria-label="End time"
+                  value={endTime}
+                  onChange={e => setEndTime(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
 
           <input
             className="w-full p-2 rounded bg-[#2a2a33] text-white"
@@ -91,9 +140,10 @@ export default function EditEventModal({ event, onClose, onSave, onDelete }: Pro
 
         <button
           onClick={save}
-          className="mt-6 w-full py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+          disabled={saving}
+          className="mt-6 w-full py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
         >
-          Save Changes
+          {saving ? 'Saving...' : 'Save Changes'}
         </button>
 
         <button

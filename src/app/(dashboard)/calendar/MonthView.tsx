@@ -1,6 +1,6 @@
 'use client';
 
-import { CalendarEvent } from './mock-data';
+import type { CalendarEvent } from '@/lib/calendar/types';
 import MonthSelector from './MonthSelector';
 
 type MonthViewProps = {
@@ -37,7 +37,7 @@ export default function MonthView({
               Monthly Spread
             </p>
             <p className="mt-1 text-xs text-[#c4bba9]">
-              A bird’s‑eye view, like a planner spread.
+              A bird&rsquo;s-eye view, like a planner spread.
             </p>
           </div>
 
@@ -61,7 +61,7 @@ export default function MonthView({
             {Array.from({ length: daysInMonth }).map((_, i) => {
               const date = new Date(year, month, i + 1);
               const dateStr = date.toISOString().split('T')[0];
-              const dayEventsForDate = events.filter(e => e.date === dateStr);
+              const dayEventsForDate = events.filter(e => e.event_date === dateStr);
               const isTodayFlag = isSameDay(date, today);
               const isSelected = isSameDay(date, currentDate);
 
@@ -95,7 +95,11 @@ export default function MonthView({
                     {dayEventsForDate.slice(0, 2).map(event => (
                       <div
                         key={event.id}
-                        className="w-full rounded-full bg-[#3a352c] px-2 py-0.5 text-[0.7rem] text-[#f5e7cf] truncate"
+                        className={`w-full rounded-full px-2 py-0.5 text-[0.7rem] truncate ${
+                          event.source === 'google'
+                            ? 'bg-emerald-500/20 text-emerald-300'
+                            : 'bg-[#3a352c] text-[#f5e7cf]'
+                        }`}
                       >
                         {event.title}
                       </div>

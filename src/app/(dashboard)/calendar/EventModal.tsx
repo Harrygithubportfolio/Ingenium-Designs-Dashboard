@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { CalendarEvent } from './mock-data';
+import type { CalendarEvent } from '@/lib/calendar/types';
 
 interface Props {
   event: CalendarEvent;
@@ -24,11 +24,24 @@ export default function EventModal({ event, onClose, onEdit }: Props) {
         exit={{ scale: 0.8, opacity: 0, y: 20 }}
         transition={{ duration: 0.25 }}
       >
-        <h2 className="text-2xl font-bold text-white mb-4">{event.title}</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-2xl font-bold text-white">{event.title}</h2>
+          {event.source === 'google' && (
+            <span className="px-2 py-0.5 text-[0.65rem] font-medium rounded-full bg-emerald-500/20 text-emerald-400">
+              Google
+            </span>
+          )}
+        </div>
 
         <div className="space-y-2 text-gray-300">
-          <p><strong>Date:</strong> {event.date}</p>
-          {event.time && <p><strong>Time:</strong> {event.time}</p>}
+          <p><strong>Date:</strong> {event.event_date}</p>
+          {event.start_time && (
+            <p>
+              <strong>Time:</strong> {event.start_time.slice(0, 5)}
+              {event.end_time && ` – ${event.end_time.slice(0, 5)}`}
+            </p>
+          )}
+          {event.is_all_day && <p><strong>All day</strong></p>}
           {event.location && <p><strong>Location:</strong> {event.location}</p>}
           {event.description && <p><strong>Details:</strong> {event.description}</p>}
         </div>

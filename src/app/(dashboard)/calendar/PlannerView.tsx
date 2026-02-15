@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CalendarEvent } from './mock-data';
+import type { CalendarEvent } from '@/lib/calendar/types';
 import ResizablePanel from '@/components/ResizablePanel';
 
 type PlannerViewProps = {
@@ -44,21 +44,33 @@ export default function PlannerView({
       key={event.id}
       type="button"
       onClick={() => onSelectEvent(event)}
-      className="w-full rounded-xl border border-[#2a2a33] bg-[#1a1a22] px-3 py-2.5 text-left hover:border-[#3b82f6] hover:bg-[#1e1e28] transition-all group"
+      className={`w-full rounded-xl border px-3 py-2.5 text-left hover:border-[#3b82f6] hover:bg-[#1e1e28] transition-all group ${
+        event.source === 'google'
+          ? 'border-l-[3px] border-l-emerald-500 border-y-[#2a2a33] border-r-[#2a2a33] bg-[#1a1a22]'
+          : 'border-[#2a2a33] bg-[#1a1a22]'
+      }`}
     >
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-medium text-white group-hover:text-[#3b82f6] truncate">
-          {event.title}
-        </p>
-        {event.time && (
+        <div className="flex items-center gap-2 min-w-0">
+          {event.source === 'google' && (
+            <span className="flex-shrink-0 w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            </span>
+          )}
+          <p className="text-sm font-medium text-white group-hover:text-[#3b82f6] truncate">
+            {event.title}
+          </p>
+        </div>
+        {event.start_time && (
           <span className="text-xs text-gray-400 flex-shrink-0">
-            {event.time}
+            {event.start_time.slice(0, 5)}
+            {event.end_time && ` – ${event.end_time.slice(0, 5)}`}
           </span>
         )}
       </div>
       {event.location && (
         <p className="mt-1 text-xs text-gray-500 truncate">
-          📍 {event.location}
+          {event.location}
         </p>
       )}
     </button>
@@ -76,7 +88,7 @@ export default function PlannerView({
             : 'bg-[#1a1a22] text-gray-400 border border-[#2a2a33] hover:border-[#3b82f6]'
         }`}
       >
-        {resizeEnabled ? '✓ Resize Mode' : 'Enable Resize'}
+        {resizeEnabled ? 'Resize Mode' : 'Enable Resize'}
       </button>
 
       {/* DAY VIEW */}
@@ -112,7 +124,7 @@ export default function PlannerView({
                 onClick={onPrevDay}
                 className="px-2 py-1 text-xs rounded-lg bg-[#1a1a22] border border-[#2a2a33] text-gray-400 hover:text-[#3b82f6] hover:border-[#3b82f6] transition-all"
               >
-                ←
+                &larr;
               </button>
               <button
                 type="button"
@@ -126,7 +138,7 @@ export default function PlannerView({
                 onClick={onNextDay}
                 className="px-2 py-1 text-xs rounded-lg bg-[#1a1a22] border border-[#2a2a33] text-gray-400 hover:text-[#3b82f6] hover:border-[#3b82f6] transition-all"
               >
-                →
+                &rarr;
               </button>
             </div>
           </div>
@@ -164,14 +176,14 @@ export default function PlannerView({
                 onClick={() => onWeekChange(-1)}
                 className="px-2 py-1 text-xs rounded-lg bg-[#1a1a22] border border-[#2a2a33] text-gray-400 hover:text-[#3b82f6] hover:border-[#3b82f6] transition-all"
               >
-                ←
+                &larr;
               </button>
               <span className="text-xs text-gray-400">
                 {weekStart.toLocaleDateString('default', {
                   day: 'numeric',
                   month: 'short',
                 })}{' '}
-                –{' '}
+                &ndash;{' '}
                 {new Date(
                   weekStart.getFullYear(),
                   weekStart.getMonth(),
@@ -186,7 +198,7 @@ export default function PlannerView({
                 onClick={() => onWeekChange(1)}
                 className="px-2 py-1 text-xs rounded-lg bg-[#1a1a22] border border-[#2a2a33] text-gray-400 hover:text-[#3b82f6] hover:border-[#3b82f6] transition-all"
               >
-                →
+                &rarr;
               </button>
             </div>
           </div>
@@ -194,7 +206,8 @@ export default function PlannerView({
           <div className="flex gap-2 justify-between flex-1 min-h-0">
             {weekDays.map((d, idx) => {
               const dateStr = d.toISOString().split('T')[0];
-              const dayHasEvents = weekEvents.some((e) => e.date === dateStr);
+              const dayHasEvents = weekEvents.some((e) => e.event_date === dateStr);
+              const hasGoogleEvent = weekEvents.some((e) => e.event_date === dateStr && e.source === 'google');
               const isTodayFlag = isSameDay(d, today);
               const isSelected = isSameDay(d, currentDate);
 
@@ -221,7 +234,9 @@ export default function PlannerView({
                     <span className="mt-1 text-[0.6rem] text-[#3b82f6]">Today</span>
                   )}
                   {dayHasEvents && (
-                    <span className={`mt-1 h-1.5 w-1.5 rounded-full ${isSelected ? 'bg-[#3b82f6]' : 'bg-emerald-500'}`} />
+                    <span className={`mt-1 h-1.5 w-1.5 rounded-full ${
+                      hasGoogleEvent ? 'bg-emerald-500' : isSelected ? 'bg-[#3b82f6]' : 'bg-emerald-500'
+                    }`} />
                   )}
                 </button>
               );

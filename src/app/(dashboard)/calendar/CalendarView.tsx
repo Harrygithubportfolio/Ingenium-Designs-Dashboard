@@ -1,20 +1,21 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import mockEvents, { CalendarEvent } from './mock-data';
+import { useState, useMemo, useEffect } from 'react';
+import { useCalendar } from '@/store/useCalendar';
+import type { CalendarEvent } from '@/lib/calendar/types';
 import EventModal from './EventModal';
 import AddEventModal from './AddEventModal';
 import EditEventModal from './EditEventModal';
 import PlannerView from './PlannerView';
 import MonthView from './MonthView';
+import GoogleCalendarBanner from './GoogleCalendarBanner';
 
 type CalendarTab = 'planner' | 'month';
 
 export default function CalendarView() {
-  const [events, setEvents] = useState<CalendarEvent[]>(mockEvents);
+  const { events, loading, fetchEvents, fetchConnection } = useCalendar();
 
   const [tab, setTab] = useState<CalendarTab>('planner');
-
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
   const [adding, setAdding] = useState(false);
@@ -25,6 +26,41 @@ export default function CalendarView() {
 
   const today = new Date();
 
+  // Fetch connection status on mount
+  useEffect(() => {
+    fetchConnection();
+  }, [fetchConnection]);
+
+  // Compute the date range to fetch based on current view
+  const dateRange = useMemo(() => {
+    if (tab === 'month') {
+      const from = new Date(year, month, 1);
+      const to = new Date(year, month + 1, 0);
+      return {
+        from: from.toISOString().split('T')[0],
+        to: to.toISOString().split('T')[0],
+      };
+    }
+    // Planner view: fetch current week + buffer
+    const d = new Date(currentDate);
+    const day = d.getDay();
+    const diffToMonday = (day + 6) % 7;
+    d.setDate(d.getDate() - diffToMonday);
+    const from = new Date(d);
+    from.setDate(from.getDate() - 7); // week before
+    const to = new Date(d);
+    to.setDate(to.getDate() + 14); // two weeks after
+    return {
+      from: from.toISOString().split('T')[0],
+      to: to.toISOString().split('T')[0],
+    };
+  }, [tab, month, year, currentDate]);
+
+  // Fetch events whenever date range changes
+  useEffect(() => {
+    fetchEvents(dateRange.from, dateRange.to);
+  }, [dateRange.from, dateRange.to, fetchEvents]);
+
   const isSameDay = (a: Date, b: Date) =>
     a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
@@ -33,7 +69,7 @@ export default function CalendarView() {
   const currentDateStr = currentDate.toISOString().split('T')[0];
 
   const dayEvents = useMemo(
-    () => events.filter(e => e.date === currentDateStr),
+    () => events.filter((e) => e.event_date === currentDateStr),
     [events, currentDateStr]
   );
 
@@ -60,8 +96,8 @@ export default function CalendarView() {
     const start = new Date(weekStart);
     const end = new Date(weekStart);
     end.setDate(end.getDate() + 7);
-    return events.filter(e => {
-      const d = new Date(e.date);
+    return events.filter((e) => {
+      const d = new Date(e.event_date);
       return d >= start && d < end;
     });
   }, [events, weekStart]);
@@ -99,16 +135,18 @@ export default function CalendarView() {
     setCurrentDate(d);
   };
 
-  const addEvent = (event: CalendarEvent) => {
-    setEvents(prev => [...prev, event]);
+  const handleEventAdded = () => {
+    // Re-fetch events after adding
+    fetchEvents(dateRange.from, dateRange.to);
   };
 
-  const updateEvent = (updated: CalendarEvent) => {
-    setEvents(prev => prev.map(e => (e.id === updated.id ? updated : e)));
+  const handleEventUpdated = () => {
+    fetchEvents(dateRange.from, dateRange.to);
+    setEditingEvent(null);
   };
 
-  const deleteEvent = (id: number) => {
-    setEvents(prev => prev.filter(e => e.id !== id));
+  const handleEventDeleted = () => {
+    fetchEvents(dateRange.from, dateRange.to);
     setSelectedEvent(null);
     setEditingEvent(null);
   };
@@ -165,6 +203,17 @@ export default function CalendarView() {
         </div>
       </header>
 
+      {/* GOOGLE CALENDAR BANNER */}
+      <GoogleCalendarBanner />
+
+      {/* LOADING INDICATOR */}
+      {loading && (
+        <div className="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#1a1a22] border border-[#2a2a33]">
+          <div className="w-3 h-3 rounded-full border-2 border-[#3b82f6] border-t-transparent animate-spin" />
+          <span className="text-xs text-gray-400">Loading events...</span>
+        </div>
+      )}
+
       {/* MAIN CONTENT */}
       <main className="flex-1 min-h-0 flex flex-col">
         {tab === 'planner' && (
@@ -208,7 +257,7 @@ export default function CalendarView() {
       {adding && (
         <AddEventModal
           onClose={() => setAdding(false)}
-          onSave={addEvent}
+          onSave={handleEventAdded}
         />
       )}
 
@@ -227,8 +276,8 @@ export default function CalendarView() {
         <EditEventModal
           event={editingEvent}
           onClose={() => setEditingEvent(null)}
-          onSave={updateEvent}
-          onDelete={deleteEvent}
+          onSave={handleEventUpdated}
+          onDelete={handleEventDeleted}
         />
       )}
     </div>

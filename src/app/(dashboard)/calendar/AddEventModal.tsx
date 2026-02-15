@@ -2,30 +2,40 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CalendarEvent } from './mock-data';
+import { useCalendar } from '@/store/useCalendar';
 
 interface Props {
   onClose: () => void;
-  onSave: (event: CalendarEvent) => void;
+  onSave: () => void;
 }
 
 export default function AddEventModal({ onClose, onSave }: Props) {
+  const { addEvent, connection } = useCalendar();
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
+  const [isAllDay, setIsAllDay] = useState(false);
+  const [syncToGoogle, setSyncToGoogle] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const save = () => {
+  const save = async () => {
     if (!title || !date) return;
-    onSave({
-      id: Date.now(),
+    setSaving(true);
+    await addEvent({
       title,
-      date,
-      time,
-      location,
-      description,
+      event_date: date,
+      start_time: isAllDay ? undefined : startTime || undefined,
+      end_time: isAllDay ? undefined : endTime || undefined,
+      location: location || undefined,
+      description: description || undefined,
+      is_all_day: isAllDay,
+      sync_to_google: syncToGoogle,
     });
+    setSaving(false);
+    onSave();
     onClose();
   };
 
@@ -61,13 +71,40 @@ export default function AddEventModal({ onClose, onSave }: Props) {
             onChange={e => setDate(e.target.value)}
           />
 
-          <input
-            type="time"
-            className="w-full p-2 rounded bg-[#2a2a33] text-white"
-            aria-label="Event time"
-            value={time}
-            onChange={e => setTime(e.target.value)}
-          />
+          <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isAllDay}
+              onChange={e => setIsAllDay(e.target.checked)}
+              className="rounded bg-[#2a2a33] border-[#3a3a44]"
+            />
+            All day
+          </label>
+
+          {!isAllDay && (
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <label className="text-xs text-gray-400 mb-1 block">Start</label>
+                <input
+                  type="time"
+                  className="w-full p-2 rounded bg-[#2a2a33] text-white"
+                  aria-label="Start time"
+                  value={startTime}
+                  onChange={e => setStartTime(e.target.value)}
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-xs text-gray-400 mb-1 block">End</label>
+                <input
+                  type="time"
+                  className="w-full p-2 rounded bg-[#2a2a33] text-white"
+                  aria-label="End time"
+                  value={endTime}
+                  onChange={e => setEndTime(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
 
           <input
             className="w-full p-2 rounded bg-[#2a2a33] text-white"
@@ -82,13 +119,29 @@ export default function AddEventModal({ onClose, onSave }: Props) {
             value={description}
             onChange={e => setDescription(e.target.value)}
           />
+
+          {connection && (
+            <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={syncToGoogle}
+                onChange={e => setSyncToGoogle(e.target.checked)}
+                className="rounded bg-[#2a2a33] border-[#3a3a44]"
+              />
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                Sync to Google Calendar
+              </span>
+            </label>
+          )}
         </div>
 
         <button
           onClick={save}
-          className="mt-6 w-full py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+          disabled={saving || !title || !date}
+          className="mt-6 w-full py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Save Event
+          {saving ? 'Saving...' : 'Save Event'}
         </button>
 
         <button
