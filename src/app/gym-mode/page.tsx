@@ -68,17 +68,31 @@ export default function GymModePage() {
     return <ReflectionScreen sessionId={store.session!.id} onDone={() => { store.reset(); router.push('/fitness'); }} />;
   }
 
-  // Exercise view
+  // Check if any sets have been logged across all exercises
   const exercises = store.session?.exercises ?? [];
+  const hasLoggedSets = exercises.some((ex) => (ex.sets ?? []).length > 0);
+
+  const handleChangeMode = async () => {
+    await store.abandon();
+    store.reset();
+    fetchToday();
+    setView('start');
+  };
+
   const current = exercises[store.currentExerciseIndex];
 
   if (!current) {
     return (
       <div className="h-full flex flex-col items-center justify-center gap-4">
         <p className="text-lg text-gray-400">No exercises in this session</p>
-        <button onClick={() => router.push('/fitness')} className="px-6 py-3 bg-white/10 rounded-xl text-white">
-          Exit
-        </button>
+        <div className="flex flex-col gap-3 w-full max-w-sm">
+          <button onClick={handleChangeMode} className="w-full px-6 py-3 bg-white/10 rounded-xl text-white hover:bg-white/15 transition-colors">
+            Change Mode
+          </button>
+          <button onClick={() => router.push('/fitness')} className="w-full px-6 py-3 text-gray-500 hover:text-white transition-colors">
+            Exit Gym Mode
+          </button>
+        </div>
       </div>
     );
   }
@@ -89,6 +103,7 @@ export default function GymModePage() {
       exerciseIndex={store.currentExerciseIndex}
       totalExercises={exercises.length}
       elapsed={store.elapsedSeconds}
+      hasLoggedSets={hasLoggedSets}
       onLogSet={async (input) => { await store.logSet(input); }}
       onNext={() => store.nextExercise()}
       onPrev={() => store.prevExercise()}
@@ -97,6 +112,7 @@ export default function GymModePage() {
       onFinish={async () => { const s = await store.complete(); if (s) setView('summary'); }}
       onAddExercise={async (name) => { await store.addExercise(name); }}
       onAbandon={async () => { await store.abandon(); store.reset(); router.push('/fitness'); }}
+      onChangeMode={handleChangeMode}
     />
   );
 }
@@ -145,6 +161,7 @@ function ExerciseScreen({
   exerciseIndex,
   totalExercises,
   elapsed,
+  hasLoggedSets,
   onLogSet,
   onNext,
   onPrev,
@@ -153,11 +170,13 @@ function ExerciseScreen({
   onFinish,
   onAddExercise,
   onAbandon,
+  onChangeMode,
 }: {
   exercise: ExecutionExercise;
   exerciseIndex: number;
   totalExercises: number;
   elapsed: number;
+  hasLoggedSets: boolean;
   onLogSet: (input: LogSetInput) => void;
   onNext: () => void;
   onPrev: () => void;
@@ -166,6 +185,7 @@ function ExerciseScreen({
   onFinish: () => void;
   onAddExercise: (name: string) => void;
   onAbandon: () => void;
+  onChangeMode: () => void;
 }) {
   const sets = exercise.sets ?? [];
   const completedSets = sets.length;
@@ -199,7 +219,16 @@ function ExerciseScreen({
     <div className="h-full flex flex-col p-4 md:p-6">
       {/* Top bar: timer + controls */}
       <div className="flex items-center justify-between flex-shrink-0 mb-4">
-        <div className="text-2xl font-mono font-bold text-white/80">{formatTime(elapsed)}</div>
+        <div className="flex items-center gap-3">
+          {!hasLoggedSets && (
+            <button type="button" onClick={onChangeMode} className="p-3 bg-white/10 rounded-xl hover:bg-white/15 transition-colors" title="Change mode">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+          <div className="text-2xl font-mono font-bold text-white/80">{formatTime(elapsed)}</div>
+        </div>
         <div className="flex items-center gap-3">
           <button onClick={onPause} className="p-3 bg-white/10 rounded-xl hover:bg-white/15 transition-colors" title="Pause">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

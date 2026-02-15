@@ -52,84 +52,86 @@ export default function FitnessNutritionPage() {
   return (
     <div className="h-full flex flex-col gap-4 overflow-hidden">
       {/* Header */}
-      <header className="flex-shrink-0 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center flex-shrink-0">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold text-white">Fitness & Nutrition</h1>
-            <p className="text-gray-500 text-[11px]">Train smart, eat well</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Tab toggle */}
-          <div className="flex items-center bg-[#14141a] rounded-lg border border-[#2a2a33] p-0.5">
-            <button
-              type="button"
-              onClick={() => setActiveTab('fitness')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
-                activeTab === 'fitness'
-                  ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
-                  : 'text-gray-400 hover:text-white border border-transparent'
-              }`}
-            >
-              Fitness
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('nutrition')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
-                activeTab === 'nutrition'
-                  ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
-                  : 'text-gray-400 hover:text-white border border-transparent'
-              }`}
-            >
-              Nutrition
-            </button>
+      <header className="flex-shrink-0 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center flex-shrink-0">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold text-white">Fitness & Nutrition</h1>
+              <p className="text-gray-500 text-[11px]">Train smart, eat well</p>
+            </div>
           </div>
 
           {/* Contextual action buttons */}
-          {activeTab === 'fitness' ? (
-            <>
-              <Link
-                href="/fitness/templates"
-                className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white bg-[#1a1a22] border border-[#2a2a33] rounded-lg hover:border-[#3b82f6]/40 transition-all"
-              >
-                Templates
-              </Link>
-              <Link
-                href="/fitness/schedule"
-                className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white bg-[#1a1a22] border border-[#2a2a33] rounded-lg hover:border-[#3b82f6]/40 transition-all"
-              >
-                Schedule
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/nutrition/targets"
-                className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white bg-[#1a1a22] border border-[#2a2a33] rounded-lg hover:border-[#3b82f6]/40 transition-all"
-              >
-                Targets
-              </Link>
-              <Link
-                href="/nutrition/ai-log"
-                className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white bg-[#1a1a22] border border-[#2a2a33] rounded-lg hover:border-purple-500/40 transition-all"
-              >
-                AI Log
-              </Link>
-              <Link
-                href="/nutrition/log"
-                className="px-4 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-lg hover:opacity-90 transition-opacity"
-              >
-                + Log Meal
-              </Link>
-            </>
-          )}
+          <div className="flex items-center gap-2">
+            {activeTab === 'fitness' ? (
+              <>
+                <Link
+                  href="/fitness/templates"
+                  className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white bg-[#1a1a22] border border-[#2a2a33] rounded-lg hover:border-[#3b82f6]/40 transition-all"
+                >
+                  Templates
+                </Link>
+                <Link
+                  href="/fitness/schedule"
+                  className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white bg-[#1a1a22] border border-[#2a2a33] rounded-lg hover:border-[#3b82f6]/40 transition-all"
+                >
+                  Schedule
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/nutrition/targets"
+                  className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white bg-[#1a1a22] border border-[#2a2a33] rounded-lg hover:border-[#3b82f6]/40 transition-all"
+                >
+                  Targets
+                </Link>
+                <Link
+                  href="/nutrition/ai-log"
+                  className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white bg-[#1a1a22] border border-[#2a2a33] rounded-lg hover:border-purple-500/40 transition-all"
+                >
+                  AI Log
+                </Link>
+                <Link
+                  href="/nutrition/log"
+                  className="px-4 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-lg hover:opacity-90 transition-opacity"
+                >
+                  + Log Meal
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Tab toggle — always visible on its own row */}
+        <div className="flex items-center bg-[#14141a] rounded-lg border border-[#2a2a33] p-0.5 w-fit">
+          <button
+            type="button"
+            onClick={() => setActiveTab('fitness')}
+            className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
+              activeTab === 'fitness'
+                ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
+                : 'text-gray-400 hover:text-white border border-transparent'
+            }`}
+          >
+            Fitness
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('nutrition')}
+            className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
+              activeTab === 'nutrition'
+                ? 'bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/40'
+                : 'text-gray-400 hover:text-white border border-transparent'
+            }`}
+          >
+            Nutrition
+          </button>
         </div>
       </header>
 
