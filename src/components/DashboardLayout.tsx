@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, createContext, useContext } from 'react';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import QuickCapture from './QuickCapture';
 import { useSettings } from '@/store/useSettings';
 import { applyAccentColour, applyTheme } from '@/lib/settings/types';
 
@@ -88,6 +89,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </main>
         </div>
       </div>
+      <QuickCapture />
     </SidebarContext.Provider>
   );
 }

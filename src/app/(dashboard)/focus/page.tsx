@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import FocusHeader from './components/FocusHeader';
 import MorningFocus from './components/MorningFocus';
 import EveningReview from './components/EveningReview';
+import PomodoroTimer from './components/PomodoroTimer';
 import DailyProgress from './components/DailyProgress';
 import QuoteCard from './components/QuoteCard';
 import {
@@ -20,7 +21,7 @@ import {
 export default function FocusPage() {
   const [focus, setFocus] = useState<DailyFocus | null>(null);
   const [reflection, setReflection] = useState<Reflection | null>(null);
-  const [activeTab, setActiveTab] = useState<'morning' | 'evening'>('morning');
+  const [activeTab, setActiveTab] = useState<'morning' | 'evening' | 'pomodoro'>('morning');
   const [mounted, setMounted] = useState(false);
 
   // Determine which mode to show based on time
@@ -113,6 +114,21 @@ export default function FocusPage() {
           )}
         </button>
 
+        <button
+          type="button"
+          onClick={() => setActiveTab('pomodoro')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            activeTab === 'pomodoro'
+              ? 'bg-gradient-to-r from-red-500/20 to-orange-500/20 text-red-400 border border-red-500/30'
+              : 'bg-card text-sub border border-edge hover:border-edge'
+          }`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Pomodoro
+        </button>
+
         <div className="flex-1" />
 
         {/* Quick stats */}
@@ -147,12 +163,18 @@ export default function FocusPage() {
         <div className="lg:col-span-2 min-h-0 overflow-hidden">
           {activeTab === 'morning' ? (
             <MorningFocus focus={focus} onFocusChange={handleFocusChange} />
-          ) : (
+          ) : activeTab === 'evening' ? (
             <EveningReview
               reflection={reflection}
               focus={focus}
               onReflectionChange={handleReflectionChange}
             />
+          ) : (
+            <div className="h-full overflow-y-auto">
+              <div className="bg-gradient-to-br from-card to-inner rounded-2xl border border-edge p-6">
+                <PomodoroTimer />
+              </div>
+            </div>
           )}
         </div>
 

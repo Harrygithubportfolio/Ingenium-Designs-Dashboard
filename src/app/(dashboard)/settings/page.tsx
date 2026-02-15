@@ -52,7 +52,7 @@ function SettingsToggle({
     <button
       type="button"
       role="switch"
-      aria-checked={checked ? 'true' : 'false'}
+      aria-checked={checked}
       aria-label="Toggle setting"
       disabled={disabled}
       onClick={() => onChange(!checked)}

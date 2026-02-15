@@ -40,6 +40,16 @@ function FireboltLogo({ className = '' }: { className?: string }) {
 
 // SVG Icons
 const Icons = {
+  Health: () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+    </svg>
+  ),
+  Inbox: () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+    </svg>
+  ),
   Dashboard: () => (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 12a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1v-7z" />
@@ -139,6 +149,7 @@ const primaryNavItems: NavItem[] = [
   { name: 'Calendar', href: '/calendar', icon: <Icons.Calendar /> },
   { name: 'Weather', href: '/weather', icon: <Icons.Weather /> },
   { name: 'Fitness & Nutrition', href: '/fitness-nutrition', icon: <Icons.Fitness /> },
+  { name: 'Health', href: '/health', icon: <Icons.Health /> },
   { name: 'Focus', href: '/focus', icon: <Icons.Focus /> },
   { name: 'Goals', href: '/goals', icon: <Icons.Goals /> },
   { name: 'Spotify', href: '/spotify', icon: <Icons.Spotify /> },
@@ -152,7 +163,7 @@ const secondaryNavItems: NavItem[] = [
   { name: 'Self-Improvement', href: '/self-improvement', icon: <Icons.SelfImprovement /> },
   { name: 'Mind & Mental', href: '/mind', icon: <Icons.Mind /> },
   { name: 'Entertainment', href: '/entertainment', icon: <Icons.Entertainment /> },
-  { name: 'Life Admin', href: '/admin', icon: <Icons.Admin /> },
+  { name: 'Reviews', href: '/reviews', icon: <Icons.Admin /> },
   { name: 'Experiments', href: '/experiments', icon: <Icons.Experiments /> },
   { name: 'Life Map', href: '/life-map', icon: <Icons.LifeMap /> },
 ];

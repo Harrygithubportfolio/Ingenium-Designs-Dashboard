@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import AiBriefingCard from '@/components/AiBriefingCard';
 import {
   type WeatherData,
   type WeatherIconType,
@@ -48,6 +49,9 @@ export default function Home() {
         </div>
       </header>
 
+      {/* AI Briefing */}
+      <AiBriefingCard />
+
       {/* Main Content */}
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 grid-rows-[1fr_auto] gap-4 overflow-hidden">
         {/* Weather Preview */}
@@ -80,11 +84,11 @@ export default function Home() {
             href="/spotify"
           />
           <NavCard
-            title="Quick Notes"
-            description="3 unprocessed notes"
+            title="Inbox"
+            description="Capture & process"
             icon="edit"
             gradient="from-yellow-500 to-amber-500"
-            href="/notes"
+            href="/inbox"
           />
         </div>
       </div>
