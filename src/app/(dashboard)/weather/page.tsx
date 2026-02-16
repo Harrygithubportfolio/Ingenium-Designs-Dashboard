@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
+import { useSettings } from '@/store/useSettings';
 import {
   type WeatherData,
   type WeatherIconType,
@@ -9,9 +11,11 @@ import {
   mapWeatherToIcon,
   capitalizeDescription,
   isDaytime,
-  msToKmh,
   formatVisibility,
   getWindDirection,
+  formatTemp,
+  tempUnitSymbol,
+  formatWindSpeed,
 } from '@/lib/weather';
 
 // ============================================
@@ -158,17 +162,29 @@ function WeatherIcon({
 // ============================================
 
 export default function WeatherPage() {
+  const { settings, fetchSettings } = useSettings();
+  const { latitude, longitude, temperature_unit: tempUnit, wind_speed_unit: windUnit } = settings.weather;
+  const hasLocation = Boolean(latitude && longitude);
+
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
   const fetchWeather = useCallback(async () => {
+    if (!hasLocation) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/weather');
+      const response = await fetch(`/api/weather?lat=${latitude}&lon=${longitude}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.details || 'Failed to fetch weather data');
@@ -181,13 +197,36 @@ export default function WeatherPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [hasLocation, latitude, longitude]);
 
   useEffect(() => {
     fetchWeather();
     const interval = setInterval(fetchWeather, 10 * 60 * 1000);
     return () => clearInterval(interval);
   }, [fetchWeather]);
+
+  if (!hasLocation) {
+    return (
+      <div className="h-full flex items-center justify-center p-4">
+        <div className="bg-card rounded-2xl p-8 border border-edge text-center max-w-sm">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-accent/10 flex items-center justify-center">
+            <svg className="w-7 h-7 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h3 className="text-base font-semibold text-heading mb-2">No Location Set</h3>
+          <p className="text-sm text-sub mb-5">Set your location in settings to see weather data.</p>
+          <Link
+            href="/settings"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-xl transition-colors"
+          >
+            Go to Settings
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (loading && !weather) {
     return <LoadingSkeleton />;
@@ -258,17 +297,17 @@ export default function WeatherPage() {
                   <span>{weather.current.location}, {weather.current.country}</span>
                 </div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-6xl font-bold text-heading tracking-tight">{Math.round(weather.current.temp)}</span>
-                  <span className="text-2xl text-dim font-light">°C</span>
+                  <span className="text-6xl font-bold text-heading tracking-tight">{formatTemp(weather.current.temp, tempUnit)}</span>
+                  <span className="text-2xl text-dim font-light">{tempUnitSymbol(tempUnit)}</span>
                 </div>
                 <p className="text-accent font-medium text-sm mt-0.5">{capitalizeDescription(weather.current.weather[0].description)}</p>
-                <p className="text-dim text-xs mt-0.5">Feels like {Math.round(weather.current.feels_like)}°C</p>
+                <p className="text-dim text-xs mt-0.5">Feels like {formatTemp(weather.current.feels_like, tempUnit)}{tempUnitSymbol(tempUnit)}</p>
               </div>
 
               {/* Quick Stats */}
               <div className="hidden md:flex flex-col gap-2 text-right">
                 <QuickStat icon="humidity" label="Humidity" value={`${weather.current.humidity}%`} />
-                <QuickStat icon="wind" label="Wind" value={`${msToKmh(weather.current.wind_speed)} km/h`} />
+                <QuickStat icon="wind" label="Wind" value={formatWindSpeed(weather.current.wind_speed, windUnit)} />
                 <QuickStat icon="visibility" label="Visibility" value={formatVisibility(weather.current.visibility)} />
               </div>
             </div>
@@ -296,7 +335,7 @@ export default function WeatherPage() {
                       {isNow ? 'Now' : formatHour(hour.dt, weather.timezone)}
                     </span>
                     <WeatherIcon type={iconType} size="sm" />
-                    <span className="text-xs font-bold text-heading mt-1.5">{Math.round(hour.temp)}°</span>
+                    <span className="text-xs font-bold text-heading mt-1.5">{formatTemp(hour.temp, tempUnit)}°</span>
                     {hour.pop > 0.1 && (
                       <span className="text-[9px] text-blue-400 mt-0.5">{Math.round(hour.pop * 100)}%</span>
                     )}
@@ -345,14 +384,14 @@ export default function WeatherPage() {
                       )}
                     </div>
                     <div className="flex-1 flex items-center gap-3">
-                      <span className="text-xs text-dim w-8 text-right font-medium">{day.temp_min}°</span>
+                      <span className="text-xs text-dim w-8 text-right font-medium">{formatTemp(day.temp_min, tempUnit)}°</span>
                       <div className="flex-1 h-1.5 bg-elevated rounded-full relative overflow-hidden">
                         <div
                           className="absolute h-full bg-gradient-to-r from-blue-500 via-amber-400 to-orange-500 rounded-full"
                           style={{ left: `${barLeft}%`, width: `${Math.max(barWidth, 10)}%` }}
                         />
                       </div>
-                      <span className="text-xs font-semibold text-heading w-8">{day.temp_max}°</span>
+                      <span className="text-xs font-semibold text-heading w-8">{formatTemp(day.temp_max, tempUnit)}°</span>
                     </div>
                   </div>
                 );
@@ -395,7 +434,7 @@ export default function WeatherPage() {
               <DetailCard
                 icon="wind"
                 label="Wind"
-                value={`${msToKmh(weather.current.wind_speed)} km/h`}
+                value={formatWindSpeed(weather.current.wind_speed, windUnit)}
                 color="text-teal-400"
               />
               <DetailCard
@@ -419,7 +458,7 @@ export default function WeatherPage() {
             <div className="space-y-3">
               <SummaryRow
                 label="High / Low"
-                value={`${weather.daily[0]?.temp_max ?? '—'}° / ${weather.daily[0]?.temp_min ?? '—'}°`}
+                value={`${weather.daily[0] ? formatTemp(weather.daily[0].temp_max, tempUnit) : '—'}° / ${weather.daily[0] ? formatTemp(weather.daily[0].temp_min, tempUnit) : '—'}°`}
               />
               <SummaryRow
                 label="Precipitation"

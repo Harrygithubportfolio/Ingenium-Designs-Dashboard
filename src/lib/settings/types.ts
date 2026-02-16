@@ -119,9 +119,9 @@ export const DEFAULT_SETTINGS: UserSettings = {
     measurement_system: 'metric',
   },
   weather: {
-    location_name: 'York, UK',
-    latitude: '53.9921',
-    longitude: '-1.5418',
+    location_name: '',
+    latitude: '',
+    longitude: '',
     temperature_unit: 'celsius',
     wind_speed_unit: 'kmh',
   },

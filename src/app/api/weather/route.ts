@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import type { WeatherData, DailyForecast, WeatherCondition } from '@/lib/weather';
 import { getDateString, formatDay } from '@/lib/weather';
 
@@ -7,14 +7,11 @@ import { getDateString, formatDay } from '@/lib/weather';
 // ============================================
 
 const API_KEY = process.env.OPENWEATHER_API_KEY!;
-const LAT = '53.9921';
-const LON = '-1.5418';
+const DEFAULT_LAT = '53.9921';
+const DEFAULT_LON = '-1.5418';
 
 const CURRENT_WEATHER_URL = 'https://api.openweathermap.org/data/2.5/weather';
 const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast';
-
-// Cache for 10 minutes
-export const revalidate = 600;
 
 // ============================================
 // API RESPONSE TYPES
@@ -172,18 +169,22 @@ function aggregateDailyForecasts(
 // API ROUTE HANDLER
 // ============================================
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = request.nextUrl;
+    const lat = searchParams.get('lat') || DEFAULT_LAT;
+    const lon = searchParams.get('lon') || DEFAULT_LON;
+
     // Build URLs
     const currentUrl = new URL(CURRENT_WEATHER_URL);
-    currentUrl.searchParams.set('lat', LAT);
-    currentUrl.searchParams.set('lon', LON);
+    currentUrl.searchParams.set('lat', lat);
+    currentUrl.searchParams.set('lon', lon);
     currentUrl.searchParams.set('units', 'metric');
     currentUrl.searchParams.set('appid', API_KEY);
 
     const forecastUrl = new URL(FORECAST_URL);
-    forecastUrl.searchParams.set('lat', LAT);
-    forecastUrl.searchParams.set('lon', LON);
+    forecastUrl.searchParams.set('lat', lat);
+    forecastUrl.searchParams.set('lon', lon);
     forecastUrl.searchParams.set('units', 'metric');
     forecastUrl.searchParams.set('appid', API_KEY);
 

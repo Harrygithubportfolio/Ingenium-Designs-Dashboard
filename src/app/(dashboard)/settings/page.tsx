@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSettings } from '@/store/useSettings';
@@ -663,67 +663,168 @@ function NutritionSection() {
   );
 }
 
+interface GeoResult {
+  name: string;
+  state?: string;
+  country: string;
+  lat: number;
+  lon: number;
+}
+
 function WeatherSection() {
   const { settings, updateSection } = useSettings();
   const { weather } = settings;
-  const [localLocation, setLocalLocation] = useState(weather.location_name);
-  const [localLat, setLocalLat] = useState(weather.latitude);
-  const [localLon, setLocalLon] = useState(weather.longitude);
-  const [showCoords, setShowCoords] = useState(false);
+
+  const [query, setQuery] = useState(weather.location_name);
+  const [results, setResults] = useState<GeoResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [geolocating, setGeolocating] = useState(false);
+  const [geoError, setGeoError] = useState('');
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   useEffect(() => {
-    setLocalLocation(weather.location_name);
-    setLocalLat(weather.latitude);
-    setLocalLon(weather.longitude);
-  }, [weather.location_name, weather.latitude, weather.longitude]);
+    setQuery(weather.location_name);
+  }, [weather.location_name]);
 
-  const saveLocation = useCallback(() => {
+  // Debounced city search
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    // Only search if query differs from currently saved location
+    if (query.length < 2 || query === weather.location_name) {
+      setResults([]);
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const res = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`);
+        if (res.ok) {
+          const data: GeoResult[] = await res.json();
+          setResults(data);
+        }
+      } catch {
+        // Silently fail
+      } finally {
+        setSearching(false);
+      }
+    }, 350);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [query, weather.location_name]);
+
+  const handleSelect = useCallback((result: GeoResult) => {
+    const locationName = `${result.name}${result.state ? `, ${result.state}` : ''}, ${result.country}`;
+    setQuery(locationName);
+    setResults([]);
     updateSection('weather', {
-      location_name: localLocation,
-      latitude: localLat,
-      longitude: localLon,
+      location_name: locationName,
+      latitude: String(result.lat),
+      longitude: String(result.lon),
     });
-  }, [localLocation, localLat, localLon, updateSection]);
+  }, [updateSection]);
+
+  const handleGeolocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setGeoError('Geolocation is not supported by your browser.');
+      return;
+    }
+    setGeolocating(true);
+    setGeoError('');
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const res = await fetch(`/api/geocode?lat=${latitude}&lon=${longitude}`);
+          if (res.ok) {
+            const data: GeoResult[] = await res.json();
+            if (data.length > 0) {
+              handleSelect(data[0]);
+            }
+          }
+        } catch {
+          setGeoError('Failed to look up your location.');
+        } finally {
+          setGeolocating(false);
+        }
+      },
+      (err) => {
+        setGeolocating(false);
+        if (err.code === err.PERMISSION_DENIED) {
+          setGeoError('Location permission denied.');
+        } else {
+          setGeoError('Unable to determine your location.');
+        }
+      },
+      { enableHighAccuracy: false, timeout: 10000 },
+    );
+  }, [handleSelect]);
 
   return (
     <SectionCard title="Weather" description="Location and temperature units" icon={SectionIcons.weather}>
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-sm font-medium text-heading">Location</p>
-          <button
-            type="button"
-            onClick={() => setShowCoords(!showCoords)}
-            className="text-[10px] text-accent hover:text-accent transition-colors"
-          >
-            {showCoords ? 'Hide coordinates' : 'Edit coordinates'}
-          </button>
+        <p className="text-sm font-medium text-heading mb-2">Location</p>
+        <div className="relative">
+          <SettingsInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search for a city..."
+          />
+          {searching && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="w-4 h-4 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+            </div>
+          )}
+          {results.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-elevated rounded-xl border border-edge shadow-xl z-10 overflow-hidden">
+              {results.map((r, i) => (
+                <button
+                  key={`${r.lat}-${r.lon}-${i}`}
+                  type="button"
+                  onClick={() => handleSelect(r)}
+                  className="w-full px-3 py-2.5 text-left hover:bg-accent/10 transition-colors flex items-center gap-2 border-b border-edge/50 last:border-0"
+                >
+                  <svg className="w-3.5 h-3.5 text-sub flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  </svg>
+                  <div>
+                    <span className="text-sm text-heading font-medium">{r.name}</span>
+                    <span className="text-xs text-sub ml-1">
+                      {r.state ? `${r.state}, ` : ''}{r.country}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        <SettingsInput
-          value={localLocation}
-          onChange={setLocalLocation}
-          placeholder="City, Country"
-        />
-        {showCoords && (
-          <div className="grid grid-cols-2 gap-3 mt-3">
-            <div>
-              <label className="text-[10px] text-dim uppercase tracking-wider mb-1 block">Latitude</label>
-              <SettingsInput value={localLat} onChange={setLocalLat} placeholder="53.9921" />
-            </div>
-            <div>
-              <label className="text-[10px] text-dim uppercase tracking-wider mb-1 block">Longitude</label>
-              <SettingsInput value={localLon} onChange={setLocalLon} placeholder="-1.5418" />
-            </div>
-          </div>
+
+        <button
+          type="button"
+          onClick={handleGeolocation}
+          disabled={geolocating}
+          className="mt-2 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-edge bg-inner hover:bg-elevated text-xs text-sub hover:text-heading transition-all disabled:opacity-50"
+        >
+          {geolocating ? (
+            <div className="w-3.5 h-3.5 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+          ) : (
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z" />
+            </svg>
+          )}
+          <span>{geolocating ? 'Detecting...' : 'Use my current location'}</span>
+        </button>
+
+        {geoError && <p className="text-xs text-red-400 mt-1">{geoError}</p>}
+
+        {weather.location_name && (
+          <p className="text-[10px] text-dim mt-2">
+            Current: {weather.location_name} ({weather.latitude}, {weather.longitude})
+          </p>
         )}
-        <div className="flex justify-end mt-3">
-          <button
-            type="button"
-            onClick={saveLocation}
-            className="px-4 py-2 text-xs font-medium rounded-lg bg-accent text-white hover:bg-accent-hover transition-colors"
-          >
-            Save Location
-          </button>
-        </div>
       </div>
 
       <SettingsRow label="Temperature Unit">

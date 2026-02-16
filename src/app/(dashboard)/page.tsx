@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import AiBriefingCard from '@/components/AiBriefingCard';
+import WeatherLocationModal from '@/components/WeatherLocationModal';
+import { useSettings } from '@/store/useSettings';
 import {
   type WeatherData,
   type WeatherIconType,
@@ -11,6 +13,8 @@ import {
   capitalizeDescription,
   isDaytime,
   formatHour,
+  formatTemp,
+  tempUnitSymbol,
 } from '@/lib/weather';
 
 interface Goal {
@@ -23,8 +27,27 @@ interface Goal {
 }
 
 export default function Home() {
+  const { settings, loading: settingsLoading, fetchSettings } = useSettings();
+  const [showLocationModal, setShowLocationModal] = useState(false);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  // Show location modal when settings are loaded and no location is set
+  useEffect(() => {
+    if (!settingsLoading && !settings.weather.location_name) {
+      setShowLocationModal(true);
+    }
+  }, [settingsLoading, settings.weather.location_name]);
+
   return (
     <div className="h-full flex flex-col gap-4 overflow-hidden">
+      {/* Weather Location Setup Modal */}
+      {showLocationModal && (
+        <WeatherLocationModal onClose={() => setShowLocationModal(false)} />
+      )}
+
       {/* Header */}
       <header className="flex-shrink-0 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -101,12 +124,20 @@ export default function Home() {
 // ============================================
 
 function WeatherPreview() {
+  const { settings } = useSettings();
+  const { latitude, longitude, temperature_unit } = settings.weather;
+  const hasLocation = Boolean(latitude && longitude);
+
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchWeather = useCallback(async () => {
+    if (!hasLocation) {
+      setLoading(false);
+      return;
+    }
     try {
-      const response = await fetch('/api/weather');
+      const response = await fetch(`/api/weather?lat=${latitude}&lon=${longitude}`);
       if (response.ok) {
         const data: WeatherData = await response.json();
         setWeather(data);
@@ -116,7 +147,7 @@ function WeatherPreview() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [hasLocation, latitude, longitude]);
 
   useEffect(() => {
     fetchWeather();
@@ -150,7 +181,15 @@ function WeatherPreview() {
           </div>
         </div>
 
-        {loading ? (
+        {!hasLocation ? (
+          <div className="flex-1 flex flex-col items-center justify-center gap-3">
+            <svg className="w-10 h-10 text-sub" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <p className="text-sm text-sub">Set your location for weather</p>
+          </div>
+        ) : loading ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
           </div>
@@ -163,8 +202,8 @@ function WeatherPreview() {
               </div>
               <div className="flex flex-col justify-center">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl md:text-6xl lg:text-7xl font-bold text-heading">{Math.round(weather.current.temp)}</span>
-                  <span className="text-xl md:text-2xl text-dim">°C</span>
+                  <span className="text-5xl md:text-6xl lg:text-7xl font-bold text-heading">{formatTemp(weather.current.temp, temperature_unit)}</span>
+                  <span className="text-xl md:text-2xl text-dim">{tempUnitSymbol(temperature_unit)}</span>
                 </div>
                 <p className="text-base md:text-lg text-accent font-medium mt-1">{capitalizeDescription(weather.current.weather[0].description)}</p>
                 <p className="text-sm text-dim">{weather.current.location}</p>
@@ -182,7 +221,7 @@ function WeatherPreview() {
                     <div key={hour.dt} className="flex flex-col items-center py-2 md:py-3 px-1 md:px-2 bg-inner rounded-xl">
                       <span className="text-xs text-dim mb-1.5">{formatHour(hour.dt, weather.timezone)}</span>
                       <WeatherIcon type={iconType} size="md" />
-                      <span className="text-sm md:text-base font-semibold text-heading mt-1.5">{Math.round(hour.temp)}°</span>
+                      <span className="text-sm md:text-base font-semibold text-heading mt-1.5">{formatTemp(hour.temp, temperature_unit)}°</span>
                     </div>
                   );
                 })}

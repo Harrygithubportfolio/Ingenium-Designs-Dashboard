@@ -128,6 +128,46 @@ export function msToKmh(ms: number): number {
 }
 
 /**
+ * Convert wind speed from m/s to mph
+ */
+export function msToMph(ms: number): number {
+  return Math.round(ms * 2.237);
+}
+
+/**
+ * Convert Celsius to Fahrenheit
+ */
+export function celsiusToFahrenheit(c: number): number {
+  return Math.round(c * 9 / 5 + 32);
+}
+
+/**
+ * Format temperature value based on user's unit preference.
+ * Input is always Celsius (from OWM metric).
+ */
+export function formatTemp(celsius: number, unit: 'celsius' | 'fahrenheit'): string {
+  const value = unit === 'fahrenheit' ? celsiusToFahrenheit(celsius) : Math.round(celsius);
+  return `${value}`;
+}
+
+/**
+ * Get the unit symbol for the user's temperature preference.
+ */
+export function tempUnitSymbol(unit: 'celsius' | 'fahrenheit'): string {
+  return unit === 'fahrenheit' ? '°F' : '°C';
+}
+
+/**
+ * Format wind speed with unit label based on user preference.
+ * Input is always m/s (from OWM metric).
+ */
+export function formatWindSpeed(ms: number, unit: 'kmh' | 'mph' | 'ms'): string {
+  if (unit === 'mph') return `${msToMph(ms)} mph`;
+  if (unit === 'ms') return `${Math.round(ms)} m/s`;
+  return `${msToKmh(ms)} km/h`;
+}
+
+/**
  * Get wind direction from degrees
  */
 export function getWindDirection(degrees: number): string {
