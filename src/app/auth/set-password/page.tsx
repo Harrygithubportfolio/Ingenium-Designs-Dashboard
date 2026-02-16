@@ -1,37 +1,34 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState, Suspense } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-const MESSAGE_MAP: Record<string, string> = {
-  password_set: "Password set successfully. Sign in below.",
-  email_confirmed: "Email confirmed. Sign in below.",
-};
-
-function LoginForm() {
-  const [email, setEmail] = useState("");
+export default function SetPasswordPage() {
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  const message = searchParams.get("message");
-  const urlError = searchParams.get("error");
-  const successText = message ? MESSAGE_MAP[message] ?? null : null;
-  const errorText = urlError === "auth_callback_failed" ? "Authentication failed. Please try again or request a new invite." : null;
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
       setError(error.message);
@@ -39,14 +36,14 @@ function LoginForm() {
       return;
     }
 
-    router.push("/");
+    router.push("/login?message=password_set");
     router.refresh();
   };
 
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-surface">
       <form
-        onSubmit={handleLogin}
+        onSubmit={handleSetPassword}
         className="w-full max-w-sm space-y-5 rounded-2xl border border-edge bg-card p-8"
       >
         {/* Logo */}
@@ -57,37 +54,16 @@ function LoginForm() {
             </svg>
           </div>
           <div className="text-center">
-            <h1 className="text-xl font-bold text-heading">Life OS Dashboard</h1>
-            <p className="text-sm text-dim mt-1">Sign in to continue</p>
+            <h1 className="text-xl font-bold text-heading">Welcome to Life OS</h1>
+            <p className="text-sm text-dim mt-1">Set your password to get started</p>
           </div>
         </div>
 
-        {successText && (
-          <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 text-sm text-emerald-400">
-            {successText}
-          </div>
-        )}
-
-        {(error || errorText) && (
+        {error && (
           <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">
-            {error || errorText}
+            {error}
           </div>
         )}
-
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-sub mb-1.5">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full rounded-lg border border-edge bg-surface px-3 py-2.5 text-heading text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
-            placeholder="you@example.com"
-          />
-        </div>
 
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-sub mb-1.5">
@@ -99,8 +75,25 @@ function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            minLength={8}
             className="w-full rounded-lg border border-edge bg-surface px-3 py-2.5 text-heading text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
-            placeholder="Your password"
+            placeholder="At least 8 characters"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-sub mb-1.5">
+            Confirm Password
+          </label>
+          <input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            minLength={8}
+            className="w-full rounded-lg border border-edge bg-surface px-3 py-2.5 text-heading text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+            placeholder="Re-enter your password"
           />
         </div>
 
@@ -109,17 +102,9 @@ function LoginForm() {
           disabled={loading}
           className="w-full rounded-lg bg-gradient-to-r from-accent to-accent-secondary px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50"
         >
-          {loading ? "Signing in..." : "Sign In"}
+          {loading ? "Setting password..." : "Set Password"}
         </button>
       </form>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense>
-      <LoginForm />
-    </Suspense>
   );
 }
