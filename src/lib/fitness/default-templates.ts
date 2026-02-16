@@ -1,0 +1,133 @@
+import type { CreateTemplateInput } from './types';
+
+/** 10 starter templates available to all new users. */
+export const DEFAULT_TEMPLATES: CreateTemplateInput[] = [
+  {
+    name: 'Push Day',
+    training_intent: 'hypertrophy',
+    description: 'Chest, shoulders, and triceps — hypertrophy focus',
+    exercises: [
+      { exercise_name: 'Flat Barbell Bench Press', sort_order: 0, target_sets: 4, target_reps: 8, target_load_kg: 80 },
+      { exercise_name: 'Incline Dumbbell Press', sort_order: 1, target_sets: 3, target_reps: 10, target_load_kg: 30 },
+      { exercise_name: 'Overhead Press', sort_order: 2, target_sets: 3, target_reps: 10, target_load_kg: 40 },
+      { exercise_name: 'Lateral Raises', sort_order: 3, target_sets: 3, target_reps: 15, target_load_kg: 10 },
+      { exercise_name: 'Tricep Rope Pushdown', sort_order: 4, target_sets: 3, target_reps: 12, target_load_kg: 25 },
+      { exercise_name: 'Overhead Tricep Extension', sort_order: 5, target_sets: 3, target_reps: 12, target_load_kg: 20 },
+    ],
+  },
+  {
+    name: 'Pull Day',
+    training_intent: 'hypertrophy',
+    description: 'Back and biceps — width and thickness',
+    exercises: [
+      { exercise_name: 'Deadlift', sort_order: 0, target_sets: 4, target_reps: 5, target_load_kg: 120 },
+      { exercise_name: 'Weighted Pull-Ups', sort_order: 1, target_sets: 4, target_reps: 8, target_load_kg: 10 },
+      { exercise_name: 'Barbell Row', sort_order: 2, target_sets: 3, target_reps: 10, target_load_kg: 70 },
+      { exercise_name: 'Face Pulls', sort_order: 3, target_sets: 3, target_reps: 15, target_load_kg: 15 },
+      { exercise_name: 'Dumbbell Bicep Curls', sort_order: 4, target_sets: 3, target_reps: 12, target_load_kg: 14 },
+      { exercise_name: 'Hammer Curls', sort_order: 5, target_sets: 3, target_reps: 12, target_load_kg: 12 },
+    ],
+  },
+  {
+    name: 'Leg Day',
+    training_intent: 'strength',
+    description: 'Heavy compounds for quad and posterior chain strength',
+    exercises: [
+      { exercise_name: 'Back Squat', sort_order: 0, target_sets: 5, target_reps: 5, target_load_kg: 100 },
+      { exercise_name: 'Romanian Deadlift', sort_order: 1, target_sets: 4, target_reps: 8, target_load_kg: 80 },
+      { exercise_name: 'Leg Press', sort_order: 2, target_sets: 3, target_reps: 10, target_load_kg: 180 },
+      { exercise_name: 'Walking Lunges', sort_order: 3, target_sets: 3, target_reps: 12, target_load_kg: 20 },
+      { exercise_name: 'Leg Curl', sort_order: 4, target_sets: 3, target_reps: 12, target_load_kg: 40 },
+      { exercise_name: 'Calf Raises', sort_order: 5, target_sets: 4, target_reps: 15, target_load_kg: 60 },
+    ],
+  },
+  {
+    name: 'Upper Body Strength',
+    training_intent: 'strength',
+    description: 'Heavy upper body compounds — low rep, high intensity',
+    exercises: [
+      { exercise_name: 'Flat Barbell Bench Press', sort_order: 0, target_sets: 5, target_reps: 3, target_load_kg: 90 },
+      { exercise_name: 'Weighted Pull-Ups', sort_order: 1, target_sets: 5, target_reps: 3, target_load_kg: 20 },
+      { exercise_name: 'Overhead Press', sort_order: 2, target_sets: 4, target_reps: 5, target_load_kg: 50 },
+      { exercise_name: 'Barbell Row', sort_order: 3, target_sets: 4, target_reps: 5, target_load_kg: 80 },
+      { exercise_name: 'Weighted Dips', sort_order: 4, target_sets: 3, target_reps: 6, target_load_kg: 20 },
+    ],
+  },
+  {
+    name: 'Full Body Conditioning',
+    training_intent: 'conditioning',
+    description: 'Circuit-style — keep rest times short, moderate weight',
+    exercises: [
+      { exercise_name: 'Kettlebell Swings', sort_order: 0, target_sets: 4, target_reps: 20, target_load_kg: 24 },
+      { exercise_name: 'Thrusters', sort_order: 1, target_sets: 3, target_reps: 12, target_load_kg: 30 },
+      { exercise_name: 'Box Jumps', sort_order: 2, target_sets: 3, target_reps: 15 },
+      { exercise_name: 'Battle Ropes', sort_order: 3, target_sets: 3, target_reps: 30 },
+      { exercise_name: 'Burpees', sort_order: 4, target_sets: 3, target_reps: 15 },
+      { exercise_name: 'Farmers Walk', sort_order: 5, target_sets: 3, target_reps: 1, target_load_kg: 32 },
+    ],
+  },
+  {
+    name: 'Active Recovery',
+    training_intent: 'recovery',
+    description: 'Light movement and stretching — blood flow and mobility',
+    exercises: [
+      { exercise_name: 'Foam Rolling', sort_order: 0, target_sets: 1, target_reps: 1 },
+      { exercise_name: 'Band Pull-Aparts', sort_order: 1, target_sets: 3, target_reps: 20 },
+      { exercise_name: 'Goblet Squat (light)', sort_order: 2, target_sets: 2, target_reps: 15, target_load_kg: 12 },
+      { exercise_name: 'Dead Hangs', sort_order: 3, target_sets: 3, target_reps: 1 },
+      { exercise_name: 'Hip 90/90 Stretch', sort_order: 4, target_sets: 2, target_reps: 10 },
+    ],
+  },
+  {
+    name: 'Lower Body Hypertrophy',
+    training_intent: 'hypertrophy',
+    description: 'High-volume leg session — quads, hamstrings, and glutes',
+    exercises: [
+      { exercise_name: 'Hack Squat', sort_order: 0, target_sets: 4, target_reps: 10, target_load_kg: 100 },
+      { exercise_name: 'Bulgarian Split Squats', sort_order: 1, target_sets: 3, target_reps: 12, target_load_kg: 16 },
+      { exercise_name: 'Leg Extension', sort_order: 2, target_sets: 3, target_reps: 15, target_load_kg: 40 },
+      { exercise_name: 'Lying Leg Curl', sort_order: 3, target_sets: 3, target_reps: 12, target_load_kg: 35 },
+      { exercise_name: 'Hip Thrust', sort_order: 4, target_sets: 4, target_reps: 10, target_load_kg: 80 },
+      { exercise_name: 'Seated Calf Raises', sort_order: 5, target_sets: 4, target_reps: 15, target_load_kg: 40 },
+    ],
+  },
+  {
+    name: 'Arms & Shoulders',
+    training_intent: 'hypertrophy',
+    description: 'Isolation-focused session for arms and delts',
+    exercises: [
+      { exercise_name: 'Seated Dumbbell Shoulder Press', sort_order: 0, target_sets: 4, target_reps: 10, target_load_kg: 22 },
+      { exercise_name: 'Lateral Raises', sort_order: 1, target_sets: 4, target_reps: 15, target_load_kg: 10 },
+      { exercise_name: 'Rear Delt Fly', sort_order: 2, target_sets: 3, target_reps: 15, target_load_kg: 8 },
+      { exercise_name: 'EZ-Bar Bicep Curl', sort_order: 3, target_sets: 3, target_reps: 12, target_load_kg: 25 },
+      { exercise_name: 'Incline Dumbbell Curl', sort_order: 4, target_sets: 3, target_reps: 10, target_load_kg: 12 },
+      { exercise_name: 'Skull Crushers', sort_order: 5, target_sets: 3, target_reps: 12, target_load_kg: 20 },
+      { exercise_name: 'Cable Tricep Kickback', sort_order: 6, target_sets: 3, target_reps: 15, target_load_kg: 10 },
+    ],
+  },
+  {
+    name: 'Full Body Strength',
+    training_intent: 'strength',
+    description: 'Big three + accessories — heavy compounds, low reps',
+    exercises: [
+      { exercise_name: 'Back Squat', sort_order: 0, target_sets: 5, target_reps: 5, target_load_kg: 110 },
+      { exercise_name: 'Flat Barbell Bench Press', sort_order: 1, target_sets: 5, target_reps: 5, target_load_kg: 85 },
+      { exercise_name: 'Deadlift', sort_order: 2, target_sets: 3, target_reps: 3, target_load_kg: 140 },
+      { exercise_name: 'Barbell Row', sort_order: 3, target_sets: 4, target_reps: 6, target_load_kg: 75 },
+      { exercise_name: 'Overhead Press', sort_order: 4, target_sets: 3, target_reps: 6, target_load_kg: 45 },
+    ],
+  },
+  {
+    name: 'Core & Abs',
+    training_intent: 'conditioning',
+    description: 'Dedicated core session — stability, anti-rotation, and flexion',
+    exercises: [
+      { exercise_name: 'Hanging Leg Raises', sort_order: 0, target_sets: 3, target_reps: 12 },
+      { exercise_name: 'Cable Woodchops', sort_order: 1, target_sets: 3, target_reps: 12, target_load_kg: 15 },
+      { exercise_name: 'Ab Wheel Rollout', sort_order: 2, target_sets: 3, target_reps: 10 },
+      { exercise_name: 'Pallof Press', sort_order: 3, target_sets: 3, target_reps: 12, target_load_kg: 10 },
+      { exercise_name: 'Plank', sort_order: 4, target_sets: 3, target_reps: 1 },
+      { exercise_name: 'Russian Twists', sort_order: 5, target_sets: 3, target_reps: 20, target_load_kg: 8 },
+    ],
+  },
+];

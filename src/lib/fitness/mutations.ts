@@ -8,6 +8,7 @@ import type {
   ExecutionSet,
   WorkoutReflection,
 } from './types';
+import { DEFAULT_TEMPLATES } from './default-templates';
 
 // --- Templates ---
 
@@ -68,6 +69,12 @@ export async function archiveTemplate(supabase: SupabaseClient, id: string) {
     .update({ is_archived: true, updated_at: new Date().toISOString() })
     .eq('id', id);
   if (error) throw new Error(error.message);
+}
+
+export async function seedDefaultTemplates(supabase: SupabaseClient, userId: string) {
+  for (const tmpl of DEFAULT_TEMPLATES) {
+    await createTemplate(supabase, userId, tmpl);
+  }
 }
 
 // --- Scheduling ---

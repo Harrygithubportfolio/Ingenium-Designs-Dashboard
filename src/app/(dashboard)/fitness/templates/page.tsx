@@ -6,14 +6,16 @@ import { useFitnessSchedule } from '@/store/useFitnessSchedule';
 import TemplateCard from '@/components/fitness/TemplateCard';
 import EditTemplateModal from '@/components/fitness/EditTemplateModal';
 import type { WorkoutTemplate, CreateTemplateInput, TrainingIntent } from '@/lib/fitness/types';
-import { createTemplate, archiveTemplate } from '@/lib/fitness/mutations';
+import { createTemplate, archiveTemplate, seedDefaultTemplates } from '@/lib/fitness/mutations';
 import { createClient } from '@/lib/supabase/client';
+import { DEFAULT_TEMPLATES } from '@/lib/fitness/default-templates';
 
 export default function TemplatesPage() {
   const { templates, fetchTemplates } = useFitnessSchedule();
   const [showCreate, setShowCreate] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<WorkoutTemplate | null>(null);
   const [loading, setLoading] = useState(true);
+  const [seeding, setSeeding] = useState(false);
 
   useEffect(() => {
     fetchTemplates().finally(() => setLoading(false));
@@ -24,6 +26,21 @@ export default function TemplatesPage() {
     const supabase = createClient();
     await archiveTemplate(supabase, template.id);
     await fetchTemplates();
+  };
+
+  const handleSeedDefaults = async () => {
+    setSeeding(true);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      await seedDefaultTemplates(supabase, user.id);
+      await fetchTemplates();
+    } catch (err) {
+      console.error('Seed defaults error:', err);
+    } finally {
+      setSeeding(false);
+    }
   };
 
   return (
@@ -52,14 +69,26 @@ export default function TemplatesPage() {
       ) : (
         <div className="flex-1 min-h-0 overflow-hidden">
           {templates.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center gap-3">
+            <div className="h-full flex flex-col items-center justify-center gap-4">
               <p className="text-sm text-dim">No templates yet</p>
-              <button
-                onClick={() => setShowCreate(true)}
-                className="px-4 py-2 text-xs font-medium text-accent border border-accent/30 rounded-lg hover:bg-accent/10 transition-colors"
-              >
-                Create Your First Template
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleSeedDefaults}
+                  disabled={seeding}
+                  className="px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-accent to-accent-secondary rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {seeding ? 'Loading...' : `Load ${DEFAULT_TEMPLATES.length} Starter Templates`}
+                </button>
+                <span className="text-xs text-dim">or</span>
+                <button
+                  type="button"
+                  onClick={() => setShowCreate(true)}
+                  className="px-4 py-2 text-xs font-medium text-accent border border-accent/30 rounded-lg hover:bg-accent/10 transition-colors"
+                >
+                  Create Your Own
+                </button>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 h-full overflow-hidden">
