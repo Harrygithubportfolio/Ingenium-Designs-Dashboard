@@ -1,6 +1,6 @@
 -- ============================================
 -- MIGRATION 010: Focus / Pomodoro Sessions
--- Run this in the Supabase SQL Editor (data project)
+-- Run this in the Supabase SQL Editor (tvbemlwkphnvmsromqha)
 -- Safe to re-run — all statements use IF NOT EXISTS
 -- ============================================
 

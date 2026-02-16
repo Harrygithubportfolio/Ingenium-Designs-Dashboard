@@ -1649,8 +1649,8 @@ type GymSessionState = {
 
 ## 1. Key Architectural Decisions
 
-### Dual Supabase Projects
-The existing setup uses two Supabase projects (one for auth, one for data). All fitness/nutrition tables go into the **data project** (`ftorqizpzrjhwarjuqst`). Auth checks reference the **dashboard project** (`tvbemlwkphnvmsromqha`). Ensure `user_id` foreign keys reference the correct auth schema.
+### Single Supabase Project
+All tables (auth + data) live in the single Supabase project (`tvbemlwkphnvmsromqha`). The `user_id` column is TEXT type matching `auth.uid()::text`.
 
 ### State Management Strategy
 ```

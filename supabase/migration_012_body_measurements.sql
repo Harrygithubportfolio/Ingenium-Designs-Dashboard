@@ -1,6 +1,6 @@
 -- ============================================
 -- MIGRATION 012: Body Measurements
--- Run this in the Supabase SQL Editor (data project)
+-- Run this in the Supabase SQL Editor (tvbemlwkphnvmsromqha)
 -- Safe to re-run — all statements use IF NOT EXISTS
 -- ============================================
 
