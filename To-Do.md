@@ -8,12 +8,6 @@ Landscape views on touchscreens
 - [ ] Implement touch-friendly navigation and controls in the landscape views to enhance user interaction.
 - [ ] Optimize the performance of the landscape views to ensure smooth and fast loading times on mobile devices.
 
-Strava Integration
-- [ ] Integrate Strava API to allow users to connect their Strava accounts and sync their fitness data with the website.
-- [ ] Display users' Strava activities, such as runs, rides, and workouts, on their profile pages.
-- [ ] Implement features to analyze and visualize Strava data, such as performance metrics, activity maps, and progress tracking.
-- [ ] Ensure that the Strava integration is secure and respects user privacy by implementing proper authentication and data handling practices.
-
 
 Fitness Section
 
@@ -22,6 +16,7 @@ Fitness Section
 - [ ] Update the design of the Fitness section to make it more visually appealing and user-friendly.
 - [ ] Incorporate interactive elements such as progress trackers, chart.js. More trackability with this and an achivements section
 - [ ] Include a variety of fitness levels and goals in the content to cater to a wider audience.
+- [ ] I want a Generate workout feature where the user is asked a series of questions such as Age, experience level at gym ,what goals they are trying to achieve with fitness (Lose weight, build muscle etc...) and once they've answeredd these questions they hit "Generate Bespoke Workout" which then using ai designs them an 8-12 week plan with everything included! This they can then view and click on each individual exercise as view it in further detail! 
 
 Rejig the Focus section! 
 

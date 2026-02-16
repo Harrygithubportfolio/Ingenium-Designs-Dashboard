@@ -17,7 +17,7 @@ export default function AddGoalModal({ onClose }: AddGoalModalProps) {
   const handleSave = async () => {
     if (!title.trim()) return;
     setSaving(true);
-    await addGoal(title.trim(), description.trim());
+    await addGoal({ title: title.trim(), description: description.trim() });
     setSaving(false);
     onClose();
   };

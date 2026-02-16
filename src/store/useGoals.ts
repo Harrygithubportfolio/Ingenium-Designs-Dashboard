@@ -1,31 +1,55 @@
 import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
+import type {
+  Goal,
+  GoalInput,
+  GoalUpdate,
+  GoalCategory,
+  GoalPriority,
+  GoalStatus,
+} from "@/lib/goals/types";
 
-export type GoalStatus = "active" | "completed" | "archived";
+// Re-export for backward compatibility
+export type { Goal, GoalStatus } from "@/lib/goals/types";
 
-export interface Goal {
-  id: string;
-  user_id: string | null;
-  title: string;
-  description: string | null;
-  status: GoalStatus;
-  created_at: string;
-  updated_at: string;
-}
+export type SortField = "created_at" | "target_date" | "priority" | "progress" | "title";
+export type SortDirection = "asc" | "desc";
 
 interface GoalsState {
   goals: Goal[];
   loading: boolean;
+
+  // Filters
+  filterStatus: GoalStatus | "all";
+  filterCategory: GoalCategory | "all";
+  filterPriority: GoalPriority | "all";
+  sortField: SortField;
+  sortDirection: SortDirection;
+
+  // Data actions
   fetchGoals: () => Promise<void>;
   subscribeToRealtime: () => () => void;
-  addGoal: (title: string, description?: string) => Promise<void>;
-  updateGoal: (id: string, updates: Partial<Pick<Goal, "title" | "description" | "status">>) => Promise<void>;
+  addGoal: (input: GoalInput) => Promise<void>;
+  updateGoal: (id: string, updates: GoalUpdate) => Promise<void>;
   deleteGoal: (id: string) => Promise<void>;
+
+  // Filter/sort actions
+  setFilterStatus: (status: GoalStatus | "all") => void;
+  setFilterCategory: (category: GoalCategory | "all") => void;
+  setFilterPriority: (priority: GoalPriority | "all") => void;
+  setSortField: (field: SortField) => void;
+  setSortDirection: (direction: SortDirection) => void;
 }
 
 export const useGoals = create<GoalsState>((set, get) => ({
   goals: [],
   loading: false,
+
+  filterStatus: "all",
+  filterCategory: "all",
+  filterPriority: "all",
+  sortField: "created_at",
+  sortDirection: "desc",
 
   fetchGoals: async () => {
     set({ loading: true });
@@ -33,11 +57,11 @@ export const useGoals = create<GoalsState>((set, get) => ({
     const { data, error } = await supabase
       .from("goals")
       .select("*")
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: false });
     if (error) {
       console.error("fetchGoals error:", error);
     } else if (data) {
-      set({ goals: data });
+      set({ goals: data as Goal[] });
     }
     set({ loading: false });
   },
@@ -58,14 +82,24 @@ export const useGoals = create<GoalsState>((set, get) => ({
     };
   },
 
-  addGoal: async (title, description = "") => {
+  addGoal: async (input) => {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       console.error("addGoal error: not authenticated");
       return;
     }
-    const { error } = await supabase.from("goals").insert({ title, description, user_id: user.id });
+    const { error } = await supabase.from("goals").insert({
+      user_id: user.id,
+      title: input.title,
+      description: input.description ?? "",
+      category: input.category ?? "personal",
+      priority: input.priority ?? "medium",
+      target_date: input.target_date ?? null,
+      milestones: input.milestones ?? [],
+    });
     if (error) {
       console.error("addGoal error:", error);
       return;
@@ -95,4 +129,10 @@ export const useGoals = create<GoalsState>((set, get) => ({
     }
     await get().fetchGoals();
   },
+
+  setFilterStatus: (status) => set({ filterStatus: status }),
+  setFilterCategory: (category) => set({ filterCategory: category }),
+  setFilterPriority: (priority) => set({ filterPriority: priority }),
+  setSortField: (field) => set({ sortField: field }),
+  setSortDirection: (direction) => set({ sortDirection: direction }),
 }));
