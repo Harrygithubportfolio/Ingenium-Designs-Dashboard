@@ -76,6 +76,11 @@ export default function AgendaView({ schedule, onSelectWorkout }: Props) {
                         <div className="flex items-center gap-2 mt-1.5">
                           {w.template && <TrainingIntentBadge intent={w.template.training_intent} />}
                           <WorkoutStatusBadge status={w.status} />
+                          {w.programme_id && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-accent/10 text-accent font-medium">
+                              Programme
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

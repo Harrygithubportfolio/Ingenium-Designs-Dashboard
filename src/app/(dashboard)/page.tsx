@@ -97,7 +97,7 @@ export default function Home() {
             description="8,432 steps today"
             icon="heart"
             gradient="from-red-500 to-pink-500"
-            href="/fitness"
+            href="/fitness-nutrition"
           />
           <NavCard
             title="Spotify"

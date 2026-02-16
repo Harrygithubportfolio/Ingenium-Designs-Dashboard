@@ -3,10 +3,9 @@
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useFitnessSchedule } from '@/store/useFitnessSchedule';
+import { useFitnessProfile } from '@/store/useFitnessProfile';
 import { useNutritionDay } from '@/store/useNutritionDay';
 import { useStrava } from '@/store/useStrava';
-import TrainingIntentBadge from '@/components/fitness/TrainingIntentBadge';
-import WorkoutStatusBadge from '@/components/fitness/WorkoutStatusBadge';
 import CalorieRing from '@/components/nutrition/CalorieRing';
 import IntakeEventCard from '@/components/nutrition/IntakeEventCard';
 import MealDetailModal from '@/components/nutrition/MealDetailModal';
@@ -17,7 +16,13 @@ import ActivityDetailModal from '@/app/(dashboard)/strava/components/ActivityDet
 import SportTypeBadge from '@/app/(dashboard)/strava/components/SportTypeBadge';
 import StatCard from '@/components/shared/charts/StatCard';
 import HeatmapGrid from '@/components/shared/charts/HeatmapGrid';
-import type { ScheduledWorkout } from '@/lib/fitness/types';
+import FitnessHeroCard from './components/FitnessHeroCard';
+import WeeklyOverviewStrip from './components/WeeklyOverviewStrip';
+import FitnessStatsGrid from './components/FitnessStatsGrid';
+import GamificationBar from './components/GamificationBar';
+import FitnessChartsSection from './components/FitnessChartsSection';
+import QuickAccessGrid from './components/QuickAccessGrid';
+import RecentActivityFeed from './components/RecentActivityFeed';
 import type { IntakeEvent } from '@/lib/nutrition/types';
 import type { StravaConnection, StravaActivity, StravaSportType } from '@/lib/strava/types';
 import { formatDistance, formatDuration, formatElevation } from '@/lib/strava/types';
@@ -31,10 +36,23 @@ export default function FitnessNutritionPage() {
   const {
     todayWorkout,
     weekSchedule,
-    templates,
     loading: fitnessLoading,
     refresh: refreshFitness,
+    monthlyStats,
+    heatmapData,
+    volumeTrend,
+    recentSessions,
+    fetchDashboardData,
   } = useFitnessSchedule();
+
+  // Gamification store
+  const {
+    profile: fitnessProfile,
+    achievements: fitnessAchievements,
+    prCount,
+    loading: profileLoading,
+    fetchAll: fetchProfileAll,
+  } = useFitnessProfile();
 
   // Nutrition store
   const {
@@ -60,12 +78,11 @@ export default function FitnessNutritionPage() {
   // Fetch all on mount so tab switching is instant
   useEffect(() => {
     refreshFitness();
+    fetchDashboardData();
+    fetchProfileAll();
     fetchDay();
     fetchStravaActivities();
   }, []);
-
-  const todayTemplate = todayWorkout?.template;
-  const exercises = todayTemplate?.exercises ?? [];
 
   const consumed = summary?.consumed ?? { calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0 };
   const targets = summary?.targets ?? { calories: 2400, protein_g: 180, carbs_g: 300, fat_g: 80 };
@@ -93,6 +110,18 @@ export default function FitnessNutritionPage() {
           <div className="flex items-center gap-2">
             {activeTab === 'fitness' && (
               <>
+                <Link
+                  href="/fitness/programmes"
+                  className="px-3 py-1.5 text-xs font-medium text-sub hover:text-heading bg-card border border-edge rounded-lg hover:border-purple-500/40 transition-all"
+                >
+                  Programmes
+                </Link>
+                <Link
+                  href="/fitness/achievements"
+                  className="px-3 py-1.5 text-xs font-medium text-sub hover:text-heading bg-card border border-edge rounded-lg hover:border-amber-500/40 transition-all"
+                >
+                  Achievements
+                </Link>
                 <Link
                   href="/fitness/templates"
                   className="px-3 py-1.5 text-xs font-medium text-sub hover:text-heading bg-card border border-edge rounded-lg hover:border-accent/40 transition-all"
@@ -204,14 +233,40 @@ export default function FitnessNutritionPage() {
 
       {/* Tab Content */}
       {activeTab === 'fitness' && (
-        <FitnessTab
-          loading={fitnessLoading}
-          todayWorkout={todayWorkout}
-          todayTemplate={todayTemplate}
-          exercises={exercises}
-          weekSchedule={weekSchedule}
-          templatesCount={templates.length}
-        />
+        <div className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
+          {/* Hero + Weekly Overview */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <FitnessHeroCard todayWorkout={todayWorkout} loading={fitnessLoading} />
+            <WeeklyOverviewStrip weekSchedule={weekSchedule} />
+          </div>
+
+          {/* Stats Grid */}
+          <FitnessStatsGrid
+            monthlyWorkouts={monthlyStats?.workoutCount ?? 0}
+            streak={fitnessProfile?.current_streak ?? 0}
+            monthlyVolume={monthlyStats?.totalVolume ?? 0}
+            prCount={prCount}
+          />
+
+          {/* Gamification Bar */}
+          <GamificationBar
+            profile={fitnessProfile}
+            achievements={fitnessAchievements}
+            loading={profileLoading}
+          />
+
+          {/* Charts */}
+          <FitnessChartsSection
+            volumeTrend={volumeTrend}
+            heatmapData={heatmapData}
+          />
+
+          {/* Quick Access */}
+          <QuickAccessGrid />
+
+          {/* Recent Activity */}
+          <RecentActivityFeed sessions={recentSessions} />
+        </div>
       )}
       {activeTab === 'nutrition' && (
         <NutritionTab
@@ -235,139 +290,6 @@ export default function FitnessNutritionPage() {
           setSportTypeFilter={setSportTypeFilter}
         />
       )}
-    </div>
-  );
-}
-
-// ─── Fitness Tab ────────────────────────────────────────────
-
-function FitnessTab({
-  loading,
-  todayWorkout,
-  todayTemplate,
-  exercises,
-  weekSchedule,
-  templatesCount,
-}: {
-  loading: boolean;
-  todayWorkout: ScheduledWorkout | null;
-  todayTemplate: ScheduledWorkout['template'];
-  exercises: NonNullable<NonNullable<ScheduledWorkout['template']>['exercises']>;
-  weekSchedule: ScheduledWorkout[];
-  templatesCount: number;
-}) {
-  return (
-    <div className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      {/* Today's Session */}
-      <div className="bg-gradient-to-br from-card to-inner rounded-2xl border border-edge p-5 flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between mb-4 flex-shrink-0">
-          <h2 className="text-sm font-semibold text-heading">Today&apos;s Session</h2>
-          {todayTemplate && <TrainingIntentBadge intent={todayTemplate.training_intent} />}
-        </div>
-
-        {loading ? (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-          </div>
-        ) : todayWorkout && todayTemplate ? (
-          <div className="flex-1 flex flex-col min-h-0">
-            <h3 className="text-xl font-bold text-heading mb-1">{todayTemplate.name}</h3>
-            <p className="text-xs text-dim mb-4">{exercises.length} exercises</p>
-
-            <div className="flex-1 min-h-0 space-y-2 overflow-hidden">
-              {exercises.slice(0, 6).map((ex) => (
-                <div key={ex.id} className="flex items-center justify-between py-1.5 px-3 bg-inner rounded-lg">
-                  <span className="text-sm text-sub">{ex.exercise_name}</span>
-                  <span className="text-xs text-dim">
-                    {ex.target_sets}&times;{ex.target_reps}
-                    {ex.target_load_kg ? ` @${ex.target_load_kg}kg` : ''}
-                  </span>
-                </div>
-              ))}
-              {exercises.length > 6 && (
-                <p className="text-xs text-dim text-center">+{exercises.length - 6} more</p>
-              )}
-            </div>
-
-            <Link
-              href="/gym-mode"
-              className="mt-4 flex-shrink-0 w-full py-3 bg-gradient-to-r from-accent to-accent-secondary text-white font-semibold rounded-xl text-center hover:opacity-90 transition-opacity"
-            >
-              Start Gym Mode
-            </Link>
-          </div>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center gap-3">
-            <p className="text-sm text-dim">No workout scheduled for today</p>
-            <Link
-              href="/fitness/schedule"
-              className="px-4 py-2 text-xs font-medium text-accent border border-accent/30 rounded-lg hover:bg-accent/10 transition-colors"
-            >
-              Schedule a Workout
-            </Link>
-          </div>
-        )}
-      </div>
-
-      {/* Week Overview + Quick Stats */}
-      <div className="flex flex-col gap-4 overflow-hidden">
-        <div className="bg-gradient-to-br from-card to-inner rounded-2xl border border-edge p-5 flex-1 min-h-0 flex flex-col overflow-hidden">
-          <h2 className="text-sm font-semibold text-heading mb-3 flex-shrink-0">This Week</h2>
-          <div className="flex-1 min-h-0 space-y-2 overflow-hidden">
-            {weekSchedule.length === 0 ? (
-              <p className="text-sm text-dim text-center py-4">No workouts scheduled this week</p>
-            ) : (
-              weekSchedule.slice(0, 7).map((sw) => (
-                <WeekDayRow key={sw.id} workout={sw} />
-              ))
-            )}
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-card to-inner rounded-2xl border border-edge p-5 flex-shrink-0">
-          <h2 className="text-sm font-semibold text-heading mb-3">Quick Stats</h2>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-inner rounded-xl p-3 text-center">
-              <p className="text-2xl font-bold text-heading">{templatesCount}</p>
-              <p className="text-[10px] text-dim uppercase">Templates</p>
-            </div>
-            <div className="bg-inner rounded-xl p-3 text-center">
-              <p className="text-2xl font-bold text-green-400">
-                {weekSchedule.filter((w) => w.status === 'completed').length}
-              </p>
-              <p className="text-[10px] text-dim uppercase">Done</p>
-            </div>
-            <div className="bg-inner rounded-xl p-3 text-center">
-              <p className="text-2xl font-bold text-blue-400">
-                {weekSchedule.filter((w) => w.status === 'scheduled').length}
-              </p>
-              <p className="text-[10px] text-dim uppercase">Upcoming</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      </div>
-    </div>
-  );
-}
-
-function WeekDayRow({ workout }: { workout: ScheduledWorkout }) {
-  const date = new Date(workout.scheduled_date);
-  const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-  const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const templateName = workout.template?.name ?? 'Unknown';
-
-  return (
-    <div className="flex items-center gap-3 py-2 px-3 bg-inner rounded-lg">
-      <div className="w-10 text-center flex-shrink-0">
-        <p className="text-xs font-semibold text-heading">{dayName}</p>
-        <p className="text-[10px] text-dim">{dateStr}</p>
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm text-sub truncate">{templateName}</p>
-      </div>
-      <WorkoutStatusBadge status={workout.status} />
     </div>
   );
 }

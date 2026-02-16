@@ -172,12 +172,17 @@ export default function MonthView({ year, month, schedule, onSelectDate, selecte
                 className="p-3 bg-card border border-edge rounded-xl"
               >
                 <p className="text-sm font-medium text-heading">{w.template?.name ?? 'Workout'}</p>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
                   {w.template && (
                     <span className="text-[10px] text-dim">{w.template.training_intent}</span>
                   )}
                   <span className="text-[10px] text-dim">|</span>
                   <span className="text-[10px] text-dim">{exercises.length} exercises</span>
+                  {w.programme_id && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-accent/10 text-accent font-medium">
+                      Programme
+                    </span>
+                  )}
                 </div>
                 {exercises.length > 0 && (
                   <div className="mt-2 space-y-1">

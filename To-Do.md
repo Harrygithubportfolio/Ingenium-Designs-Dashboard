@@ -41,3 +41,4 @@ Routines
 
 
 
+photo album integration! 

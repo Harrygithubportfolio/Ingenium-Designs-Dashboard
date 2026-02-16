@@ -1,122 +1,30 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useFitnessSchedule } from '@/store/useFitnessSchedule';
-import TemplateCard from '@/components/fitness/TemplateCard';
-import EditTemplateModal from '@/components/fitness/EditTemplateModal';
+import { useState } from 'react';
 import type { WorkoutTemplate, CreateTemplateInput, TrainingIntent } from '@/lib/fitness/types';
-import { createTemplate, archiveTemplate } from '@/lib/fitness/mutations';
+import { updateTemplate } from '@/lib/fitness/mutations';
 import { createClient } from '@/lib/supabase/client';
 
-export default function TemplatesPage() {
-  const { templates, fetchTemplates } = useFitnessSchedule();
-  const [showCreate, setShowCreate] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState<WorkoutTemplate | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchTemplates().finally(() => setLoading(false));
-  }, []);
-
-  const handleArchive = async (template: WorkoutTemplate) => {
-    if (!confirm(`Archive "${template.name}"?`)) return;
-    const supabase = createClient();
-    await archiveTemplate(supabase, template.id);
-    await fetchTemplates();
-  };
-
-  return (
-    <div className="h-full flex flex-col gap-4 overflow-hidden">
-      <header className="flex-shrink-0 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/fitness-nutrition" className="text-dim hover:text-heading transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </Link>
-          <h1 className="text-lg font-semibold text-heading">Workout Templates</h1>
-        </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-accent to-accent-secondary rounded-lg hover:opacity-90 transition-opacity"
-        >
-          + New Template
-        </button>
-      </header>
-
-      {loading ? (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-        </div>
-      ) : (
-        <div className="flex-1 min-h-0 overflow-hidden">
-          {templates.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center gap-3">
-              <p className="text-sm text-dim">No templates yet</p>
-              <button
-                onClick={() => setShowCreate(true)}
-                className="px-4 py-2 text-xs font-medium text-accent border border-accent/30 rounded-lg hover:bg-accent/10 transition-colors"
-              >
-                Create Your First Template
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 h-full overflow-hidden">
-              {templates.map((t) => (
-                <TemplateCard
-                  key={t.id}
-                  template={t}
-                  onEdit={(tmpl) => setEditingTemplate(tmpl)}
-                  onArchive={(tmpl) => handleArchive(tmpl)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {showCreate && (
-        <CreateTemplateModal
-          onClose={() => setShowCreate(false)}
-          onCreated={() => {
-            setShowCreate(false);
-            fetchTemplates();
-          }}
-        />
-      )}
-
-      {editingTemplate && (
-        <EditTemplateModal
-          template={editingTemplate}
-          onClose={() => setEditingTemplate(null)}
-          onUpdated={() => {
-            setEditingTemplate(null);
-            fetchTemplates();
-          }}
-        />
-      )}
-    </div>
-  );
+interface Props {
+  template: WorkoutTemplate;
+  onClose: () => void;
+  onUpdated: () => void;
 }
 
-// ============================================
-// CREATE TEMPLATE MODAL
-// ============================================
-
-function CreateTemplateModal({
-  onClose,
-  onCreated,
-}: {
-  onClose: () => void;
-  onCreated: () => void;
-}) {
-  const [name, setName] = useState('');
-  const [intent, setIntent] = useState<TrainingIntent>('strength');
-  const [description, setDescription] = useState('');
+export default function EditTemplateModal({ template, onClose, onUpdated }: Props) {
+  const [name, setName] = useState(template.name);
+  const [intent, setIntent] = useState<TrainingIntent>(template.training_intent);
+  const [description, setDescription] = useState(template.description ?? '');
   const [exercises, setExercises] = useState<
     { exercise_name: string; target_sets: number; target_reps: number; target_load_kg: string }[]
-  >([{ exercise_name: '', target_sets: 3, target_reps: 10, target_load_kg: '' }]);
+  >(
+    (template.exercises ?? []).map((ex) => ({
+      exercise_name: ex.exercise_name,
+      target_sets: ex.target_sets,
+      target_reps: ex.target_reps,
+      target_load_kg: ex.target_load_kg ? String(ex.target_load_kg) : '',
+    }))
+  );
   const [saving, setSaving] = useState(false);
 
   const addExercise = () => {
@@ -155,12 +63,10 @@ function CreateTemplateModal({
           })),
       };
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-      await createTemplate(supabase, user.id, input);
-      onCreated();
+      await updateTemplate(supabase, template.id, input);
+      onUpdated();
     } catch (err) {
-      console.error('Create template error:', err);
+      console.error('Update template error:', err);
     } finally {
       setSaving(false);
     }
@@ -170,7 +76,7 @@ function CreateTemplateModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="w-full max-w-lg bg-card rounded-2xl border border-edge p-6 max-h-[90vh] flex flex-col overflow-hidden">
         <div className="flex items-center justify-between mb-4 flex-shrink-0">
-          <h2 className="text-lg font-semibold text-heading">New Template</h2>
+          <h2 className="text-lg font-semibold text-heading">Edit Template</h2>
           <button onClick={onClose} aria-label="Close modal" className="text-dim hover:text-heading transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -290,7 +196,7 @@ function CreateTemplateModal({
             disabled={saving || !name.trim()}
             className="flex-1 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-accent to-accent-secondary rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            {saving ? 'Creating...' : 'Create Template'}
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </div>

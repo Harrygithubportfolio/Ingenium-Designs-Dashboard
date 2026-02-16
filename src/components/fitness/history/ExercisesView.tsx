@@ -112,7 +112,8 @@ export default function ExercisesView() {
 
           {/* Stats summary */}
           <div className="grid grid-cols-3 gap-2">
-            <div className="p-2 bg-inner rounded-lg border border-edge text-center">
+            <div className="p-2 bg-inner rounded-lg border border-edge text-center relative">
+              <span className="absolute top-1 right-1 text-[8px] px-1 py-0.5 rounded bg-amber-500/10 text-amber-400 font-semibold">PR</span>
               <p className="text-lg font-bold text-heading">
                 {chartData.length > 0 ? Math.max(...chartData.map((d) => d.maxWeight)) : 0}kg
               </p>
@@ -130,6 +131,14 @@ export default function ExercisesView() {
             </div>
           </div>
 
+          {/* Volume chart */}
+          <div>
+            <p className="text-xs text-dim uppercase tracking-wider mb-2">Volume Progression</p>
+            <ProgressChart
+              data={chartData.map((d) => ({ ...d, maxWeight: d.totalVolume }))}
+            />
+          </div>
+
           {/* Past performances */}
           <div>
             <p className="text-xs text-dim uppercase tracking-wider mb-2">Past Performances</p>
@@ -141,12 +150,23 @@ export default function ExercisesView() {
                   month: 'short',
                   year: 'numeric',
                 });
+                const maxWeightInSession = entry.sets.length > 0
+                  ? Math.max(...entry.sets.map((s) => s.actual_weight_kg))
+                  : 0;
+                const allTimeBest = chartData.length > 0
+                  ? Math.max(...chartData.map((d) => d.maxWeight))
+                  : 0;
                 return (
                   <div
                     key={entry.gym_session_id}
                     className="p-3 bg-card border border-edge rounded-xl"
                   >
-                    <p className="text-xs text-dim mb-2">{date}</p>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs text-dim">{date}</p>
+                      {maxWeightInSession === allTimeBest && allTimeBest > 0 && (
+                        <span className="text-[8px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-semibold">ALL-TIME PR</span>
+                      )}
+                    </div>
                     <div className="space-y-1">
                       {entry.sets
                         .sort((a, b) => a.set_number - b.set_number)

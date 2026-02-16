@@ -108,6 +108,11 @@ export default function WeekView({ weekStart, schedule, onSelectWorkout, onPrevW
                       <div className="flex items-center gap-1 mt-1 flex-wrap">
                         {w.template && <TrainingIntentBadge intent={w.template.training_intent} />}
                         <WorkoutStatusBadge status={w.status} />
+                        {w.programme_id && (
+                          <span className="text-[8px] px-1 py-0.5 rounded bg-accent/10 text-accent font-medium">
+                            Programme
+                          </span>
+                        )}
                       </div>
                     </button>
                   ))

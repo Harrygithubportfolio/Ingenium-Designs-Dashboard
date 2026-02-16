@@ -7,9 +7,10 @@ interface Props {
   template: WorkoutTemplate;
   onSelect?: (template: WorkoutTemplate) => void;
   onEdit?: (template: WorkoutTemplate) => void;
+  onArchive?: (template: WorkoutTemplate) => void;
 }
 
-export default function TemplateCard({ template, onSelect, onEdit }: Props) {
+export default function TemplateCard({ template, onSelect, onEdit, onArchive }: Props) {
   const exerciseCount = template.exercises?.length ?? 0;
   const totalSets = template.exercises?.reduce((sum, ex) => sum + ex.target_sets, 0) ?? 0;
 
@@ -52,16 +53,31 @@ export default function TemplateCard({ template, onSelect, onEdit }: Props) {
         </div>
       )}
 
-      {onEdit && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(template);
-          }}
-          className="mt-3 text-xs text-accent hover:text-accent/80 transition-colors"
-        >
-          Edit Template
-        </button>
+      {(onEdit || onArchive) && (
+        <div className="mt-3 flex items-center gap-3">
+          {onEdit && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(template);
+              }}
+              className="text-xs text-accent hover:text-accent/80 transition-colors"
+            >
+              Edit
+            </button>
+          )}
+          {onArchive && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onArchive(template);
+              }}
+              className="text-xs text-dim hover:text-red-400 transition-colors"
+            >
+              Archive
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

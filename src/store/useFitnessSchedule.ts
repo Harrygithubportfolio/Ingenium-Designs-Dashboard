@@ -1,7 +1,25 @@
 import { create } from 'zustand';
-import type { ScheduledWorkout, WorkoutTemplate } from '@/lib/fitness/types';
-import { fetchSchedule, fetchTodaySchedule, fetchTemplates } from '@/lib/fitness/queries';
+import type { ScheduledWorkout, WorkoutTemplate, GymSession } from '@/lib/fitness/types';
+import {
+  fetchSchedule,
+  fetchTodaySchedule,
+  fetchTemplates,
+  fetchMonthlyWorkoutStats,
+  fetchWorkoutHeatmapData,
+  fetchVolumeOverTime,
+  fetchRecentCompletedSessions,
+} from '@/lib/fitness/queries';
 import { createClient } from '@/lib/supabase/client';
+
+interface MonthlyStats {
+  workoutCount: number;
+  totalVolume: number;
+}
+
+interface VolumeDataPoint {
+  week: string;
+  volume: number;
+}
 
 interface FitnessScheduleState {
   todayWorkout: ScheduledWorkout | null;
@@ -10,11 +28,19 @@ interface FitnessScheduleState {
   templates: WorkoutTemplate[];
   loading: boolean;
 
+  // Dashboard data
+  monthlyStats: MonthlyStats | null;
+  heatmapData: Record<string, number>;
+  volumeTrend: VolumeDataPoint[];
+  recentSessions: GymSession[];
+  dashboardLoaded: boolean;
+
   fetchToday: () => Promise<void>;
   fetchWeek: (from: string, to: string) => Promise<void>;
   fetchMonth: (year: number, month: number) => Promise<void>;
   fetchTemplates: () => Promise<void>;
   refresh: () => Promise<void>;
+  fetchDashboardData: () => Promise<void>;
 }
 
 export const useFitnessSchedule = create<FitnessScheduleState>((set, get) => ({
@@ -23,6 +49,13 @@ export const useFitnessSchedule = create<FitnessScheduleState>((set, get) => ({
   monthSchedule: [],
   templates: [],
   loading: false,
+
+  // Dashboard data
+  monthlyStats: null,
+  heatmapData: {},
+  volumeTrend: [],
+  recentSessions: [],
+  dashboardLoaded: false,
 
   fetchToday: async () => {
     try {
@@ -83,5 +116,20 @@ export const useFitnessSchedule = create<FitnessScheduleState>((set, get) => ({
       get().fetchWeek(from.toISOString().split('T')[0], to.toISOString().split('T')[0]),
       get().fetchTemplates(),
     ]);
+  },
+
+  fetchDashboardData: async () => {
+    try {
+      const supabase = createClient();
+      const [monthlyStats, heatmapData, volumeTrend, recentSessions] = await Promise.all([
+        fetchMonthlyWorkoutStats(supabase),
+        fetchWorkoutHeatmapData(supabase, 20),
+        fetchVolumeOverTime(supabase, 12),
+        fetchRecentCompletedSessions(supabase, 5),
+      ]);
+      set({ monthlyStats, heatmapData, volumeTrend, recentSessions, dashboardLoaded: true });
+    } catch (err) {
+      console.error('fetchDashboardData error:', err);
+    }
   },
 }));

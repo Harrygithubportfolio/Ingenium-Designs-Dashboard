@@ -9,7 +9,7 @@ import { createReflection, updateReflection } from '@/lib/fitness/mutations';
 import { createClient } from '@/lib/supabase/client';
 import type { SessionRating, LogSetInput, ExecutionExercise, GymSession } from '@/lib/fitness/types';
 
-type GymView = 'loading' | 'start' | 'exercise' | 'paused' | 'summary' | 'reflection';
+type GymView = 'loading' | 'start' | 'exercise' | 'paused' | 'summary' | 'celebration' | 'reflection';
 
 export default function GymModePage() {
   const router = useRouter();
@@ -63,7 +63,7 @@ export default function GymModePage() {
     return <StartScreen todayWorkoutId={todayWorkout?.id} onStart={async (swId) => {
       await store.startSession(swId);
       setView('exercise');
-    }} onExit={() => router.push('/fitness')} />;
+    }} onExit={() => router.push('/fitness-nutrition')} />;
   }
 
   if (view === 'paused') {
@@ -78,11 +78,15 @@ export default function GymModePage() {
   }
 
   if (view === 'summary' && completedSession) {
-    return <SessionSummary session={completedSession} elapsed={completedElapsed} onReflect={() => setView('reflection')} />;
+    return <SessionSummary session={completedSession} elapsed={completedElapsed} onReflect={() => setView('celebration')} />;
+  }
+
+  if (view === 'celebration' && completedSession) {
+    return <CelebrationScreen sessionId={completedSession.id} onContinue={() => setView('reflection')} />;
   }
 
   if (view === 'reflection' && completedSession) {
-    return <ReflectionScreen sessionId={completedSession.id} onDone={() => { store.reset(); router.push('/fitness'); }} />;
+    return <ReflectionScreen sessionId={completedSession.id} onDone={() => { store.reset(); router.push('/fitness-nutrition'); }} />;
   }
 
   // Check if any sets have been logged across all exercises
@@ -106,7 +110,7 @@ export default function GymModePage() {
           <button onClick={handleChangeMode} className="w-full px-6 py-3 bg-white/10 rounded-xl text-heading hover:bg-white/15 transition-colors">
             Change Mode
           </button>
-          <button onClick={() => router.push('/fitness')} className="w-full px-6 py-3 text-dim hover:text-heading transition-colors">
+          <button onClick={() => router.push('/fitness-nutrition')} className="w-full px-6 py-3 text-dim hover:text-heading transition-colors">
             Exit Gym Mode
           </button>
         </div>
@@ -128,7 +132,7 @@ export default function GymModePage() {
       onPause={async () => { await store.pause(); setView('paused'); }}
       onFinish={async () => { const s = await store.complete(); goToSummary(s ?? store.session); }}
       onAddExercise={async (name) => { await store.addExercise(name); }}
-      onAbandon={async () => { await store.abandon(); store.reset(); router.push('/fitness'); }}
+      onAbandon={async () => { await store.abandon(); store.reset(); router.push('/fitness-nutrition'); }}
       onChangeMode={handleChangeMode}
     />
   );
@@ -535,6 +539,153 @@ function SessionSummary({ session, elapsed, onReflect }: { session: any; elapsed
         className="w-full max-w-sm py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl text-xl font-bold hover:opacity-90 transition-opacity"
       >
         Add Reflection
+      </button>
+    </div>
+  );
+}
+
+// ============================================
+// CELEBRATION SCREEN — Gamification Results
+// ============================================
+interface CompletionResult {
+  xpEarned: number;
+  xpBreakdown: { base: number; prBonus: number; streakMultiplier: number; total: number };
+  newPRs: { exercise_name: string; record_type: string; value: number }[];
+  newAchievements: string[];
+  previousLevel: number;
+  newLevel: number;
+  leveledUp: boolean;
+  streak: number;
+}
+
+function CelebrationScreen({ sessionId, onContinue }: { sessionId: string; onContinue: () => void }) {
+  const [result, setResult] = useState<CompletionResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [displayXP, setDisplayXP] = useState(0);
+
+  useEffect(() => {
+    const process = async () => {
+      try {
+        const res = await fetch('/api/fitness/process-completion', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: sessionId }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setResult(data);
+        }
+      } catch (err) {
+        console.error('Process completion error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    process();
+  }, [sessionId]);
+
+  // XP counting animation
+  useEffect(() => {
+    if (!result) return;
+    const target = result.xpEarned;
+    if (target === 0) { setDisplayXP(0); return; }
+    const step = Math.max(1, Math.ceil(target / 40));
+    const interval = setInterval(() => {
+      setDisplayXP((prev) => {
+        const next = prev + step;
+        if (next >= target) { clearInterval(interval); return target; }
+        return next;
+      });
+    }, 30);
+    return () => clearInterval(interval);
+  }, [result]);
+
+  if (loading) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center gap-6 p-8">
+        <div className="w-10 h-10 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+        <p className="text-sub text-lg">Processing your results...</p>
+      </div>
+    );
+  }
+
+  if (!result) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center gap-6 p-8">
+        <p className="text-sub">Could not process gamification data</p>
+        <button onClick={onContinue} className="px-8 py-3 bg-white/10 rounded-xl hover:bg-white/15 transition-colors">
+          Continue to Reflection
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full flex flex-col items-center justify-center gap-6 p-8">
+      {/* Level up overlay */}
+      {result.leveledUp && (
+        <div className="text-center mb-2 animate-bounce">
+          <p className="text-xs text-amber-400 uppercase tracking-widest font-bold">Level Up!</p>
+          <p className="text-5xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+            Level {result.newLevel}
+          </p>
+        </div>
+      )}
+
+      {/* XP earned */}
+      <div className="text-center">
+        <p className="text-xs text-dim uppercase tracking-wider mb-1">XP Earned</p>
+        <p className="text-6xl font-bold text-blue-400 font-mono">+{displayXP}</p>
+        <div className="flex items-center gap-3 justify-center mt-2 text-xs text-dim">
+          <span>Base: {result.xpBreakdown.base}</span>
+          {result.xpBreakdown.prBonus > 0 && <span>PRs: +{result.xpBreakdown.prBonus}</span>}
+          {result.xpBreakdown.streakMultiplier > 1 && (
+            <span>Streak: ×{result.xpBreakdown.streakMultiplier.toFixed(1)}</span>
+          )}
+        </div>
+      </div>
+
+      {/* Streak */}
+      {result.streak > 0 && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-orange-500/10 rounded-xl">
+          <span className="text-orange-400 text-lg">🔥</span>
+          <span className="text-orange-400 font-semibold">{result.streak} day streak</span>
+        </div>
+      )}
+
+      {/* New PRs */}
+      {result.newPRs.length > 0 && (
+        <div className="w-full max-w-sm space-y-2">
+          <p className="text-xs text-dim uppercase tracking-wider text-center">New Personal Records</p>
+          {result.newPRs.map((pr, i) => (
+            <div key={i} className="flex items-center justify-between px-4 py-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+              <span className="text-sm text-heading font-medium">{pr.exercise_name}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-amber-400 font-semibold uppercase">{pr.record_type}</span>
+                <span className="text-sm text-amber-400 font-bold">{pr.value}{pr.record_type === 'weight' ? 'kg' : pr.record_type === 'reps' ? ' reps' : 'kg'}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* New achievements */}
+      {result.newAchievements.length > 0 && (
+        <div className="w-full max-w-sm space-y-2">
+          <p className="text-xs text-dim uppercase tracking-wider text-center">Achievements Unlocked</p>
+          {result.newAchievements.map((key) => (
+            <div key={key} className="px-4 py-2.5 bg-purple-500/10 border border-purple-500/20 rounded-xl text-center">
+              <span className="text-sm text-purple-400 font-medium capitalize">{key.replace(/_/g, ' ')}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button
+        onClick={onContinue}
+        className="w-full max-w-sm py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl text-xl font-bold hover:opacity-90 transition-opacity mt-4"
+      >
+        Continue to Reflection
       </button>
     </div>
   );

@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import SessionsView from './SessionsView';
 import ExercisesView from './ExercisesView';
+import AnalyticsView from './AnalyticsView';
 
-type SubTab = 'sessions' | 'exercises';
+type SubTab = 'sessions' | 'exercises' | 'analytics';
 
 export default function HistoryTab() {
   const [subTab, setSubTab] = useState<SubTab>('sessions');
@@ -35,10 +36,23 @@ export default function HistoryTab() {
         >
           Exercises
         </button>
+        <button
+          type="button"
+          onClick={() => setSubTab('analytics')}
+          className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
+            subTab === 'analytics'
+              ? 'bg-accent/20 text-accent border border-accent/40'
+              : 'text-sub hover:text-heading border border-transparent'
+          }`}
+        >
+          Analytics
+        </button>
       </div>
 
       {/* Content */}
-      {subTab === 'sessions' ? <SessionsView /> : <ExercisesView />}
+      {subTab === 'sessions' && <SessionsView />}
+      {subTab === 'exercises' && <ExercisesView />}
+      {subTab === 'analytics' && <AnalyticsView />}
     </div>
   );
 }

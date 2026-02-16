@@ -49,6 +49,7 @@ export interface ScheduledWorkout {
   status: ScheduledWorkoutStatus;
   rescheduled_to: string | null;
   rescheduled_from_id: string | null;
+  programme_id?: string | null;
   created_at: string;
   updated_at: string;
   // Joined fields
