@@ -154,7 +154,6 @@ const primaryNavItems: NavItem[] = [
   { name: 'Calendar', href: '/calendar', icon: <Icons.Calendar /> },
   { name: 'Weather', href: '/weather', icon: <Icons.Weather /> },
   { name: 'Fitness & Nutrition', href: '/fitness-nutrition', icon: <Icons.Fitness /> },
-  { name: 'Strava', href: '/strava', icon: <Icons.Strava /> },
   { name: 'Health', href: '/health', icon: <Icons.Health /> },
   { name: 'Focus', href: '/focus', icon: <Icons.Focus /> },
   { name: 'Goals', href: '/goals', icon: <Icons.Goals /> },
@@ -163,6 +162,7 @@ const primaryNavItems: NavItem[] = [
 ];
 
 const secondaryNavItems: NavItem[] = [
+  { name: 'Strava', href: '/strava', icon: <Icons.Strava /> },
   { name: 'Work & Projects', href: '/work', icon: <Icons.Work /> },
   { name: 'Finance', href: '/finance', icon: <Icons.Finance /> },
   { name: 'Home & Lifestyle', href: '/home', icon: <Icons.Home /> },
