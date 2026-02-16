@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useSettings } from '@/store/useSettings';
 import { useCalendar } from '@/store/useCalendar';
 import { useSpotify } from '@/store/useSpotify';
+import { useStrava } from '@/store/useStrava';
 import { createClient } from '@/lib/supabase/client';
 import {
   type SettingsSection,
@@ -890,19 +891,21 @@ function NotificationsSection() {
 function IntegrationsSection() {
   const { connection, disconnectGoogle, fetchConnection } = useCalendar();
   const { connection: spotifyConn, disconnect: disconnectSpotify, fetchConnection: fetchSpotifyConnection } = useSpotify();
+  const { connection: stravaConn, disconnect: disconnectStrava, fetchActivities: fetchStravaConnection } = useStrava();
 
   useEffect(() => {
     fetchConnection();
     fetchSpotifyConnection();
-  }, [fetchConnection, fetchSpotifyConnection]);
+    fetchStravaConnection();
+  }, [fetchConnection, fetchSpotifyConnection, fetchStravaConnection]);
 
   const isGoogleConnected = !!connection;
   const isSpotifyConnected = !!spotifyConn;
+  const isStravaConnected = !!stravaConn;
 
   const futureIntegrations = [
     { name: 'Apple Health', description: 'Sync health and activity data', icon: '❤️' },
     { name: 'Notion', description: 'Sync notes and knowledge base', icon: '📝' },
-    { name: 'Strava', description: 'Running and cycling activities', icon: '🏃' },
   ];
 
   return (
@@ -967,6 +970,41 @@ function IntegrationsSection() {
           <a
             href="/api/spotify/auth"
             className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1db954] text-white hover:bg-[#1ed760] transition-colors"
+          >
+            Connect
+          </a>
+        )}
+      </div>
+
+      {/* Strava */}
+      <div className="flex items-center justify-between p-4 rounded-xl bg-inner border border-edge">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-[#fc4c02]/10 flex items-center justify-center">
+            <svg className="w-5 h-5 text-[#fc4c02]" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-.842l2.585 5.1 2.585-5.1h-1.725L12 4.8l-3.774 7.33z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-heading">Strava</p>
+            <p className="text-xs text-dim">
+              {isStravaConnected
+                ? `Connected${stravaConn.display_name ? ` as ${stravaConn.display_name}` : ''}`
+                : 'Not connected'}
+            </p>
+          </div>
+        </div>
+        {isStravaConnected ? (
+          <button
+            type="button"
+            onClick={disconnectStrava}
+            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-red-400/30 text-red-400 hover:bg-red-400/10 transition-colors"
+          >
+            Disconnect
+          </button>
+        ) : (
+          <a
+            href="/api/strava/auth"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#fc4c02] text-white hover:bg-[#e34402] transition-colors"
           >
             Connect
           </a>

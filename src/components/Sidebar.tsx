@@ -85,6 +85,11 @@ const Icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
     </svg>
   ),
+  Strava: () => (
+    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-.842l2.585 5.1 2.585-5.1h-1.725L12 4.8l-3.774 7.33z" />
+    </svg>
+  ),
   Spotify: () => (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
@@ -149,6 +154,7 @@ const primaryNavItems: NavItem[] = [
   { name: 'Calendar', href: '/calendar', icon: <Icons.Calendar /> },
   { name: 'Weather', href: '/weather', icon: <Icons.Weather /> },
   { name: 'Fitness & Nutrition', href: '/fitness-nutrition', icon: <Icons.Fitness /> },
+  { name: 'Strava', href: '/strava', icon: <Icons.Strava /> },
   { name: 'Health', href: '/health', icon: <Icons.Health /> },
   { name: 'Focus', href: '/focus', icon: <Icons.Focus /> },
   { name: 'Goals', href: '/goals', icon: <Icons.Goals /> },
@@ -213,7 +219,8 @@ export default function Sidebar({ isPrimary, isCollapsed, onToggleCollapse }: Si
           <ul className="space-y-1">
             {navItems.map((item, index) => {
               const isActive = pathname === item.href ||
-                (item.href === '/fitness-nutrition' && (pathname.startsWith('/fitness') || pathname.startsWith('/nutrition')));
+                (item.href === '/fitness-nutrition' && (pathname.startsWith('/fitness') || pathname.startsWith('/nutrition'))) ||
+                (item.href === '/strava' && pathname.startsWith('/strava'));
               return (
                 <li
                   key={item.href}

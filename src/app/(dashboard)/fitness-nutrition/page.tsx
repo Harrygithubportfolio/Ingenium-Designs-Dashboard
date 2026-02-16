@@ -11,6 +11,7 @@ import IntakeEventCard from '@/components/nutrition/IntakeEventCard';
 import MealDetailModal from '@/components/nutrition/MealDetailModal';
 import DailySummaryCard from '@/components/nutrition/DailySummaryCard';
 import HistoryTab from '@/components/fitness/history/HistoryTab';
+import StravaWidget from '@/components/fitness/StravaWidget';
 import type { ScheduledWorkout } from '@/lib/fitness/types';
 import type { IntakeEvent } from '@/lib/nutrition/types';
 
@@ -193,7 +194,8 @@ function FitnessTab({
   templatesCount: number;
 }) {
   return (
-    <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-4 overflow-hidden">
+    <div className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {/* Today's Session */}
       <div className="bg-gradient-to-br from-card to-inner rounded-2xl border border-edge p-5 flex flex-col overflow-hidden">
         <div className="flex items-center justify-between mb-4 flex-shrink-0">
@@ -282,6 +284,10 @@ function FitnessTab({
           </div>
         </div>
       </div>
+      </div>
+
+      {/* Strava recent activities */}
+      <StravaWidget />
     </div>
   );
 }
