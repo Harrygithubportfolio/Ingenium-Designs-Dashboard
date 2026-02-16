@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useFitnessSchedule } from '@/store/useFitnessSchedule';
 import TemplateCard from '@/components/fitness/TemplateCard';
 import EditTemplateModal from '@/components/fitness/EditTemplateModal';
+import TemplateDetailModal from '@/components/fitness/TemplateDetailModal';
 import type { WorkoutTemplate, CreateTemplateInput, TrainingIntent } from '@/lib/fitness/types';
 import { createTemplate, archiveTemplate, seedDefaultTemplates } from '@/lib/fitness/mutations';
 import { createClient } from '@/lib/supabase/client';
@@ -14,6 +15,7 @@ export default function TemplatesPage() {
   const { templates, fetchTemplates } = useFitnessSchedule();
   const [showCreate, setShowCreate] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<WorkoutTemplate | null>(null);
+  const [viewingTemplate, setViewingTemplate] = useState<WorkoutTemplate | null>(null);
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
 
@@ -96,6 +98,7 @@ export default function TemplatesPage() {
                 <TemplateCard
                   key={t.id}
                   template={t}
+                  onSelect={(tmpl) => setViewingTemplate(tmpl)}
                   onEdit={(tmpl) => setEditingTemplate(tmpl)}
                   onArchive={(tmpl) => handleArchive(tmpl)}
                 />
@@ -103,6 +106,21 @@ export default function TemplatesPage() {
             </div>
           )}
         </div>
+      )}
+
+      {viewingTemplate && (
+        <TemplateDetailModal
+          template={viewingTemplate}
+          onClose={() => setViewingTemplate(null)}
+          onEdit={(tmpl) => {
+            setViewingTemplate(null);
+            setEditingTemplate(tmpl);
+          }}
+          onArchive={(tmpl) => {
+            setViewingTemplate(null);
+            handleArchive(tmpl);
+          }}
+        />
       )}
 
       {showCreate && (
