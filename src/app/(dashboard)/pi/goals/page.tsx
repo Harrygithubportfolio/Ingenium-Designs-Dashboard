@@ -11,12 +11,13 @@ export default function PiGoalsPage() {
   const loading = useGoals((s) => s.loading);
   const fetchGoals = useGoals((s) => s.fetchGoals);
   const subscribeToRealtime = useGoals((s) => s.subscribeToRealtime);
+  const autoTransitionGoals = useGoals((s) => s.autoTransitionGoals);
 
   const [showAdd, setShowAdd] = useState(false);
   const [editing, setEditing] = useState<Goal | null>(null);
 
   useEffect(() => {
-    fetchGoals();
+    fetchGoals().then(() => autoTransitionGoals());
     const unsub = subscribeToRealtime();
     return unsub;
     // eslint-disable-next-line react-hooks/exhaustive-deps

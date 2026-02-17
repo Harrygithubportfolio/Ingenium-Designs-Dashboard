@@ -22,6 +22,7 @@ export default function GoalsPage() {
   const loading = useGoals((s) => s.loading);
   const fetchGoals = useGoals((s) => s.fetchGoals);
   const subscribeToRealtime = useGoals((s) => s.subscribeToRealtime);
+  const autoTransitionGoals = useGoals((s) => s.autoTransitionGoals);
   const filterStatus = useGoals((s) => s.filterStatus);
   const setFilterStatus = useGoals((s) => s.setFilterStatus);
 
@@ -31,7 +32,7 @@ export default function GoalsPage() {
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
 
   useEffect(() => {
-    fetchGoals();
+    fetchGoals().then(() => autoTransitionGoals());
     const unsub = subscribeToRealtime();
     return unsub;
     // eslint-disable-next-line react-hooks/exhaustive-deps

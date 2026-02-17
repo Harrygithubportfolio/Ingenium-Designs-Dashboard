@@ -26,12 +26,16 @@ interface GoalsState {
   sortField: SortField;
   sortDirection: SortDirection;
 
+  // Auto-transition guard (tracks which date transitions last ran for)
+  _transitionRanForDate: string | null;
+
   // Data actions
   fetchGoals: () => Promise<void>;
   subscribeToRealtime: () => () => void;
   addGoal: (input: GoalInput) => Promise<void>;
   updateGoal: (id: string, updates: GoalUpdate) => Promise<void>;
   deleteGoal: (id: string) => Promise<void>;
+  autoTransitionGoals: () => Promise<void>;
 
   // Filter/sort actions
   setFilterStatus: (status: GoalStatus | "all") => void;
@@ -45,11 +49,12 @@ export const useGoals = create<GoalsState>((set, get) => ({
   goals: [],
   loading: false,
 
-  filterStatus: "all",
+  filterStatus: "active",
   filterCategory: "all",
   filterPriority: "all",
   sortField: "created_at",
   sortDirection: "desc",
+  _transitionRanForDate: null,
 
   fetchGoals: async () => {
     set({ loading: true });
@@ -127,6 +132,53 @@ export const useGoals = create<GoalsState>((set, get) => ({
       console.error("deleteGoal error:", error);
       return;
     }
+    await get().fetchGoals();
+  },
+
+  autoTransitionGoals: async () => {
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    // Guard: only run once per calendar day
+    if (get()._transitionRanForDate === todayStr) return;
+    set({ _transitionRanForDate: todayStr });
+
+    const goals = get().goals;
+    if (goals.length === 0) return;
+
+    const toArchive: string[] = [];
+    const toComplete: string[] = [];
+
+    for (const goal of goals) {
+      if (goal.status !== "active") continue;
+
+      if (goal.progress === 100) {
+        toComplete.push(goal.id);
+      } else if (goal.target_date && goal.target_date < todayStr) {
+        toArchive.push(goal.id);
+      }
+    }
+
+    if (toArchive.length === 0 && toComplete.length === 0) return;
+
+    const supabase = createClient();
+    const now = new Date().toISOString();
+
+    if (toArchive.length > 0) {
+      const { error } = await supabase
+        .from("goals")
+        .update({ status: "archived", updated_at: now })
+        .in("id", toArchive);
+      if (error) console.error("autoTransition archive error:", error);
+    }
+
+    if (toComplete.length > 0) {
+      const { error } = await supabase
+        .from("goals")
+        .update({ status: "completed", updated_at: now })
+        .in("id", toComplete);
+      if (error) console.error("autoTransition complete error:", error);
+    }
+
     await get().fetchGoals();
   },
 
