@@ -35,6 +35,9 @@ INSERT INTO template_exercises (template_id, exercise_name, sort_order, target_s
   ((SELECT id FROM pull), 'Dumbbell Bicep Curls', 4, 3, 12, 14),
   ((SELECT id FROM pull), 'Hammer Curls', 5, 3, 12, 12);
 
+
+
+
 -- ==================
 -- 3. LEG DAY (Strength)
 -- ==================
