@@ -37,7 +37,6 @@ INSERT INTO template_exercises (template_id, exercise_name, sort_order, target_s
 
 
 
-
 -- ==================
 -- 3. LEG DAY (Strength)
 -- ==================

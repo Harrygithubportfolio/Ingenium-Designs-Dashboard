@@ -25,7 +25,7 @@ Rejig the Focus section!
 - [ ] Incorporate interactive elements such as focus timers, task management tools, and mindfulness exercises.
 
 Website
-- [ ]  Dsign the website so that its overall look and feel makes it mordern and visually appealing.
+- [ ] Design the website so that its overall look and feel makes it mordern and visually appealing.
 - [ ] Ensure that the website is responsive and works well on various devices and screen sizes.
 - [ ] Optimize the website's performance to ensure fast loading times and smooth user experience.
 - [ ] Implement SEO best practices to improve the website's visibility and search engine rankings.
@@ -33,7 +33,7 @@ Website
 
 
 Routines 
-- [ ]design the Routines section to make it more organized and user-friendly.
+- [ ] Design the Routines section to make it more organized and user-friendly.
 - [ ] Add more content to the Routines section, including daily schedules, productivity tips, and resources for time management.
 - [ ] Incorporate interactive elements such as customizable routine templates, reminders, and progress tracking to help users stay on track with their routines.
 - [ ] Test the Routines section on various devices to ensure compatibility and usability.

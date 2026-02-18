@@ -1,36 +1,12 @@
 // ============================================
-// FOCUS TYPES
+// Re-export types from lib (Supabase-backed)
 // ============================================
 
-export interface FocusTask {
-  id: string;
-  title: string;
-  completed: boolean;
-  priority: 'high' | 'medium' | 'low';
-  source?: 'goal' | 'manual';
-  goalId?: string;
-  milestoneId?: string;
-}
+export type { FocusTask, DailyFocus, Reflection } from '@/lib/focus/types';
 
-export interface DailyFocus {
-  id: string;
-  date: string;
-  primaryFocus: string;
-  primaryFocusCompleted: boolean;
-  supportingTasks: FocusTask[];
-  intentionNote?: string;
-  createdAt: string;
-}
-
-export interface Reflection {
-  id: string;
-  date: string;
-  wentWell: string;
-  challenges: string;
-  improvements: string;
-  gratitude?: string;
-  createdAt: string;
-}
+// ============================================
+// QUOTE TYPE
+// ============================================
 
 export interface Quote {
   text: string;
@@ -118,14 +94,16 @@ export const inspirationalQuotes: Quote[] = [
   { text: "You are never too old to set another goal or to dream a new dream.", author: "C.S. Lewis" },
 ];
 
-export function getDailyQuote(): Quote {
-  // Use the day of year to get a consistent quote for the day
+function getDayOfYear(): number {
   const now = new Date();
   const start = new Date(now.getFullYear(), 0, 0);
   const diff = now.getTime() - start.getTime();
   const oneDay = 1000 * 60 * 60 * 24;
-  const dayOfYear = Math.floor(diff / oneDay);
-  return inspirationalQuotes[dayOfYear % inspirationalQuotes.length];
+  return Math.floor(diff / oneDay);
+}
+
+export function getDailyQuote(): Quote {
+  return inspirationalQuotes[getDayOfYear() % inspirationalQuotes.length];
 }
 
 // ============================================
@@ -149,70 +127,11 @@ export const eveningPrompts: string[] = [
 ];
 
 export function getDailyMorningPrompt(): string {
-  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
-  return morningPrompts[dayOfYear % morningPrompts.length];
+  return morningPrompts[getDayOfYear() % morningPrompts.length];
 }
 
 export function getDailyEveningPrompt(): string {
-  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
-  return eveningPrompts[dayOfYear % eveningPrompts.length];
-}
-
-// ============================================
-// LOCAL STORAGE HELPERS
-// ============================================
-
-const FOCUS_STORAGE_KEY = 'lifeOS_dailyFocus';
-const REFLECTION_STORAGE_KEY = 'lifeOS_reflections';
-
-export function saveDailyFocus(focus: DailyFocus): void {
-  if (typeof window === 'undefined') return;
-  const existing = getAllFocusData();
-  const updated = existing.filter(f => f.date !== focus.date);
-  updated.push(focus);
-  localStorage.setItem(FOCUS_STORAGE_KEY, JSON.stringify(updated));
-}
-
-export function getTodaysFocus(): DailyFocus | null {
-  if (typeof window === 'undefined') return null;
-  const today = getTodayString();
-  const all = getAllFocusData();
-  return all.find(f => f.date === today) ?? null;
-}
-
-export function getAllFocusData(): DailyFocus[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const data = localStorage.getItem(FOCUS_STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
-}
-
-export function saveReflection(reflection: Reflection): void {
-  if (typeof window === 'undefined') return;
-  const existing = getAllReflections();
-  const updated = existing.filter(r => r.date !== reflection.date);
-  updated.push(reflection);
-  localStorage.setItem(REFLECTION_STORAGE_KEY, JSON.stringify(updated));
-}
-
-export function getTodaysReflection(): Reflection | null {
-  if (typeof window === 'undefined') return null;
-  const today = getTodayString();
-  const all = getAllReflections();
-  return all.find(r => r.date === today) ?? null;
-}
-
-export function getAllReflections(): Reflection[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const data = localStorage.getItem(REFLECTION_STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
+  return eveningPrompts[getDayOfYear() % eveningPrompts.length];
 }
 
 // Generate unique ID
