@@ -1,0 +1,7 @@
+93046b0e98816bab29622a834452daf7 access key id
+
+
+e16019827df56a62a29019d778743aeca5f076bc1577d59779873caf9cb144bf secret access key
+
+
+DQRikPZ4UJGZbY1oSwTk011I5wB2ooXTO4uz_GCu token value 

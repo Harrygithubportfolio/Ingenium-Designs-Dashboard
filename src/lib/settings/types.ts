@@ -28,6 +28,7 @@ export type AccentColour =
 export interface ProfileSettings {
   display_name: string;
   avatar_url: string | null;
+  onboarding_completed: boolean;
 }
 
 export interface AppearanceSettings {
@@ -102,6 +103,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   profile: {
     display_name: '',
     avatar_url: null,
+    onboarding_completed: false,
   },
   appearance: {
     theme: 'dark',

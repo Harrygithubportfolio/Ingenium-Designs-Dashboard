@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react';
 import { getGreeting, formatDate, formatTime, getTimeOfDay } from '../utils/focusTypes';
 import { type WeatherData, formatTime as formatWeatherTime, isDaytime } from '@/lib/weather';
+import { useSettings } from '@/store/useSettings';
 
-interface FocusHeaderProps {
-  userName?: string;
-}
-
-export default function FocusHeader({ userName = 'Harry' }: FocusHeaderProps) {
+export default function FocusHeader() {
+  const { settings } = useSettings();
+  const userName = settings.profile.display_name || 'there';
   const [currentTime, setCurrentTime] = useState(new Date());
   const [weather, setWeather] = useState<WeatherData | null>(null);
 

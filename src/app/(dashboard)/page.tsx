@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import AiBriefingCard from '@/components/AiBriefingCard';
+import WelcomeModal from '@/components/WelcomeModal';
 import WeatherLocationModal from '@/components/WeatherLocationModal';
 import { useSettings } from '@/store/useSettings';
 import {
@@ -28,22 +29,34 @@ interface Goal {
 
 export default function Home() {
   const { settings, loading: settingsLoading, fetchSettings } = useSettings();
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
 
   useEffect(() => {
     fetchSettings();
   }, [fetchSettings]);
 
-  // Show location modal when settings are loaded and no location is set
+  // Show the appropriate modal once settings have loaded
   useEffect(() => {
-    if (!settingsLoading && !settings.weather.location_name) {
-      setShowLocationModal(true);
+    if (settingsLoading) return;
+
+    if (!settings.profile.onboarding_completed) {
+      // First-time user: show combined welcome modal (name + weather)
+      setShowWelcomeModal(true);
     }
-  }, [settingsLoading, settings.weather.location_name]);
+    // Returning users who already completed onboarding never see the weather modal
+  }, [settingsLoading, settings.profile.onboarding_completed]);
+
+  const displayName = settings.profile.display_name || 'there';
 
   return (
     <div className="h-full flex flex-col gap-4 overflow-hidden">
-      {/* Weather Location Setup Modal */}
+      {/* First-time onboarding modal (name + weather) */}
+      {showWelcomeModal && (
+        <WelcomeModal onClose={() => setShowWelcomeModal(false)} />
+      )}
+
+      {/* Legacy weather-only modal — only via manual trigger (e.g. settings) */}
       {showLocationModal && (
         <WeatherLocationModal onClose={() => setShowLocationModal(false)} />
       )}
@@ -58,7 +71,7 @@ export default function Home() {
           </div>
           <div>
             <h1 className="text-lg font-semibold text-heading">
-              Welcome back, <span className="text-accent">Harry</span>
+              Welcome back, <span className="text-accent">{displayName}</span>
             </h1>
             <p className="text-dim text-[11px]">Stay focused, stay intentional</p>
           </div>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSettings } from '@/store/useSettings';
 import styles from './Sidebar.module.css';
 
 interface NavItem {
@@ -176,6 +177,9 @@ const secondaryNavItems: NavItem[] = [
 
 export default function Sidebar({ isPrimary, isCollapsed, onToggleCollapse }: SidebarProps) {
   const pathname = usePathname();
+  const { settings } = useSettings();
+  const displayName = settings.profile.display_name || 'User';
+  const initial = displayName[0]?.toUpperCase() || 'U';
   const navItems = isPrimary ? primaryNavItems : secondaryNavItems;
   const sectionTitle = isPrimary ? 'Primary' : 'Secondary';
 
@@ -256,10 +260,10 @@ export default function Sidebar({ isPrimary, isCollapsed, onToggleCollapse }: Si
       <div className="p-3 border-t border-edge">
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-elevated transition-colors cursor-pointer">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-purple-600 flex items-center justify-center text-sm font-semibold text-white">
-            H
+            {initial}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-heading truncate">Harry</p>
+            <p className="text-sm font-medium text-heading truncate">{displayName}</p>
             <p className="text-xs text-dim truncate">Premium</p>
           </div>
         </div>
